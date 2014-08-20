@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<package>
+  <name>tue_config</name>
+  <version>0.0.0</version>
+  <description>The tue_config package</description>
+
+  <maintainer email="S.v.d.Dries@tue.nl">Sjoerd van den Dries</maintainer>
+
+  <license>TODO</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>tue_filesystem</build_depend>
+  <build_depend>yaml-cpp</build_depend>
+  <run_depend>tue_filesystem</run_depend>
+  <run_depend>yaml-cpp</run_depend>
+</package>

@@ -1,0 +1,29 @@
+#ifndef TUE_CONFIG_CONFIG_SET_H_
+#define TUE_CONFIG_CONFIG_SET_H_
+
+#include <map>
+#include <string>
+
+#include "tue/config/variant.h"
+
+#include <boost/shared_ptr.hpp>
+
+class ConfigSet;
+typedef boost::shared_ptr<ConfigSet> ConfigSetPtr;
+
+struct ConfigSet
+{
+    ConfigSet(const std::string& name_) : name(name_), parent(0), sequence_parent(0), is_array(false), idx_array(0) {}
+
+    std::string name;
+
+    ConfigSet* parent;
+    ConfigSet* sequence_parent;
+    bool is_array;
+    int idx_array;
+    std::map<std::string, ConfigSetPtr> children;
+    std::map<std::string, tue::Variant> values;
+    std::vector<ConfigSetPtr> sequence;
+};
+
+#endif
