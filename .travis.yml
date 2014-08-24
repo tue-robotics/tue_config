@@ -19,8 +19,8 @@ before_install:
   - rosdep update
 
 install:
-  - mkdir -p ~/ros/ws_tue_config/src
-  - cd ~/ros/ws_tue_config/src
+  - mkdir -p ~/ros/ws_${REPOSITORY_NAME}/src
+  - cd ~/ros/ws_${REPOSITORY_NAME}/src
   - wstool init .
   - wstool set -y tue_filesystem --git https://github.com/Rayman/tue_filesystem.git
   - wstool update
