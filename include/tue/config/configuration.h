@@ -78,6 +78,8 @@ public:
 
     const std::string& error() const;
 
+    void addError(const std::string& msg);
+
 
     // Syncing and Loading
 
@@ -102,8 +104,6 @@ private:
     Configuration(const boost::shared_ptr<ConfigData>& data, ConfigSet* head, ConfigSet* scope);
 
     bool checkValue(const std::string& key, Variant& v);
-
-    void addError(const std::string& msg);
 
     void print(std::ostream& out, const ConfigSet& cs, const std::string& indent = "") const;
 
