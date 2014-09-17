@@ -443,8 +443,9 @@ bool Configuration::sync() {
         if (last_write_time > source_last_write_time_)
         {
             loadFromYAMLFile(filename_);
+            source_last_write_time_ = last_write_time;
             return true;
-        }
+        }        
     }
 
     return false;
@@ -496,7 +497,7 @@ bool loadFromYAMLNode(const YAML::Node& node, Configuration& config)
                 const YAML::Node& n2 = *it2;
                 if (n2.Type() != YAML::NodeType::Map)
                 {
-                    std::cout << "Sequences must only contains maps" << std::endl;
+                    config.addError("Sequences must only contains maps");
                     return false;
                 }
                 else
@@ -531,9 +532,13 @@ bool Configuration::loadFromYAMLFile(const std::string& filename)
     // Remove possible previous errors
     data_->error.clear();
 
+    // Reset head
+    head_ = scope_;
+
     std::ifstream fin(filename.c_str());
     if (fin.fail())
     {
+        addError("No such file: '" + filename + "'.");
         return false;
     }
 
