@@ -552,7 +552,8 @@ bool Configuration::loadFromYAMLFile(const std::string& filename)
     }
     catch(YAML::Exception& e)
     {
-        std::cout << e.what() << "\n";
+//        std::cout << e.what() << "\n";
+        addError(e.what());
         return false;
     }
 
