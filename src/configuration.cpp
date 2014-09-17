@@ -528,6 +528,9 @@ bool loadFromYAMLNode(const YAML::Node& node, Configuration& config)
 
 bool Configuration::loadFromYAMLFile(const std::string& filename)
 {
+    // Remove possible previous errors
+    data_->error.clear();
+
     std::ifstream fin(filename.c_str());
     if (fin.fail())
     {
