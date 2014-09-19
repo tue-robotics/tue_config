@@ -120,24 +120,25 @@ void Configuration::setValue(const std::string& key, const Variant& value)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Configuration::checkValue(const std::string& key, Variant& v)
+bool Configuration::checkValue(const std::string& key, Variant& v, RequiredOrOoptional opt)
 {
     v = valueRec(head_, key, Variant());
     if (v.isValid())
         return true;
     else
     {
-        addError("Missing key: '" + key + "'");
+        if (opt == REQUIRED)
+            addError("Missing key: '" + key + "'");
         return false;
     }
 }
 
 // ----------------------------------------------------------------------------------------------------z
 
-bool Configuration::value(const std::string &key, double& d)
+bool Configuration::value(const std::string &key, double& d, RequiredOrOoptional opt)
 {
     Variant v;
-    if (!checkValue(key, v))
+    if (!checkValue(key, v, opt))
         return false;
 
     if (!v.isReal())
@@ -152,10 +153,10 @@ bool Configuration::value(const std::string &key, double& d)
 
 // ----------------------------------------------------------------------------------------------------z
 
-bool Configuration::value(const std::string &key, float& f)
+bool Configuration::value(const std::string &key, float& f, RequiredOrOoptional opt)
 {
     Variant v;
-    if (!checkValue(key, v))
+    if (!checkValue(key, v, opt))
         return false;
 
     if (!v.isReal())
@@ -170,10 +171,10 @@ bool Configuration::value(const std::string &key, float& f)
 
 // ----------------------------------------------------------------------------------------------------z
 
-bool Configuration::value(const std::string &key, int& i)
+bool Configuration::value(const std::string &key, int& i, RequiredOrOoptional opt)
 {
     Variant v;
-    if (!checkValue(key, v))
+    if (!checkValue(key, v, opt))
         return false;
 
     if (!v.isInt())
@@ -188,10 +189,10 @@ bool Configuration::value(const std::string &key, int& i)
 
 // ----------------------------------------------------------------------------------------------------z
 
-bool Configuration::value(const std::string &key, bool& b)
+bool Configuration::value(const std::string &key, bool& b, RequiredOrOoptional opt)
 {
     Variant v;
-    if (!checkValue(key, v))
+    if (!checkValue(key, v, opt))
         return false;
 
     if (!v.isInt())
@@ -206,10 +207,10 @@ bool Configuration::value(const std::string &key, bool& b)
 
 // ----------------------------------------------------------------------------------------------------z
 
-bool Configuration::value(const std::string &key, std::string& s)
+bool Configuration::value(const std::string &key, std::string& s, RequiredOrOoptional opt)
 {
     Variant v;
-    if (!checkValue(key, v))
+    if (!checkValue(key, v, opt))
         return false;
 
     if (!v.isString())
@@ -224,14 +225,15 @@ bool Configuration::value(const std::string &key, std::string& s)
 
 // ----------------------------------------------------------------------------------------------------
 
-Variant Configuration::value(const std::string& key)
+Variant Configuration::value(const std::string& key, RequiredOrOoptional opt)
 {
     Variant v = valueRec(head_, key, Variant());
     if (v.isValid())
         return v;
     else
     {
-        addError("Missing key: '" + key + "'");
+        if (opt == REQUIRED)
+            addError("Missing key: '" + key + "'");
         return v;
     }
 }

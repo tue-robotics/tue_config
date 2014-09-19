@@ -16,6 +16,12 @@ class ConfigSet;
 namespace tue
 {
 
+enum RequiredOrOoptional
+{
+    REQUIRED,
+    OPTIONAL
+};
+
 class Configuration
 {
 
@@ -28,17 +34,17 @@ public:
 
     void setValue(const std::string& key, const Variant& value);
 
-    Variant value(const std::string& key);
+    Variant value(const std::string& key, RequiredOrOoptional opt = REQUIRED);
 
-    bool value(const std::string &key, float& f);
+    bool value(const std::string &key, float& f, RequiredOrOoptional opt = REQUIRED);
 
-    bool value(const std::string &key, double& d);
+    bool value(const std::string &key, double& d, RequiredOrOoptional opt = REQUIRED);
 
-    bool value(const std::string &key, int& i);
+    bool value(const std::string &key, int& i, RequiredOrOoptional opt = REQUIRED);
 
-    bool value(const std::string &key, bool& b);
+    bool value(const std::string &key, bool& b, RequiredOrOoptional opt = REQUIRED);
 
-    bool value(const std::string &key, std::string& s);
+    bool value(const std::string &key, std::string& s, RequiredOrOoptional opt = REQUIRED);
 
     void remove(const std::string& key);
 
@@ -103,7 +109,7 @@ private:
 
     Configuration(const boost::shared_ptr<ConfigData>& data, ConfigSet* head, ConfigSet* scope);
 
-    bool checkValue(const std::string& key, Variant& v);
+    bool checkValue(const std::string& key, Variant& v, RequiredOrOoptional opt = REQUIRED);
 
     void print(std::ostream& out, const ConfigSet& cs, const std::string& indent = "") const;
 
