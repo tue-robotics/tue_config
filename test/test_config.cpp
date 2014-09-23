@@ -103,6 +103,8 @@ void test3()
     std::cout << config.error() << std::endl;
 }
 
+// ----------------------------------------------------------------------------------------------------
+
 void test4()
 {
     tue::Configuration config;
@@ -124,6 +126,34 @@ void test4()
 
 // ----------------------------------------------------------------------------------------------------
 
+void test5()
+{
+    tue::Configuration config1;
+    config1.setValue("foo", "test");
+    config1.setValue("bar", 123.456);
+    config1.writeGroup("group1");
+    config1.setValue("test", 100);
+    config1.setValue("test2", "bla");
+    config1.endGroup();
+
+    tue::Configuration config2;
+    config2.setValue("foo", "replaced");
+    config2.writeGroup("group1");
+    config2.setValue("test2", "also replaced");
+    config2.endGroup();
+    config2.writeGroup("group2");
+    config2.setValue("name", "this is a new group");
+    config2.endGroup();
+
+    config1.add(config2);
+
+    std::cout << config1 << std::endl;
+    std::cout << "---" << std::endl;
+    std::cout << config2 << std::endl;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 int main(int argc, char **argv) {
 
     tue::Configuration config;
@@ -134,7 +164,7 @@ int main(int argc, char **argv) {
     }
     else
     {
-        test2();
+        test5();
     }
 
     return 0;

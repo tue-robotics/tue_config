@@ -78,6 +78,11 @@ public:
     Configuration limitScope() const;
 
 
+    // Merging
+
+    bool add(const Configuration& config);
+
+
     // Error handling
 
     bool hasError() const;

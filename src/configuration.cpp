@@ -427,6 +427,67 @@ Configuration Configuration::limitScope() const
 
 // ----------------------------------------------------------------------------------------------------
 
+void merge(ConfigNode* n1, const ConfigNode& n2, std::string& error)
+{
+    if (n1->is_array != n2.is_array)
+    {
+        error += "Trying to merge an array with a non-array: '" + n1->name + "' with '" + n2.name + "'\n";
+        return;
+    }
+
+    // Merge children
+    for(std::map<std::string, ConfigNodePtr>::const_iterator it2 = n2.children.begin(); it2 != n2.children.end(); ++it2)
+    {
+        const std::string& name = it2->first;
+        std::map<std::string, ConfigNodePtr>::iterator it1 = n1->children.find(name);
+        if (it1 == n1->children.end())
+        {
+            // n1 does not have that child. Copy it and add it to n1
+            ConfigNodePtr c(new ConfigNode(*it2->second));
+            c->parent = n1;
+            n1->children[name] = c;
+        }
+        else
+        {
+            // n1 already has that child. Merge them.
+            merge(it1->second.get(), *it2->second, error);
+        }
+    }
+
+    // Merge values
+    for(std::map<std::string, tue::Variant>::const_iterator it2 = n2.values.begin(); it2 != n2.values.end(); ++it2)
+    {
+        n1->values[it2->first] = it2->second;
+    }
+
+    // n1's sequence is completely replaced by n2's sequence
+    n1->sequence.resize(n2.sequence.size());
+    for(unsigned int i = 0; i < n2.sequence.size(); ++i)
+    {
+        ConfigNodePtr c(new ConfigNode(*n2.sequence[i]));
+        c->parent = n1;
+        n1->sequence[i] = c;
+    }
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool Configuration::add(const Configuration& config)
+{
+    std::string error;
+    merge(head_, *config.head_, error);
+
+    if (!error.empty())
+    {
+        addError(error);
+        return false;
+    }
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 bool Configuration::sync() {
 
     if (!filename_.empty() )
