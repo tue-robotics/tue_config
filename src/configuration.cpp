@@ -1,7 +1,7 @@
 #include "tue/config/configuration.h"
 
 #include "config_data.h"
-#include "config_set.h"
+#include "config_node.h"
 
 // YAML parsing
 #include <fstream>
