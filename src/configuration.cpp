@@ -36,14 +36,14 @@ bool split(const std::string& composite_key, std::string& first, std::string& la
 
 // ----------------------------------------------------------------------------------------------------
 
-void setValueRec(ConfigSet* cs, const std::string& key, const Variant& value)
+void setValueRec(ConfigNode* cs, const std::string& key, const Variant& value)
 {
     std::string first, last;
     if (!split(key, first, last))
         cs->values[key] = value;
     else
     {
-        ConfigSet* cs_child = cs->children[first].get();
+        ConfigNode* cs_child = cs->children[first].get();
         cs_child->parent = cs;
         setValueRec(cs_child, last, value);
     }
@@ -51,7 +51,7 @@ void setValueRec(ConfigSet* cs, const std::string& key, const Variant& value)
 
 // ----------------------------------------------------------------------------------------------------
 
-Variant valueRec(const ConfigSet* cs, const std::string& key, const Variant& default_value)
+Variant valueRec(const ConfigNode* cs, const std::string& key, const Variant& default_value)
 {
     std::string first, last;
     if (!split(key, first, last))
@@ -66,7 +66,7 @@ Variant valueRec(const ConfigSet* cs, const std::string& key, const Variant& def
     }
     else
     {
-        std::map<std::string, ConfigSetPtr>::const_iterator it = cs->children.find(first);
+        std::map<std::string, ConfigNodePtr>::const_iterator it = cs->children.find(first);
         if (it == cs->children.end())
             return Variant();
         else
@@ -76,7 +76,7 @@ Variant valueRec(const ConfigSet* cs, const std::string& key, const Variant& def
 
 // ----------------------------------------------------------------------------------------------------
 
-void removeRec(ConfigSet* cs, const std::string& key)
+void removeRec(ConfigNode* cs, const std::string& key)
 {
     std::string first, last;
     if (!split(key, first, last))
@@ -86,7 +86,7 @@ void removeRec(ConfigSet* cs, const std::string& key)
     }
     else
     {
-        std::map<std::string, ConfigSetPtr>::iterator it = cs->children.find(first);
+        std::map<std::string, ConfigNodePtr>::iterator it = cs->children.find(first);
         if (it != cs->children.end())
             removeRec(it->second.get(), last);
     }
@@ -100,7 +100,7 @@ Configuration::Configuration() : data_(new ConfigData), head_(&data_->root), sco
 
 // ----------------------------------------------------------------------------------------------------
 
-Configuration::Configuration(const boost::shared_ptr<ConfigData>& data, ConfigSet* head, ConfigSet* scope)
+Configuration::Configuration(const boost::shared_ptr<ConfigData>& data, ConfigNode* head, ConfigNode* scope)
     : data_(data), head_(head), scope_(scope)
 {
 }
@@ -249,7 +249,7 @@ void Configuration::remove(const std::string& key)
 
 void Configuration::writeGroup(const std::string& group)
 {
-    ConfigSetPtr c(new ConfigSet(group));
+    ConfigNodePtr c(new ConfigNode(group));
     c->parent = head_;
 
     head_->children[group] = c;
@@ -260,7 +260,7 @@ void Configuration::writeGroup(const std::string& group)
 
 bool Configuration::readGroup(const std::string& group)
 {
-    std::map<std::string, ConfigSetPtr>::iterator it = head_->children.find(group);
+    std::map<std::string, ConfigNodePtr>::iterator it = head_->children.find(group);
     if (it == head_->children.end())
     {
         return false;
@@ -299,7 +299,7 @@ void Configuration::writeArray(const std::string& array)
 
 bool Configuration::readArray(const std::string& array)
 {
-    std::map<std::string, ConfigSetPtr>::iterator it = head_->children.find(array);
+    std::map<std::string, ConfigNodePtr>::iterator it = head_->children.find(array);
     if (it == head_->children.end())
     {
         return false;
@@ -346,7 +346,7 @@ bool Configuration::nextArrayItem()
     {
         // head_ is an item in a array. Therefore, change head to it's next sibling
 
-        ConfigSet* a = head_->sequence_parent;
+        ConfigNode* a = head_->sequence_parent;
         ++a->idx_array;
 
         if (a->idx_array >= (int)a->sequence.size())
@@ -384,7 +384,7 @@ void Configuration::addArrayItem()
         return;
     }
 
-    ConfigSetPtr c(new ConfigSet(""));
+    ConfigNodePtr c(new ConfigNode(""));
     c->sequence_parent = head_;
 
     head_->sequence.push_back(c);
@@ -580,7 +580,7 @@ void Configuration::addError(const std::string& msg)
     // build context
     std::vector<std::string> context;
 
-    ConfigSet* c = head_;
+    ConfigNode* c = head_;
     while(c)
     {
         if (c->sequence_parent)
@@ -642,14 +642,14 @@ std::ostream& operator<< (std::ostream& out, const Configuration& c)
 
 // ----------------------------------------------------------------------------------------------------
 
-void Configuration::print(std::ostream& out, const ConfigSet& cs, const std::string& indent) const
+void Configuration::print(std::ostream& out, const ConfigNode& cs, const std::string& indent) const
 {
     for(std::map<std::string, Variant>::const_iterator it = cs.values.begin(); it != cs.values.end(); ++it)
     {
         out << indent << it->first << ": " << it->second << std::endl;
     }
 
-    for(std::map<std::string, ConfigSetPtr>::const_iterator it = cs.children.begin(); it != cs.children.end(); ++it)
+    for(std::map<std::string, ConfigNodePtr>::const_iterator it = cs.children.begin(); it != cs.children.end(); ++it)
     {
         out << indent << it->first << ":" << std::endl;
         print(out, *it->second, indent + "    ");

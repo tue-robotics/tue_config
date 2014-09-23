@@ -11,7 +11,7 @@
 #include <ctime>
 
 class ConfigData;
-class ConfigSet;
+class ConfigNode;
 
 namespace tue
 {
@@ -99,19 +99,19 @@ private:
 
     boost::shared_ptr<ConfigData> data_;
 
-    ConfigSet* head_;
+    ConfigNode* head_;
 
-    ConfigSet* scope_;
+    ConfigNode* scope_;
 
     std::string filename_;
 
     std::time_t source_last_write_time_;
 
-    Configuration(const boost::shared_ptr<ConfigData>& data, ConfigSet* head, ConfigSet* scope);
+    Configuration(const boost::shared_ptr<ConfigData>& data, ConfigNode* head, ConfigNode* scope);
 
     bool checkValue(const std::string& key, Variant& v, RequiredOrOoptional opt = REQUIRED);
 
-    void print(std::ostream& out, const ConfigSet& cs, const std::string& indent = "") const;
+    void print(std::ostream& out, const ConfigNode& cs, const std::string& indent = "") const;
 
 };
 

@@ -7,7 +7,7 @@ struct ConfigData
 {
     ConfigData() : root("") {}
 
-    ConfigSet root;
+    ConfigNode root;
     std::string error;
 };
 

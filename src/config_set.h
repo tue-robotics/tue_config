@@ -8,22 +8,22 @@
 
 #include <boost/shared_ptr.hpp>
 
-class ConfigSet;
-typedef boost::shared_ptr<ConfigSet> ConfigSetPtr;
+class ConfigNode;
+typedef boost::shared_ptr<ConfigNode> ConfigNodePtr;
 
-struct ConfigSet
+struct ConfigNode
 {
-    ConfigSet(const std::string& name_) : name(name_), parent(0), sequence_parent(0), is_array(false), idx_array(0) {}
+    ConfigNode(const std::string& name_) : name(name_), parent(0), sequence_parent(0), is_array(false), idx_array(0) {}
 
     std::string name;
 
-    ConfigSet* parent;
-    ConfigSet* sequence_parent;
+    ConfigNode* parent;
+    ConfigNode* sequence_parent;
     bool is_array;
     int idx_array;
-    std::map<std::string, ConfigSetPtr> children;
+    std::map<std::string, ConfigNodePtr> children;
     std::map<std::string, tue::Variant> values;
-    std::vector<ConfigSetPtr> sequence;
+    std::vector<ConfigNodePtr> sequence;
 };
 
 #endif
