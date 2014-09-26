@@ -4,15 +4,14 @@
 #include "config_node.h"
 
 // YAML parsing
-#include <fstream>
-#include "yaml-cpp/yaml.h"
-#include <stdlib.h>
+#include "tue/config/loaders/yaml.h"
+
+// Errors
+#include <sstream>
 
 // Sync
 #include <tue/filesystem/path.h>
 #include <boost/filesystem.hpp>
-
-#include <iostream>
 
 namespace tue
 {
@@ -516,80 +515,6 @@ bool Configuration::sync() {
 
 // ----------------------------------------------------------------------------------------------------
 
-Variant yamlScalarToVariant(const YAML::Node& n)
-{
-    std::string s;
-    n.GetScalar(s);
-
-    char* pEnd;
-
-    int i = strtol(s.c_str(), &pEnd, 10);
-    if (pEnd[0] == 0)
-        return Variant(i);
-
-    double d = strtod(s.c_str(), &pEnd);
-    if (pEnd[0] == 0)
-        return Variant(d);
-
-    return Variant(s);
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-bool loadFromYAMLNode(const YAML::Node& node, Configuration& config)
-{
-
-    for(YAML::Iterator it = node.begin(); it != node.end(); ++it)
-    {
-        std::string key;
-        it.first() >> key;
-
-        const YAML::Node& n = it.second();
-
-        switch (n.Type())
-        {
-        case YAML::NodeType::Scalar:
-            config.setValue(key, yamlScalarToVariant(n));
-            break;
-        case YAML::NodeType::Sequence:
-        {
-            config.writeArray(key);
-
-            for(YAML::Iterator it2 = n.begin(); it2 != n.end(); ++it2)
-            {
-                const YAML::Node& n2 = *it2;
-                if (n2.Type() != YAML::NodeType::Map)
-                {
-                    config.addError("Sequences must only contains maps");
-                    return false;
-                }
-                else
-                {
-                    config.addArrayItem();
-                    loadFromYAMLNode(n2, config);
-                    config.endArrayItem();
-                }
-            }
-
-            config.endArray();
-
-            break;
-        }
-        case YAML::NodeType::Map:
-            config.writeGroup(key);
-            loadFromYAMLNode(n, config);
-            config.endGroup();
-            break;
-        case YAML::NodeType::Null:
-            break;
-        }
-    }
-
-    return true;
-}
-
-// ----------------------------------------------------------------------------------------------------
-
 bool Configuration::loadFromYAMLFile(const std::string& filename)
 {
     // Remove possible previous errors
@@ -598,35 +523,8 @@ bool Configuration::loadFromYAMLFile(const std::string& filename)
     // Reset head
     head_ = scope_;
 
-    std::ifstream fin(filename.c_str());
-    if (fin.fail())
-    {
-        addError("No such file: '" + filename + "'.");
+    if (!config::loadFromYAMLFile(filename, *this))
         return false;
-    }
-
-    try
-    {
-        // load yaml file
-        YAML::Parser parser(fin);
-        YAML::Node doc;
-        parser.GetNextDocument(doc);
-
-        if (doc.Type() != YAML::NodeType::Map)
-        {
-            addError("Root of the config file must be a map.");
-            return false;
-        }
-
-        if (!loadFromYAMLNode(doc, *this))
-            return false;
-    }
-    catch(YAML::Exception& e)
-    {
-//        std::cout << e.what() << "\n";
-        addError(e.what());
-        return false;
-    }
 
     filename_ = filename;
     source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();

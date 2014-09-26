@@ -29,6 +29,7 @@ file(GLOB_RECURSE HEADER_FILES include/*.h src/*.h)
 
 add_library(tue_config
    src/configuration.cpp
+   src/loaders/yaml.cpp
    ${HEADER_FILES}
 )
 
