@@ -53,7 +53,7 @@ public:
 
     void writeGroup(const std::string& group);
 
-    bool readGroup(const std::string& group);
+    bool readGroup(const std::string& group, RequiredOrOoptional opt = OPTIONAL);
 
     void endGroup();
 
@@ -62,7 +62,7 @@ public:
 
     void writeArray(const std::string& array);
 
-    bool readArray(const std::string& array);
+    bool readArray(const std::string& array, RequiredOrOoptional opt = OPTIONAL);
 
     void endArray();
 

@@ -257,11 +257,13 @@ void Configuration::writeGroup(const std::string& group)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Configuration::readGroup(const std::string& group)
+bool Configuration::readGroup(const std::string& group, RequiredOrOoptional opt)
 {
     std::map<std::string, ConfigNodePtr>::iterator it = head_->children.find(group);
     if (it == head_->children.end())
     {
+        if (opt == REQUIRED)
+            addError("No such group: '" + group + "'");
         return false;
     }
 
@@ -296,16 +298,20 @@ void Configuration::writeArray(const std::string& array)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Configuration::readArray(const std::string& array)
+bool Configuration::readArray(const std::string& array, RequiredOrOoptional opt)
 {
     std::map<std::string, ConfigNodePtr>::iterator it = head_->children.find(array);
     if (it == head_->children.end())
     {
+        if (opt == REQUIRED)
+            addError("No such group: '" + array + "'");
         return false;
     }
 
     if (!it->second->is_array)
     {
+        if (opt == REQUIRED)
+            addError("Field '" + array + "' is not an array.");
         return false;
     }
 
