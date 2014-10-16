@@ -607,23 +607,48 @@ std::ostream& operator<< (std::ostream& out, const Configuration& c)
 
 // ----------------------------------------------------------------------------------------------------
 
-void Configuration::print(std::ostream& out, const ConfigNode& cs, const std::string& indent) const
+std::string Configuration::toYAMLString() const
 {
+    std::stringstream ss;
+    this->print(ss, *head_, "");
+    return ss.str();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void Configuration::print(std::ostream& out, const ConfigNode& cs, const std::string& indent, bool skip_first_indent) const
+{   
+
     for(std::map<std::string, Variant>::const_iterator it = cs.values.begin(); it != cs.values.end(); ++it)
     {
-        out << indent << it->first << ": " << it->second << std::endl;
+        if (!skip_first_indent)
+            out << indent;
+        else
+            skip_first_indent = false;
+
+        out << it->first << ": " << it->second << std::endl;
     }
 
     for(std::map<std::string, ConfigNodePtr>::const_iterator it = cs.children.begin(); it != cs.children.end(); ++it)
     {
-        out << indent << it->first << ":" << std::endl;
+        if (!skip_first_indent)
+            out << indent;
+        else
+            skip_first_indent = false;
+
+        out << it->first << ":" << std::endl;
         print(out, *it->second, indent + "    ");
     }
 
     for(unsigned int i = 0; i < cs.sequence.size(); ++i)
     {
-        out << indent << "(" << i << ")" << std::endl;
-        print(out, *cs.sequence[i], indent + "    ");
+        if (!skip_first_indent)
+            out << indent;
+        else
+            skip_first_indent = false;
+
+        out << "- ";
+        print(out, *cs.sequence[i], indent + "  ", true);
     }
 }
 

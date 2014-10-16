@@ -37,6 +37,12 @@ void test2()
 
     config.addArrayItem();
     config.setValue("a", 1);
+    config.setValue("b", 2);
+    config.writeGroup("group");
+    config.setValue("c", 3);
+    config.setValue("d", 4);
+    config.endGroup();
+    config.setValue("e", 5);
     config.endArrayItem();
 
     config.addArrayItem();
@@ -164,7 +170,7 @@ int main(int argc, char **argv) {
     }
     else
     {
-        test5();
+        test2();
     }
 
     return 0;

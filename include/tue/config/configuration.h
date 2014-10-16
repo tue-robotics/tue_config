@@ -98,6 +98,8 @@ public:
 
     bool loadFromYAMLFile(const std::string& filename);
 
+    std::string toYAMLString() const;
+
     friend std::ostream& operator<< (std::ostream& out, const Configuration& c);
 
 private:
@@ -116,7 +118,7 @@ private:
 
     bool checkValue(const std::string& key, Variant& v, RequiredOrOoptional opt = REQUIRED);
 
-    void print(std::ostream& out, const ConfigNode& cs, const std::string& indent = "") const;
+    void print(std::ostream& out, const ConfigNode& cs, const std::string& indent = "", bool skip_first_indent = false) const;
 
 };
 
