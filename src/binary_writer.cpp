@@ -1,4 +1,4 @@
-#include "tue/config2/binary_writer.h"
+#include "tue/config/binary_writer.h"
 
 #include <iostream>
 

@@ -1,11 +1,11 @@
-#include <tue/config2/reader.h>
-#include <tue/config2/writer.h>
-#include <tue/config2/configuration.h>
+#include <tue/config/reader.h>
+#include <tue/config/writer.h>
+#include <tue/config/configuration.h>
 
-#include <tue/config2/yaml_emitter.h>
+#include <tue/config/yaml_emitter.h>
 
-#include <tue/config2/binary_writer.h>
-#include <tue/config2/binary_reader.h>
+#include <tue/config/binary_writer.h>
+#include <tue/config/binary_reader.h>
 
 #include <iostream>
 #include <sstream>

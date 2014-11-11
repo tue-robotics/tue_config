@@ -1,4 +1,4 @@
-#include "tue/config2/sequence.h"
+#include "tue/config/sequence.h"
 
 namespace tue
 {

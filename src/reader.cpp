@@ -1,6 +1,6 @@
-#include "tue/config2/reader.h"
-#include "tue/config2/node.h"
-#include "tue/config2/configuration.h"
+#include "tue/config/reader.h"
+#include "tue/config/node.h"
+#include "tue/config/configuration.h"
 
 namespace tue
 {

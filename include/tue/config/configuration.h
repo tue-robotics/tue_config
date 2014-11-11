@@ -1,12 +1,12 @@
 #ifndef TUE_CONFIG2_CONFIGURATION_H_
 #define TUE_CONFIG2_CONFIGURATION_H_
 
-#include "tue/config2/types.h"
+#include "tue/config/types.h"
 
 #include <map>
 #include <vector>
-#include "tue/config2/label.h"
-#include "tue/config2/node.h"
+#include "tue/config/label.h"
+#include "tue/config/node.h"
 
 namespace tue
 {

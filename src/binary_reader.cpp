@@ -1,4 +1,4 @@
-#include "tue/config2/binary_reader.h"
+#include "tue/config/binary_reader.h"
 
 #include <iostream>
 #include <string.h>

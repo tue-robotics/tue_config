@@ -1,8 +1,8 @@
 #ifndef TUE_CONFIG2_CONFIG_READER_H_
 #define TUE_CONFIG2_CONFIG_READER_H_
 
-#include "tue/config2/types.h"
-#include "tue/config2/configuration.h"
+#include "tue/config/types.h"
+#include "tue/config/configuration.h"
 
 
 namespace tue

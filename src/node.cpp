@@ -1,4 +1,4 @@
-#include "tue/config2/node.h"
+#include "tue/config/node.h"
 
 namespace tue
 {

@@ -1,4 +1,4 @@
-#include "tue/config2/map.h"
+#include "tue/config/map.h"
 
 namespace tue
 {

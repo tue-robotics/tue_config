@@ -1,7 +1,7 @@
 #ifndef TUE_CONFIG2_YAML_EMITTER_H_
 #define TUE_CONFIG2_YAML_EMITTER_H_
 
-#include "tue/config2/types.h"
+#include "tue/config/types.h"
 
 namespace tue
 {

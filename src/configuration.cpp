@@ -1,5 +1,5 @@
-#include "tue/config2/configuration.h"
-#include "tue/config2/map.h"
+#include "tue/config/configuration.h"
+#include "tue/config/map.h"
 
 #include <boost/make_shared.hpp>
 

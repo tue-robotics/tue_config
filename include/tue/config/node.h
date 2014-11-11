@@ -1,9 +1,9 @@
 #ifndef TUE_CONFIG2_NODE_H_
 #define TUE_CONFIG2_NODE_H_
 
-#include "tue/config2/types.h"
-#include "tue/config2/variant.h"
-#include "tue/config2/label.h"
+#include "tue/config/types.h"
+#include "tue/config/variant.h"
+#include "tue/config/label.h"
 
 #include <map>
 

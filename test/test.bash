@@ -1,6 +1,6 @@
 #! /bin/bash
-rosrun tue_config2 test_tue_config2 > /tmp/test-output.txt
-diff=$(diff /tmp/test-output.txt `rospack find tue_config2`/test/test-output.txt)
+rosrun tue_config test_tue_config > /tmp/test-output.txt
+diff=$(diff /tmp/test-output.txt `rospack find tue_config`/test/test-output.txt)
 
 if [ -z "$diff" ]
 then

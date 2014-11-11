@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(tue_config2)
+project(tue_config)
 
 find_package(catkin REQUIRED COMPONENTS
 )
@@ -54,22 +54,22 @@ include_directories(
 )
 
 set(HEADER_FILES
-    include/tue/config2/types.h
-    include/tue/config2/variant.h
-    include/tue/config2/yaml_emitter.h
-    include/tue/config2/reader.h
-    include/tue/config2/writer.h
-    include/tue/config2/sequence.h
-    include/tue/config2/node.h
-    include/tue/config2/map.h
-    include/tue/config2/value.h
-    include/tue/config2/configuration.h
-    include/tue/config2/label.h
-    include/tue/config2/binary_writer.h
-    include/tue/config2/binary_reader.h
+    include/tue/config/types.h
+    include/tue/config/variant.h
+    include/tue/config/yaml_emitter.h
+    include/tue/config/reader.h
+    include/tue/config/writer.h
+    include/tue/config/sequence.h
+    include/tue/config/node.h
+    include/tue/config/map.h
+    include/tue/config/value.h
+    include/tue/config/configuration.h
+    include/tue/config/label.h
+    include/tue/config/binary_writer.h
+    include/tue/config/binary_reader.h
 )
 
-add_library(tue_config2
+add_library(tue_config
     src/configuration.cpp
     src/node.cpp
     src/map.cpp
@@ -83,9 +83,9 @@ add_library(tue_config2
 )
 # target_link_libraries(library_name ${catkin_LIBRARIES})
 
-add_executable(test_tue_config2
+add_executable(test_tue_config
 	test/test.cpp
 )
-target_link_libraries(test_tue_config2 tue_config2)
+target_link_libraries(test_tue_config tue_config)
 
 

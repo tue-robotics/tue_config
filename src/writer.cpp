@@ -1,8 +1,8 @@
-#include "tue/config2/writer.h"
-#include "tue/config2/node.h"
-#include "tue/config2/configuration.h"
-#include "tue/config2/map.h"
-#include "tue/config2/sequence.h"
+#include "tue/config/writer.h"
+#include "tue/config/node.h"
+#include "tue/config/configuration.h"
+#include "tue/config/map.h"
+#include "tue/config/sequence.h"
 
 #include <boost/make_shared.hpp>
 
