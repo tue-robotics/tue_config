@@ -1,27 +1,18 @@
-#include "tue/config2/configuration.h"
-#include "tue/config2/map.h"
-
-#include <boost/make_shared.hpp>
+#include "tue/config2/value.h"
 
 namespace tue
 {
 
-namespace config
-{
-
 // ----------------------------------------------------------------------------------------------------
 
-Configuration::Configuration()
+Value::Value()
 {
-    nodes.push_back(boost::make_shared<Map>(0));
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-Configuration::~Configuration()
+Value::~Value()
 {
-}
-
 }
 
 } // end namespace tue

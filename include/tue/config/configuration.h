@@ -1,26 +1,18 @@
-#ifndef TUE_CONFIG_CONFIGURATION_H_
-#define TUE_CONFIG_CONFIGURATION_H_
+#ifndef TUE_CONFIG2_CONFIGURATION_H_
+#define TUE_CONFIG2_CONFIGURATION_H_
 
-#include <string>
+#include "tue/config2/types.h"
 
-#include "tue/config/variant.h"
-
-#include <boost/shared_ptr.hpp>
-
-// Sync
-#include <ctime>
-
-class ConfigData;
-class ConfigNode;
+#include <map>
+#include <vector>
+#include "tue/config2/label.h"
+#include "tue/config2/node.h"
 
 namespace tue
 {
 
-enum RequiredOrOoptional
+namespace config
 {
-    REQUIRED,
-    OPTIONAL
-};
 
 class Configuration
 {
@@ -29,99 +21,52 @@ public:
 
     Configuration();
 
-    ~Configuration();
+    virtual ~Configuration();
 
+    std::map<std::string, Label> name_to_label;
 
-    void setValue(const std::string& key, const Variant& value);
+    std::vector<std::string> label_to_name;
 
-    Variant value(const std::string& key, RequiredOrOoptional opt = REQUIRED);
+    Label getOrAddLabel(const std::string& name)
+    {
+        std::map<std::string, Label>::const_iterator it = name_to_label.find(name);
+        if (it != name_to_label.end())
+            return it->second;
 
-    bool value(const std::string &key, float& f, RequiredOrOoptional opt = REQUIRED);
+        Label l = name_to_label.size();
+        name_to_label[name] = l;
+        label_to_name.push_back(name);
+        return l;
+    }
 
-    bool value(const std::string &key, double& d, RequiredOrOoptional opt = REQUIRED);
+    bool getLabel(const std::string& name, Label& label) const
+    {
+        std::map<std::string, Label>::const_iterator it = name_to_label.find(name);
+        if (it == name_to_label.end())
+            return false;
 
-    bool value(const std::string &key, int& i, RequiredOrOoptional opt = REQUIRED);
+        label = it->second;
+        return true;
+    }
 
-    bool value(const std::string &key, bool& b, RequiredOrOoptional opt = REQUIRED);
+    const std::string& getName(const Label& label) const
+    {
+        return label_to_name[label];
+    }
 
-    bool value(const std::string &key, std::string& s, RequiredOrOoptional opt = REQUIRED);
+    NodeIdx addNode(const NodePtr& n, NodeIdx parent)
+    {
+        n->parent = parent;
+        nodes.push_back(n);
+        return nodes.size() - 1;
+    }
 
-    void remove(const std::string& key);
-
-
-    // Group operations
-
-    void writeGroup(const std::string& group);
-
-    bool readGroup(const std::string& group, RequiredOrOoptional opt = OPTIONAL);
-
-    void endGroup();
-
-
-    // Array operations
-
-    void writeArray(const std::string& array);
-
-    bool readArray(const std::string& array, RequiredOrOoptional opt = OPTIONAL);
-
-    void endArray();
-
-    bool nextArrayItem();
-
-    void addArrayItem();
-
-    void endArrayItem();
-
-
-    // Scope operations
-
-    Configuration limitScope() const;
-
-
-    // Merging
-
-    bool add(const Configuration& config);
-
-
-    // Error handling
-
-    bool hasError() const;
-
-    const std::string& error() const;
-
-    void addError(const std::string& msg);
-
-
-    // Syncing and Loading
-
-    bool sync();
-
-    bool loadFromYAMLFile(const std::string& filename);
-
-    std::string toYAMLString() const;
-
-    friend std::ostream& operator<< (std::ostream& out, const Configuration& c);
-
-private:
-
-    boost::shared_ptr<ConfigData> data_;
-
-    ConfigNode* head_;
-
-    ConfigNode* scope_;
-
-    std::string filename_;
-
-    std::time_t source_last_write_time_;
-
-    Configuration(const boost::shared_ptr<ConfigData>& data, ConfigNode* head, ConfigNode* scope);
-
-    bool checkValue(const std::string& key, Variant& v, RequiredOrOoptional opt = REQUIRED);
-
-    void print(std::ostream& out, const ConfigNode& cs, const std::string& indent = "", bool skip_first_indent = false) const;
+    std::vector<NodePtr> nodes;
 
 };
 
 }
+
+} // end namespace tue
 
 #endif
