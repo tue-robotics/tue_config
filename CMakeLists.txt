@@ -63,14 +63,16 @@ set(HEADER_FILES
     include/tue/config/node.h
     include/tue/config/map.h
     include/tue/config/value.h
-    include/tue/config/configuration.h
+    include/tue/config/data.h
     include/tue/config/label.h
     include/tue/config/binary_writer.h
     include/tue/config/binary_reader.h
+    #include/tue/config/reader_writer.h
+    #include/tue/config/configuration.h
 )
 
 add_library(tue_config
-    src/configuration.cpp
+    src/data.cpp
     src/node.cpp
     src/map.cpp
     src/sequence.cpp
@@ -79,6 +81,7 @@ add_library(tue_config
     src/yaml_emitter.cpp
     src/binary_writer.cpp
     src/binary_reader.cpp
+    #src/reader_writer.cpp
     ${HEADER_FILES}
 )
 # target_link_libraries(library_name ${catkin_LIBRARIES})

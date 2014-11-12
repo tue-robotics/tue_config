@@ -1,6 +1,6 @@
 #include "tue/config/reader.h"
 #include "tue/config/node.h"
-#include "tue/config/configuration.h"
+#include "tue/config/data.h"
 
 namespace tue
 {
@@ -33,7 +33,7 @@ bool Reader::read(const std::string& name)
 
 bool Reader::end()
 {   
-    NodeIdx parent = cfg_->nodes[idx_]->parent;
+    NodeIdx parent = cfg_->getParent(idx_);
     if (parent == -1)
         return false;
 
@@ -48,7 +48,7 @@ bool Reader::next()
     if (cfg_->nodes[idx_]->type() == ARRAY)
         return cfg_->nodes[idx_]->firstChild(idx_);
 
-    NodeIdx right_sibling = cfg_->nodes[idx_]->right_sibling;
+    NodeIdx right_sibling = cfg_->getRightSibling(idx_);
     if (right_sibling == -1)
         return false;
 

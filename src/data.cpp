@@ -1,4 +1,4 @@
-#include "tue/config/configuration.h"
+#include "tue/config/data.h"
 #include "tue/config/map.h"
 
 #include <boost/make_shared.hpp>
@@ -13,7 +13,7 @@ namespace config
 
 Configuration::Configuration()
 {
-    nodes.push_back(boost::make_shared<Map>(0));
+    addNode(boost::make_shared<Map>(0), -1);
 }
 
 // ----------------------------------------------------------------------------------------------------

@@ -1,9 +1,8 @@
-#ifndef TUE_CONFIG2_CONFIG_READER_H_
-#define TUE_CONFIG2_CONFIG_READER_H_
+#ifndef TUE_CONFIG_CONFIG_READER_WRITER_H_
+#define TUE_CONFIG_CONFIG_READER_WRITER_H_
 
 #include "tue/config/types.h"
 #include "tue/config/data.h"
-
 
 namespace tue
 {
@@ -13,14 +12,14 @@ namespace config
 
 class Configuration;
 
-class Reader
+class ReaderWriter
 {
 
 public:
 
-    Reader(const tue::config::Configuration& cfg);
+    ReaderWriter();
 
-    virtual ~Reader();
+    virtual ~ReaderWriter();
 
     bool read(const std::string& name);
 
@@ -47,11 +46,17 @@ public:
 
     void print() const;
 
+    ReaderWriter limitScope() const;
+
+    void add(const ReaderWriter& rw);
+
 private:
 
     NodeIdx idx_;
 
-    const Configuration* cfg_;
+    NodeIdx scope_;
+
+    boost::shared_ptr<Configuration> cfg_;
 
 };
 

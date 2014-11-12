@@ -1,7 +1,7 @@
 #ifndef TUE_CONFIG2_WRITER_H_
 #define TUE_CONFIG2_WRITER_H_
 
-#include "tue/config/configuration.h"
+#include "tue/config/data.h"
 
 namespace tue
 {

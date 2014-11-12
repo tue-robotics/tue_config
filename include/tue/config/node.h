@@ -21,24 +21,12 @@ enum NodeType
     ARRAY
 };
 
-class Pointer;
-
-class Iterator
-{
-
-public:
-
-    virtual NodePtr get() const = 0;
-    virtual void incr() const = 0;
-    virtual bool isEnd() const = 0;
-};
-
 class Node
 {
 
 public:
 
-    Node(const Label& name, NodeType type) : parent(-1), right_sibling(-1), name_(name), type_(type) {}
+    Node(const Label& name, NodeType type) : name_(name), type_(type) {}
 
     virtual ~Node() {}
 
@@ -69,9 +57,6 @@ public:
     inline const Label& name() const { return name_; }
 
     inline const NodeType& type() const { return type_; }
-
-    NodeIdx parent;
-    NodeIdx right_sibling;
 
 private:
 

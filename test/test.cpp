@@ -1,6 +1,6 @@
 #include <tue/config/reader.h>
 #include <tue/config/writer.h>
-#include <tue/config/configuration.h>
+#include <tue/config/data.h>
 
 #include <tue/config/yaml_emitter.h>
 

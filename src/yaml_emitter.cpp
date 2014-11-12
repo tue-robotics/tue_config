@@ -1,5 +1,5 @@
 #include "tue/config/yaml_emitter.h"
-#include "tue/config/configuration.h"
+#include "tue/config/data.h"
 #include "tue/config/node.h"
 
 #include "tue/config/map.h"

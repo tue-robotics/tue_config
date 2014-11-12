@@ -1,6 +1,6 @@
 #include "tue/config/writer.h"
 #include "tue/config/node.h"
-#include "tue/config/configuration.h"
+#include "tue/config/data.h"
 #include "tue/config/map.h"
 #include "tue/config/sequence.h"
 
@@ -72,7 +72,7 @@ bool Writer::nextArrayItem()
         return false;
 
     if (previous != -1)
-        cfg_->nodes[previous]->right_sibling = n;
+        cfg_->setRightSibling(previous, n);
 
     idx_ = n;
 
@@ -83,7 +83,7 @@ bool Writer::nextArrayItem()
 
 bool Writer::end()
 {
-    NodeIdx parent = cfg_->nodes[idx_]->parent;
+    NodeIdx parent = cfg_->getParent(idx_);
     if (parent == -1)
         return false;
 
