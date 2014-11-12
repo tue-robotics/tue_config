@@ -91,6 +91,36 @@ void test2()
 
 // ----------------------------------------------------------------------------------------------------
 
+void test3()
+{
+    tue::Configuration config;
+    config.setValue("bla", 10);
+    config.writeArray("array");
+
+    config.addArrayItem();
+    config.setValue("x", 1.2);
+    config.setValue("y", 3.4);
+    config.endArrayItem();
+
+    config.addArrayItem();
+    config.setValue("foo", "abc");
+    config.setValue("bar", "def");
+    config.endArrayItem();
+
+    config.endArray();
+
+    std::cout << config << std::endl;
+
+    config.readArray("array");
+    if (config.nextArrayItem())
+        std::cout << config << std::endl;
+    config.endArray();
+
+    std::cout << config << std::endl;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 int main(int argc, char **argv)
 {
     tue::config::Configuration cfg;
@@ -184,11 +214,13 @@ int main(int argc, char **argv)
             std::cout << "x = " << x << ", y = " << y << ", z = " << z << std::endl;
     }
 
-    std::cout << "--------------------------------------------------" << std::endl;
-
+    std::cout << "---------------------- TEST 2 ----------------------" << std::endl;
     test2();
+    std::cout << "----------------------------------------------------" << std::endl;
 
-    std::cout << "--------------------------------------------------" << std::endl;
+    std::cout << "---------------------- TEST 3 ----------------------" << std::endl;
+    test3();
+    std::cout << "----------------------------------------------------" << std::endl;
 
 //    tue::config::Configuration cfg2;
 //    tue::config::Writer bw(cfg2);
