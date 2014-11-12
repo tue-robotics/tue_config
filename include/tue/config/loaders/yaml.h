@@ -4,22 +4,19 @@
 #include <string>
 #include <istream>
 
-class ConfigData;
-class ConfigNode;
-
 namespace tue
 {
-
-class Configuration;
 
 namespace config
 {
 
-bool loadFromYAMLStream(std::istream& stream, tue::Configuration& config);
+class ReaderWriter;
 
-bool loadFromYAMLString(const std::string& string, tue::Configuration& config);
+bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config);
 
-bool loadFromYAMLFile(const std::string& filename, tue::Configuration& config);
+bool loadFromYAMLString(const std::string& string, ReaderWriter& config);
+
+bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config);
 
 }
 

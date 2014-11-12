@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tue_config)
 
 find_package(catkin REQUIRED COMPONENTS
+    tue_filesystem
 )
 
 # find_package(Boost REQUIRED COMPONENTS system program_options)
@@ -39,9 +40,9 @@ find_package(catkin REQUIRED COMPONENTS
 
 catkin_package(
   INCLUDE_DIRS include
-#  LIBRARIES bla
-#  CATKIN_DEPENDS other_catkin_pkg
-#  DEPENDS system_lib
+  LIBRARIES tue_config
+  CATKIN_DEPENDS tue_filesystem
+  DEPENDS YamlCpp
 )
 
 # ------------------------------------------------------------------------------------------------
@@ -69,6 +70,7 @@ set(HEADER_FILES
     include/tue/config/binary_reader.h
     include/tue/config/reader_writer.h
     include/tue/config/configuration.h
+    include/tue/config/loaders/yaml.h
 )
 
 add_library(tue_config
@@ -82,9 +84,10 @@ add_library(tue_config
     src/binary_writer.cpp
     src/binary_reader.cpp
     src/reader_writer.cpp
+    src/loaders/yaml.cpp
     ${HEADER_FILES}
 )
-# target_link_libraries(library_name ${catkin_LIBRARIES})
+ target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp)
 
 add_executable(test_tue_config
 	test/test.cpp

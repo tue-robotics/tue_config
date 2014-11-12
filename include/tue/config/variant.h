@@ -122,6 +122,15 @@ public:
     bool getValue(float& v) { return checkAndGet((float)d_, 'd', v) || checkAndGet((float)i_, 'i', v); }
     bool getValue(std::string& v) { return checkAndGet(s_, 's', v); }
 
+    bool getValue(bool& v)
+    {
+        int i;
+        if (!checkAndGet(i_, 'i', i))
+            return false;
+        v = (i == 1);
+        return true;
+    }
+
 private:
 
     char type_;

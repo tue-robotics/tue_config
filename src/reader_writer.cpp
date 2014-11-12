@@ -6,6 +6,17 @@
 #include "tue/config/sequence.h"
 #include "tue/config/map.h"
 
+#include <boost/make_shared.hpp>
+
+// YAML
+#include "tue/config/yaml_emitter.h"
+#include "tue/config/loaders/yaml.h"
+#include <sstream>
+
+// Sync
+#include <tue/filesystem/path.h>
+#include <boost/filesystem.hpp>
+
 namespace tue
 {
 namespace config
@@ -173,12 +184,135 @@ void ReaderWriter::addError(const std::string& msg)
 
 // ----------------------------------------------------------------------------------------------------
 
-void ReaderWriter::print() const
+bool ReaderWriter::writeGroup(const std::string& name)
 {
-//    std::cout << "POINTER: [ ";
-//    for(unsigned int i = 0; i < ptr_.stack.size(); ++i)
-//        std::cout << ptr_.stack[i] << " ";
-//    std::cout << "]" << std::endl;
+    if (cfg_->nodes[idx_]->type() != MAP)
+        return false;
+
+    Label label = cfg_->getOrAddLabel(name);
+
+    NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
+
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
+        return false;
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::writeArray(const std::string& name)
+{
+    if (cfg_->nodes[idx_]->type() != MAP)
+        return false;
+
+    Label label = cfg_->getOrAddLabel(name);
+
+    NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
+
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
+        return false;
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::addArrayItem()
+{
+    if (cfg_->nodes[idx_]->type() != ARRAY)
+        return false;
+
+    NodePtr node = boost::make_shared<Map>("");
+    NodeIdx n = cfg_->addNode(node, idx_);
+
+    NodeIdx previous;
+    if (!cfg_->nodes[idx_]->add(n, previous))
+        return false;
+
+    if (previous != -1)
+        cfg_->setRightSibling(previous, n);
+
+    idx_ = n;
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::endArrayItem()
+{
+    NodeIdx parent = cfg_->getParent(idx_);
+    if (parent == -1)
+        return false;
+
+    idx_ = parent;
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+std::string ReaderWriter::toYAMLString() const
+{
+    YAMLEmitter emitter;
+    std::stringstream s;
+    emitter.emit(*cfg_, s);
+    return s.str();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::loadFromYAMLFile(const std::string& filename)
+{
+    // Remove possible previous errors
+    error_.clear();
+
+    // Reset head
+    idx_ = scope_;
+
+    if (!config::loadFromYAMLFile(filename, *this))
+        return false;
+
+    filename_ = filename;
+    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::sync() {
+
+    if (!filename_.empty() )
+    {
+        std::time_t last_write_time;
+
+        try
+        {
+             last_write_time = tue::filesystem::Path(filename_).lastWriteTime();
+        }
+        catch (boost::filesystem3::filesystem_error& e)
+        {
+            return false;
+        }
+
+        if (last_write_time > source_last_write_time_)
+        {
+            loadFromYAMLFile(filename_);
+            source_last_write_time_ = last_write_time;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw)
+{
+    out << rw.toYAMLString();
+    return out;
 }
 
 } // end namespace config
