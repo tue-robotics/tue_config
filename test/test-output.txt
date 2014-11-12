@@ -22,6 +22,33 @@ bla = 7
    array2.bar = 2
 bla = 7
 --------------------------------------------------
+main_value: 10
+group1: 
+    abc: 123
+    def: bla
+    parameters: 
+        x: 0.1
+        y: 0.2
+        z: 0.3
+
+----- test2_foo -----
+abc: 123
+def: bla
+parameters: 
+    x: 0.1
+    y: 0.2
+    z: 0.3
+
+y = 0.2
+abc = 123
+Succesfully opened
+x: 0.1
+y: 0.2
+z: 0.3
+
+---------------------
+main_value = 10
+--------------------------------------------------
 Begin
 Writing done
 238

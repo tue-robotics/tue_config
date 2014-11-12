@@ -7,8 +7,89 @@
 #include <tue/config/binary_writer.h>
 #include <tue/config/binary_reader.h>
 
+#include <tue/config/configuration.h>
+
 #include <iostream>
 #include <sstream>
+
+// ----------------------------------------------------------------------------------------------------
+
+void test1()
+{
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void test2_bar(tue::Configuration config)
+{
+    double y;
+    if (config.value("y", y))
+        std::cout << "y = " << y << std::endl;
+
+    // Try to move out of scope. This should not affect the caller.
+    config.endGroup();
+    config.endGroup();
+    config.endGroup();
+}
+
+void test2_foo(tue::Configuration config)
+{
+    std::cout << "----- test2_foo -----" << std::endl;
+    std::cout << config << std::endl;
+
+    if (config.readGroup("parameters"))
+    {
+        test2_bar(config.limitScope());
+        config.endGroup();
+    }
+
+    int v;
+    if (config.value("abc", v))
+        std::cout << "abc = " << v << std::endl;
+
+    // Open it again accidentally, but forget to close
+    if (config.readGroup("parameters"))
+        std::cout << "Succesfully opened" << std::endl;
+
+    std::cout << config << std::endl;
+
+    std::cout << "---------------------" << std::endl;
+}
+
+void test2()
+{
+    // Writing a config
+    tue::Configuration config;
+    config.setValue("main_value", 10);
+
+    config.writeGroup("group1");
+
+    config.setValue("abc", 123);
+    config.setValue("def", "bla");
+
+    config.writeGroup("parameters");
+    config.setValue("x", 0.1);
+    config.setValue("y", 0.2);
+    config.setValue("z", 0.3);
+    config.endGroup();
+
+    config.endGroup();
+
+    std::cout << config.toYAMLString() << std::endl;
+
+    // Reading
+    if (config.readGroup("group1"))
+    {
+        test2_foo(config);
+        config.endGroup();
+    }
+
+    int main_value;
+    if (config.value("main_value", main_value))
+        std::cout << "main_value = " << main_value << std::endl;
+}
+
+// ----------------------------------------------------------------------------------------------------
 
 int main(int argc, char **argv)
 {
@@ -102,6 +183,10 @@ int main(int argc, char **argv)
         if (reader.value("x", x) && reader.value("y", y) && reader.value("z", z))
             std::cout << "x = " << x << ", y = " << y << ", z = " << z << std::endl;
     }
+
+    std::cout << "--------------------------------------------------" << std::endl;
+
+    test2();
 
     std::cout << "--------------------------------------------------" << std::endl;
 

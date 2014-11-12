@@ -20,6 +20,8 @@ public:
 
     void emit(const tue::config::Configuration& cfg, std::ostream& out, const std::string& indent = "");
 
+    void emit(const tue::config::Configuration& cfg, NodeIdx idx, std::ostream& out, const std::string& indent = "");
+
 };
 
 } // end namespace config

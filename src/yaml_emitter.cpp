@@ -66,6 +66,13 @@ void YAMLEmitter::emit(const tue::config::Configuration& cfg, std::ostream& out,
     emitRecursive(out, cfg, cfg.nodes[0], indent);
 }
 
+// ----------------------------------------------------------------------------------------------------
+
+void YAMLEmitter::emit(const tue::config::Configuration& cfg, NodeIdx idx, std::ostream& out, const std::string& indent)
+{
+    emitRecursive(out, cfg, cfg.nodes[idx], indent);
+}
+
 } // end namespace config
 
 } // end namespace tue

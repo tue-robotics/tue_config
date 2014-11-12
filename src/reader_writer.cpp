@@ -256,7 +256,7 @@ std::string ReaderWriter::toYAMLString() const
 {
     YAMLEmitter emitter;
     std::stringstream s;
-    emitter.emit(*cfg_, s);
+    emitter.emit(*cfg_, idx_, s);
     return s.str();
 }
 

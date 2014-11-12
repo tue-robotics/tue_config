@@ -87,11 +87,7 @@ add_library(tue_config
     src/loaders/yaml.cpp
     ${HEADER_FILES}
 )
- target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp)
+target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp)
 
-add_executable(test_tue_config
-	test/test.cpp
-)
+add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
-
-
