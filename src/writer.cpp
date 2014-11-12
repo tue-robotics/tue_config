@@ -64,7 +64,7 @@ bool Writer::nextArrayItem()
     if (cfg_->nodes[idx_]->type() != ARRAY)
         return false;
 
-    NodePtr node = boost::make_shared<Map>(0);
+    NodePtr node = boost::make_shared<Map>("");
     NodeIdx n = cfg_->addNode(node, idx_);
 
     NodeIdx previous;

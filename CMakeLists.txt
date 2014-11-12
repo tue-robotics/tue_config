@@ -67,8 +67,8 @@ set(HEADER_FILES
     include/tue/config/label.h
     include/tue/config/binary_writer.h
     include/tue/config/binary_reader.h
-    #include/tue/config/reader_writer.h
-    #include/tue/config/configuration.h
+    include/tue/config/reader_writer.h
+    include/tue/config/configuration.h
 )
 
 add_library(tue_config
@@ -81,7 +81,7 @@ add_library(tue_config
     src/yaml_emitter.cpp
     src/binary_writer.cpp
     src/binary_reader.cpp
-    #src/reader_writer.cpp
+    src/reader_writer.cpp
     ${HEADER_FILES}
 )
 # target_link_libraries(library_name ${catkin_LIBRARIES})

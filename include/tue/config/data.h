@@ -29,29 +29,33 @@ public:
 
     Label getOrAddLabel(const std::string& name)
     {
-        std::map<std::string, Label>::const_iterator it = name_to_label.find(name);
-        if (it != name_to_label.end())
-            return it->second;
+        return name;
+//        std::map<std::string, Label>::const_iterator it = name_to_label.find(name);
+//        if (it != name_to_label.end())
+//            return it->second;
 
-        Label l = name_to_label.size();
-        name_to_label[name] = l;
-        label_to_name.push_back(name);
-        return l;
+//        Label l = name_to_label.size();
+//        name_to_label[name] = l;
+//        label_to_name.push_back(name);
+//        return l;
     }
 
     bool getLabel(const std::string& name, Label& label) const
     {
-        std::map<std::string, Label>::const_iterator it = name_to_label.find(name);
-        if (it == name_to_label.end())
-            return false;
+//        std::map<std::string, Label>::const_iterator it = name_to_label.find(name);
+//        if (it == name_to_label.end())
+//            return false;
 
-        label = it->second;
+//        label = it->second;
+//        return true;
+        label = name;
         return true;
     }
 
     const std::string& getName(const Label& label) const
     {
-        return label_to_name[label];
+//        return label_to_name[label];
+        return label;
     }
 
     NodeIdx addNode(const NodePtr& n, NodeIdx parent)
@@ -71,7 +75,6 @@ public:
     std::vector<NodePtr> nodes;
     std::vector<NodeIdx> parents;
     std::vector<NodeIdx> right_siblings;
-
 
 };
 

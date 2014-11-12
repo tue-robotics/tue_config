@@ -48,7 +48,9 @@ public:
 
     ReaderWriter limitScope() const;
 
-    void add(const ReaderWriter& rw);
+    bool add(const ReaderWriter& rw);
+
+    void addError(const std::string& msg);
 
 private:
 
@@ -57,6 +59,8 @@ private:
     NodeIdx scope_;
 
     boost::shared_ptr<Configuration> cfg_;
+
+    std::string error_;
 
 };
 

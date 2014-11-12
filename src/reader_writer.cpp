@@ -40,7 +40,7 @@ bool ReaderWriter::end()
     if (idx_ == scope_)
         return false;
 
-    NodeIdx parent = cfg_->nodes[idx_]->parent;
+    NodeIdx parent = cfg_->getParent(idx_);
     if (parent == -1)
         return false;
 
@@ -55,7 +55,7 @@ bool ReaderWriter::next()
     if (cfg_->nodes[idx_]->type() == ARRAY)
         return cfg_->nodes[idx_]->firstChild(idx_);
 
-    NodeIdx right_sibling = cfg_->nodes[idx_]->right_sibling;
+    NodeIdx right_sibling = cfg_->getRightSibling(idx_);
     if (right_sibling == -1)
         return false;
 
@@ -98,90 +98,35 @@ void merge(Configuration& c1, NodeIdx& me_idx, const Configuration& c2, NodeIdx 
         const std::map<Label, NodeIdx>& children = map2->map_;
         for(std::map<Label, NodeIdx>::const_iterator it2 = children.begin(); it2 != children.end(); ++it2)
         {
-            const std::string& name2 = c2.getName(it2->second);
-
-
-            Label label1;
-            if (c1.getLabel(name2, label1))
+            const Label& label2 = it2->first;
+            std::map<Label, NodeIdx>::iterator it1 = map1->map_.find(label2);
+            if (it1 == map1->map_.end())
             {
-                std::map<std::string, NodeIdx>::iterator it1 = map1->map_.find(label1);
-                if (it1 == map1->map_.end())
-                {
-                    c1.nodes[it1->second] = n2;
-
-                    // n1 does not have that child. Copy it and add it to n1
-                    ConfigNodePtr c(new ConfigNode(*it2->second));
-                    c->parent = n1;
-                    n1->children[name2] = c;
-                }
+                // c1 does not have that child, so add it
+                map1->map_[label2] = c1.addNode(c2.nodes[it2->second], me_idx);
             }
-
-
-
             else
             {
                 // n1 already has that child. Merge them.
-                merge(it1->second.get(), *it2->second, error);
+                merge(c1, it1->second, c2, it2->second, error);
             }
         }
 
         // Merge values
-        const std::map<Label, Variant>& values = map->values;
+        const std::map<Label, Variant>& values = map2->values;
         for(std::map<Label, Variant>::const_iterator it2 = values.begin(); it2 != values.end(); ++it2)
         {
-
+            map1->values[it2->first] = it2->second;
         }
-
-
-    }
-
-
-
-
-
-
-
-    // Merge children
-    for(std::map<std::string, ConfigNodePtr>::const_iterator it2 = n2.children.begin(); it2 != n2.children.end(); ++it2)
-    {
-        const std::string& name = it2->first;
-        std::map<std::string, ConfigNodePtr>::iterator it1 = n1->children.find(name);
-        if (it1 == n1->children.end())
-        {
-            // n1 does not have that child. Copy it and add it to n1
-            ConfigNodePtr c(new ConfigNode(*it2->second));
-            c->parent = n1;
-            n1->children[name] = c;
-        }
-        else
-        {
-            // n1 already has that child. Merge them.
-            merge(it1->second.get(), *it2->second, error);
-        }
-    }
-
-    // Merge values
-    for(std::map<std::string, tue::Variant>::const_iterator it2 = n2.values.begin(); it2 != n2.values.end(); ++it2)
-    {
-        n1->values[it2->first] = it2->second;
-    }
-
-    // n1's sequence is completely replaced by n2's sequence
-    n1->sequence.resize(n2.sequence.size());
-    for(unsigned int i = 0; i < n2.sequence.size(); ++i)
-    {
-        ConfigNodePtr c(new ConfigNode(*n2.sequence[i]));
-        c->parent = n1;
-        n1->sequence[i] = c;
     }
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void ReaderWriter::add(const ReaderWriter& rw)
+bool ReaderWriter::add(const ReaderWriter& rw)
 {
     std::string error;
-    merge(*this, idx_, rw, rw.idx_, error);
+    merge(*this->cfg_, idx_, *rw.cfg_, rw.idx_, error);
 
     if (!error.empty())
     {
@@ -190,6 +135,40 @@ void ReaderWriter::add(const ReaderWriter& rw)
     }
 
     return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+void ReaderWriter::addError(const std::string& msg)
+{
+    // build context
+    std::vector<std::string> context;
+
+    NodeIdx c = idx_;
+    while(c != -1)
+    {
+        const NodePtr& n = cfg_->nodes[c];
+        context.push_back(n->name());
+        c = cfg_->getParent(c);
+    }
+
+    if (context.size() > 1)
+    {
+        error_ += "In '";
+
+        for(int i = context.size() - 2; i > 0; --i)
+        {
+            error_ += context[i] + ".";
+        }
+
+        error_ += context[0] + "': \n\n";
+    }
+    else
+    {
+        error_ += "In root of configuration:\n\n";
+    }
+
+    error_ += "    " + msg + "\n\n";
 }
 
 // ----------------------------------------------------------------------------------------------------

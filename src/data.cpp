@@ -13,7 +13,7 @@ namespace config
 
 Configuration::Configuration()
 {
-    addNode(boost::make_shared<Map>(0), -1);
+    addNode(boost::make_shared<Map>(""), -1);
 }
 
 // ----------------------------------------------------------------------------------------------------

@@ -6,7 +6,8 @@
 namespace tue
 {
 
-typedef unsigned int Label;
+//typedef unsigned int Label;
+typedef std::string Label;
 
 } // end namespace tue
 
