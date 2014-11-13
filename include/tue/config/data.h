@@ -78,11 +78,7 @@ public:
     std::vector<NodeIdx> parents;
     std::vector<NodeIdx> right_siblings;
 
-    // ---- OTHER -----
-
-    bool add(const Data& other);
-
-    friend std::ostream& operator<< (std::ostream& out, const Data& d);
+//    friend std::ostream& operator<< (std::ostream& out, const Data& d);
 
 };
 

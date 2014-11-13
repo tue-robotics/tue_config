@@ -9,13 +9,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Reader::Reader(const Data& cfg) : idx_(cfg.root()), cfg_(new Data(cfg))
-{
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-Reader::Reader(const DataConstPtr& cfg) : idx_(cfg->root()), cfg_(cfg)
+Reader::Reader(const DataConstPointer& ptr) : idx_(ptr.idx), cfg_(ptr.data)
 {
 }
 

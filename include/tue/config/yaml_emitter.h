@@ -18,9 +18,7 @@ public:
 
     YAMLEmitter();
 
-    void emit(const tue::config::Data& cfg, std::ostream& out, const std::string& indent = "");
-
-    void emit(const tue::config::Data& cfg, NodeIdx idx, std::ostream& out, const std::string& indent = "");
+    void emit(const tue::config::DataConstPointer& cfg, std::ostream& out, const std::string& indent = "");
 
 };
 

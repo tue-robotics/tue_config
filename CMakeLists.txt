@@ -71,6 +71,7 @@ set(HEADER_FILES
     include/tue/config/reader_writer.h
     include/tue/config/configuration.h
     include/tue/config/loaders/yaml.h
+    include/tue/config/data_pointer.h
 )
 
 add_library(tue_config
@@ -85,6 +86,7 @@ add_library(tue_config
     src/binary_reader.cpp
     src/reader_writer.cpp
     src/loaders/yaml.cpp
+	src/data_pointer.cpp
     ${HEADER_FILES}
 )
 target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp)

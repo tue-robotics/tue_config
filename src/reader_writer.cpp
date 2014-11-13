@@ -30,8 +30,13 @@ ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data)
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::ReaderWriter(const DataPtr& cfg) : idx_(cfg->root()), scope_(0), cfg_(cfg)
+ReaderWriter::ReaderWriter(DataPointer& cfg) : idx_(cfg.idx), scope_(0), cfg_(cfg.data)
 {
+    if (!cfg_)
+    {
+        cfg_.reset(new Data);
+        cfg.data = cfg_;
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -92,71 +97,6 @@ ReaderWriter ReaderWriter::limitScope() const
     ReaderWriter r(*this);
     r.scope_ = r.idx_;
     return r;
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-void merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
-{
-    NodePtr& n1 = c1.nodes[me_idx];
-    const NodePtr& n2 = c2.nodes[other_idx];
-
-    if (n1->type() != n2->type())
-    {
-        error += "Trying to merge two nodes of different types.\n";
-        return;
-    }
-
-    if (n1->type() == ARRAY)
-    {
-        // n1's sequence is completely replaced by n2's sequence
-        n1 = n2;
-    } else
-    {
-        Map* map1 = static_cast<Map*>(n1.get());
-        const Map* map2 = static_cast<const Map*>(n2.get());
-
-        // Merge children
-        const std::map<Label, NodeIdx>& children = map2->map_;
-        for(std::map<Label, NodeIdx>::const_iterator it2 = children.begin(); it2 != children.end(); ++it2)
-        {
-            const Label& label2 = it2->first;
-            std::map<Label, NodeIdx>::iterator it1 = map1->map_.find(label2);
-            if (it1 == map1->map_.end())
-            {
-                // c1 does not have that child, so add it
-                map1->map_[label2] = c1.addNode(c2.nodes[it2->second], me_idx);
-            }
-            else
-            {
-                // n1 already has that child. Merge them.
-                merge(c1, it1->second, c2, it2->second, error);
-            }
-        }
-
-        // Merge values
-        const std::map<Label, Variant>& values = map2->values;
-        for(std::map<Label, Variant>::const_iterator it2 = values.begin(); it2 != values.end(); ++it2)
-        {
-            map1->values[it2->first] = it2->second;
-        }
-    }
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-bool ReaderWriter::add(const ReaderWriter& rw)
-{
-    std::string error;
-    merge(*this->cfg_, idx_, *rw.cfg_, rw.idx_, error);
-
-    if (!error.empty())
-    {
-        addError(error);
-        return false;
-    }
-
-    return true;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -267,7 +207,7 @@ std::string ReaderWriter::toYAMLString() const
 {
     YAMLEmitter emitter;
     std::stringstream s;
-    emitter.emit(*cfg_, idx_, s);
+    emitter.emit(DataConstPointer(cfg_, idx_), s);
     return s.str();
 }
 
@@ -322,7 +262,7 @@ bool ReaderWriter::sync() {
 
 std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw)
 {
-    out << rw.toYAMLString();
+    out << DataPointer(rw.cfg_, rw.idx_);
     return out;
 }
 

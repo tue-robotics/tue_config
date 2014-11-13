@@ -121,9 +121,78 @@ void test3()
 
 // ----------------------------------------------------------------------------------------------------
 
+void test4()
+{
+    tue::config::DataPointer cfg1;
+    tue::config::Writer c1(cfg1);
+    c1.setValue("x", 1.2);
+    c1.setValue("y", 2.7);
+    c1.writeGroup("group1");
+    c1.writeGroup("group2");
+    c1.writeGroup("group3");
+    c1.endGroup(); // group 3
+
+    c1.writeArray("array1");
+
+    c1.addArrayItem();
+    c1.setValue("foo", 10);
+    c1.setValue("bar", "test");
+    c1.endArrayItem();
+
+    c1.endArray();
+
+    c1.writeArray("array2");
+    c1.addArrayItem();
+    c1.setValue("a", 1);
+    c1.setValue("b", 2);
+    c1.endArrayItem();
+    c1.endArray();
+
+    c1.endGroup(); // group 2
+    c1.endGroup(); // group 1
+
+    std::cout << cfg1 << std::endl;
+
+    // ---
+
+    tue::config::DataPointer cfg2;
+    tue::config::Writer c2(cfg2);
+    c2.setValue("z", 4);
+    c2.writeGroup("group1");
+    c2.writeGroup("group2");
+    c2.writeGroup("group3");
+    c2.endGroup();
+
+    c2.writeArray("array1");
+    c2.addArrayItem();
+    c2.setValue("foo", 10);
+    c2.setValue("bar", "test");
+    c2.endArrayItem();
+
+    c2.addArrayItem();
+    c2.setValue("a", 1);
+    c2.setValue("b", 2);
+    c2.endArrayItem();
+    c2.endArray();
+
+    c2.endGroup();
+    c2.endGroup();
+
+    // ---
+
+    std::cout << "-----" << std::endl;
+    std::cout << cfg2 << std::endl;
+
+    cfg1.add(cfg2);
+
+    std::cout << cfg1 << std::endl;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 int main(int argc, char **argv)
 {
-    tue::config::Data cfg;
+    tue::config::DataPointer cfg;
     tue::config::Writer writer(cfg);
 
     writer.setValue("x", 3.1);
@@ -135,18 +204,18 @@ int main(int argc, char **argv)
 
     writer.writeArray("array");
 
-    writer.nextArrayItem();
+    writer.addArrayItem();
     writer.setValue("x", 123);
     writer.setValue("y", 567);
     writer.end();
 
-    writer.nextArrayItem();
+    writer.addArrayItem();
     writer.setValue("x", 456);
     writer.setValue("y", 567);
 
     writer.writeArray("array2");
 
-    writer.nextArrayItem();
+    writer.addArrayItem();
     writer.setValue("foo", 1);
     writer.setValue("bar", 2);
     writer.end();
@@ -220,6 +289,10 @@ int main(int argc, char **argv)
 
     std::cout << "---------------------- TEST 3 ----------------------" << std::endl;
     test3();
+    std::cout << "----------------------------------------------------" << std::endl;
+
+    std::cout << "---------------------- TEST 4 ----------------------" << std::endl;
+    test4();
     std::cout << "----------------------------------------------------" << std::endl;
 
 //    tue::config::Configuration cfg2;

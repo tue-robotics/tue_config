@@ -28,7 +28,7 @@ public:
 
     ReaderWriter();
 
-    ReaderWriter(const DataPtr& cfg);
+    ReaderWriter(DataPointer& cfg);
 
     virtual ~ReaderWriter();
 
@@ -61,7 +61,7 @@ public:
 
     ReaderWriter limitScope() const;
 
-    bool add(const ReaderWriter& rw);
+//    bool add(const ReaderWriter& rw);
 
     bool readArray(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name); }
     bool readGroup(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name); }
@@ -105,7 +105,7 @@ public:
 
     friend std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw);
 
-    inline DataConstPtr data() const { return cfg_; }
+    inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
 
 private:
 

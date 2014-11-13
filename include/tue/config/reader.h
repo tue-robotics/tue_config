@@ -18,9 +18,7 @@ class Reader
 
 public:
 
-    Reader(const Data& cfg);
-
-    Reader(const DataConstPtr& cfg);
+    Reader(const DataConstPointer& ptr);
 
     virtual ~Reader();
 
@@ -53,11 +51,13 @@ public:
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
 
+    inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
+
 private:
 
     NodeIdx idx_;
 
-    DataConstPtr cfg_;
+    boost::shared_ptr<const Data> cfg_;
 
 };
 

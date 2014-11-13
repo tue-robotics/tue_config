@@ -61,16 +61,12 @@ void emitRecursive(std::ostream& out, const tue::config::Data& cfg, const NodePt
 
 // ----------------------------------------------------------------------------------------------------
 
-void YAMLEmitter::emit(const tue::config::Data& cfg, std::ostream& out, const std::string& indent)
+void YAMLEmitter::emit(const tue::config::DataConstPointer& cfg, std::ostream& out, const std::string& indent)
 {
-    emitRecursive(out, cfg, cfg.nodes[0], indent);
-}
+    if (!cfg.data)
+        return;
 
-// ----------------------------------------------------------------------------------------------------
-
-void YAMLEmitter::emit(const tue::config::Data& cfg, NodeIdx idx, std::ostream& out, const std::string& indent)
-{
-    emitRecursive(out, cfg, cfg.nodes[idx], indent);
+    emitRecursive(out, *cfg.data, cfg.data->nodes[cfg.idx], indent);
 }
 
 } // end namespace config

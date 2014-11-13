@@ -13,8 +13,20 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Writer::Writer(Data& cfg, NodeIdx idx) : cfg_(&cfg), idx_(idx)
+Writer::Writer() : idx_(0)
 {
+    cfg_.reset(new Data);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+Writer::Writer(DataPointer& cfg) : cfg_(cfg.data), idx_(cfg.idx)
+{
+    if (!cfg_)
+    {
+        cfg_.reset(new Data);
+        cfg.data = cfg_;
+    }
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -59,7 +71,7 @@ bool Writer::writeArray(const std::string& name)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Writer::nextArrayItem()
+bool Writer::addArrayItem()
 {
     if (cfg_->nodes[idx_]->type() != ARRAY)
         return false;
@@ -88,6 +100,7 @@ bool Writer::end()
         return false;
 
     idx_ = parent;
+
     return true;
 }
 

@@ -14,7 +14,9 @@ class Writer
 
 public:
 
-    Writer(Data& cfg, NodeIdx idx = 0);
+    Writer();
+
+    Writer(DataPointer& cfg);
 
     virtual ~Writer();
 
@@ -22,7 +24,7 @@ public:
 
     bool writeArray(const std::string& name);
 
-    bool nextArrayItem();
+    bool addArrayItem();
 
     bool end();
 
@@ -34,9 +36,15 @@ public:
         cfg_->nodes[idx_]->setValue(label, var);
     }
 
+    bool endArray() { return end(); }
+    bool endGroup() { return end(); }
+    bool endArrayItem() { return end(); }
+
+    inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
+
 private:
 
-    Data* cfg_;
+    boost::shared_ptr<Data> cfg_;
     NodeIdx idx_;
 
 };
