@@ -148,6 +148,7 @@ void test4()
     c1.endArrayItem();
     c1.endArray();
 
+    c1.setValue("boo", "baa");
     c1.endGroup(); // group 2
     c1.endGroup(); // group 1
 
@@ -161,21 +162,23 @@ void test4()
     c2.writeGroup("group1");
     c2.writeGroup("group2");
     c2.writeGroup("group3");
+    c2.setValue("test", 123);
     c2.endGroup();
 
     c2.writeArray("array1");
     c2.addArrayItem();
-    c2.setValue("foo", 10);
-    c2.setValue("bar", "test");
+    c2.setValue("e", 7);
+    c2.setValue("f", 7);
     c2.endArrayItem();
 
     c2.addArrayItem();
-    c2.setValue("a", 1);
-    c2.setValue("b", 2);
+    c2.setValue("L", 1);
+    c2.setValue("S", 2);
     c2.endArrayItem();
     c2.endArray();
 
     c2.endGroup();
+
     c2.endGroup();
 
     // ---

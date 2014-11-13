@@ -49,6 +49,10 @@ public:
         return true;
     }
 
+    // --- COPY
+
+    NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const;
+
     std::map<Label, NodeIdx> map_;
 
     std::map<Label, Variant> values;

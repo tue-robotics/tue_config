@@ -13,73 +13,10 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-NodeIdx deepCopy(const Data& source, NodeIdx source_idx, NodeIdx parent_idx, Data& target, NodeIdx target_idx = -1)
-{    
-    const NodePtr& n = source.nodes[source_idx];
-
-    std::cout << "DEEP COPY " << n->name() << std::endl;
-
-    if (n->type() == ARRAY)
-    {
-        boost::shared_ptr<Sequence> s_new = boost::make_shared<Sequence>(n->name());
-        if (target_idx == -1)
-            target_idx = target.addNode(s_new, parent_idx);
-        else
-            target.nodes[target_idx] = s_new;
-
-        NodeIdx previous_child_idx = -1;
-        Sequence* s = static_cast<Sequence*>(n.get());
-        for(std::vector<NodeIdx>::const_iterator it = s->children_.begin(); it != s->children_.end(); ++it)
-        {
-            NodeIdx child_idx = deepCopy(source, *it, target_idx, target);
-            s_new->children_.push_back(child_idx);
-
-            if (previous_child_idx != -1)
-                target.setRightSibling(previous_child_idx, child_idx);
-
-            previous_child_idx = child_idx;
-        }
-    }
-    else if (n->type() == MAP)
-    {
-        boost::shared_ptr<Map> m_new = boost::make_shared<Map>(n->name());
-        if (target_idx == -1)
-            target_idx = target.addNode(m_new, parent_idx);
-        else
-            target.nodes[target_idx] = m_new;
-
-        const Map* m = static_cast<const Map*>(n.get());
-        const std::map<Label, NodeIdx>& children = m->map_;
-
-        NodeIdx previous_child_idx = -1;
-        for(std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
-        {
-            NodeIdx child_idx = deepCopy(source, it->second, target_idx, target);
-            m_new->map_[it->first] = child_idx;
-
-            if (previous_child_idx != -1)
-                target.setRightSibling(previous_child_idx, child_idx);
-
-            previous_child_idx = child_idx;
-        }
-    }
-    else
-    {
-        return -1;
-    }
-
-    return target_idx;
-}
-
-// ----------------------------------------------------------------------------------------------------
-
 void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
 {
     NodePtr& n1 = c1.nodes[me_idx];
     const NodePtr& n2 = c2.nodes[other_idx];
-
-
-    std::cout << "MERGING " << n1->name() << " and " << n2->name() << std::endl;
 
     if (n1->type() != n2->type())
     {
@@ -90,7 +27,7 @@ void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std
     if (n1->type() == ARRAY)
     {
         // n1's sequence is completely replaced by n2's sequence
-        deepCopy(c2, other_idx, c1.getParent(me_idx), c1, me_idx);
+        c1.nodes[me_idx] = n2->deepCopy(c2, me_idx, c1);
     } else
     {
         Map* map1 = static_cast<Map*>(n1.get());
@@ -107,7 +44,9 @@ void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std
             if (it1 == map1->map_.end())
             {
                 // c1 does not have that child, so add it
-                new_map->map_[label2] = deepCopy(c2, it2->second, me_idx, c1);
+                NodeIdx child_idx = c1.addNode(NodePtr(), me_idx);
+                c1.nodes[child_idx] = c2.nodes[it2->second]->deepCopy(c2, child_idx, c1);
+                new_map->map_[label2] = child_idx;
             }
             else
             {

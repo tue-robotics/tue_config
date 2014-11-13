@@ -68,6 +68,50 @@ array:
       foo: abc
 
 ----------------------------------------------------
+---------------------- TEST 4 ----------------------
+x: 1.2
+y: 2.7
+group1: 
+    group2: 
+        boo: baa
+        array1: 
+            - bar: test
+              foo: 10
+        array2: 
+            - a: 1
+              b: 2
+        group3: 
+
+-----
+z: 4
+group1: 
+    group2: 
+        array1: 
+            - e: 7
+              f: 7
+            - L: 1
+              S: 2
+        group3: 
+            test: 123
+
+x: 1.2
+y: 2.7
+z: 4
+group1: 
+    group2: 
+        boo: baa
+        array1: 
+            - e: 7
+              f: 7
+            - L: 1
+              S: 2
+        array2: 
+            - a: 1
+              b: 2
+        group3: 
+            test: 123
+
+----------------------------------------------------
 Begin
 Writing done
 238

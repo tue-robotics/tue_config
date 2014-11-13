@@ -39,6 +39,11 @@ public:
 
     std::vector<NodeIdx> children_;
 
+    // --- COPY
+
+    NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const;
+
+
 };
 
 }

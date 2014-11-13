@@ -58,6 +58,11 @@ public:
 
     inline const NodeType& type() const { return type_; }
 
+
+    // --- COPY
+
+    virtual NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const = 0;
+
 private:
 
     Label name_;
