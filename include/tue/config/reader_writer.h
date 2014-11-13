@@ -105,7 +105,7 @@ public:
 
     friend std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw);
 
-    inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
+    inline DataPointer data() const { return DataPointer(cfg_, idx_); }
 
 private:
 
