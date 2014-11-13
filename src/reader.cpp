@@ -9,7 +9,13 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Reader::Reader(const tue::config::Configuration& cfg) : idx_(0), cfg_(&cfg)
+Reader::Reader(const Data& cfg) : idx_(cfg.root()), cfg_(new Data(cfg))
+{
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+Reader::Reader(const DataConstPtr& cfg) : idx_(cfg->root()), cfg_(cfg)
 {
 }
 
@@ -59,16 +65,6 @@ bool Reader::next()
 
     idx_ = right_sibling;
     return true;
-}
-
-// ----------------------------------------------------------------------------------------------------
-
-void Reader::print() const
-{
-//    std::cout << "POINTER: [ ";
-//    for(unsigned int i = 0; i < ptr_.stack.size(); ++i)
-//        std::cout << ptr_.stack[i] << " ";
-//    std::cout << "]" << std::endl;
 }
 
 } // end namespace config

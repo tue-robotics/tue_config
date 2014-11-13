@@ -13,7 +13,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Writer::Writer(Configuration& cfg, NodeIdx idx) : cfg_(&cfg), idx_(idx)
+Writer::Writer(Data& cfg, NodeIdx idx) : cfg_(&cfg), idx_(idx)
 {
 }
 

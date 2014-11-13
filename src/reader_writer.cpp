@@ -24,7 +24,13 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Configuration)
+ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data)
+{
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+ReaderWriter::ReaderWriter(const DataPtr& cfg) : idx_(cfg->root()), scope_(0), cfg_(cfg)
 {
 }
 
@@ -90,7 +96,7 @@ ReaderWriter ReaderWriter::limitScope() const
 
 // ----------------------------------------------------------------------------------------------------
 
-void merge(Configuration& c1, NodeIdx& me_idx, const Configuration& c2, NodeIdx other_idx, std::string& error)
+void merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
 {
     NodePtr& n1 = c1.nodes[me_idx];
     const NodePtr& n2 = c2.nodes[other_idx];

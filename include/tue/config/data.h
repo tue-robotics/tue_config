@@ -14,14 +14,14 @@ namespace tue
 namespace config
 {
 
-class Configuration
+class Data
 {
 
 public:
 
-    Configuration();
+    Data();
 
-    virtual ~Configuration();
+    virtual ~Data();
 
     std::map<std::string, Label> name_to_label;
 
@@ -66,6 +66,8 @@ public:
         return nodes.size() - 1;
     }
 
+    inline NodeIdx root() const { return 0; }
+
     inline NodeIdx getParent(NodeIdx n) const { return parents[n]; }
     inline NodeIdx getRightSibling(NodeIdx n) const { return right_siblings[n]; }
 
@@ -75,6 +77,12 @@ public:
     std::vector<NodePtr> nodes;
     std::vector<NodeIdx> parents;
     std::vector<NodeIdx> right_siblings;
+
+    // ---- OTHER -----
+
+    bool add(const Data& other);
+
+    friend std::ostream& operator<< (std::ostream& out, const Data& d);
 
 };
 

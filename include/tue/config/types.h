@@ -9,9 +9,19 @@ namespace tue
 namespace config
 {
 
+enum RequiredOrOoptional
+{
+    REQUIRED,
+    OPTIONAL
+};
+
 class Node;
 typedef boost::shared_ptr<Node> NodePtr;
 typedef boost::shared_ptr<const Node> NodeConstPtr;
+
+class Data;
+typedef boost::shared_ptr<Data> DataPtr;
+typedef boost::shared_ptr<const Data> DataConstPtr;
 
 typedef unsigned int NodeIdx;
 

@@ -9,7 +9,7 @@ namespace tue
 namespace config
 {
 
-class Configuration;
+class Data;
 
 class YAMLEmitter
 {
@@ -18,9 +18,9 @@ public:
 
     YAMLEmitter();
 
-    void emit(const tue::config::Configuration& cfg, std::ostream& out, const std::string& indent = "");
+    void emit(const tue::config::Data& cfg, std::ostream& out, const std::string& indent = "");
 
-    void emit(const tue::config::Configuration& cfg, NodeIdx idx, std::ostream& out, const std::string& indent = "");
+    void emit(const tue::config::Data& cfg, NodeIdx idx, std::ostream& out, const std::string& indent = "");
 
 };
 

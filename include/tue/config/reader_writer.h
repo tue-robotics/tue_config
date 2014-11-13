@@ -19,7 +19,7 @@ enum RequiredOrOoptional
 namespace config
 {
 
-class Configuration;
+class Data;
 
 class ReaderWriter
 {
@@ -27,6 +27,8 @@ class ReaderWriter
 public:
 
     ReaderWriter();
+
+    ReaderWriter(const DataPtr& cfg);
 
     virtual ~ReaderWriter();
 
@@ -39,7 +41,7 @@ public:
     bool next();
 
     template<typename T>
-    bool value(const std::string& name, T& value, tue::RequiredOrOoptional opt = REQUIRED) const
+    bool value(const std::string& name, T& value, tue::RequiredOrOoptional opt = tue::REQUIRED) const
     {
         Label label;
         if (!cfg_->getLabel(name, label))
@@ -61,8 +63,8 @@ public:
 
     bool add(const ReaderWriter& rw);
 
-    bool readArray(const std::string& name, tue::RequiredOrOoptional opt = OPTIONAL) { return read(name); }
-    bool readGroup(const std::string& name, tue::RequiredOrOoptional opt = OPTIONAL) { return read(name); }
+    bool readArray(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name); }
+    bool readGroup(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name); }
     bool endArray() { return end(); }
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
@@ -103,13 +105,15 @@ public:
 
     friend std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw);
 
+    inline DataConstPtr data() const { return cfg_; }
+
 private:
 
     NodeIdx idx_;
 
     NodeIdx scope_;
 
-    boost::shared_ptr<Configuration> cfg_;
+    boost::shared_ptr<Data> cfg_;
 
     std::string error_;
 

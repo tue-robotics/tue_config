@@ -14,7 +14,7 @@ class Writer
 
 public:
 
-    Writer(Configuration& cfg, NodeIdx idx = 0);
+    Writer(Data& cfg, NodeIdx idx = 0);
 
     virtual ~Writer();
 
@@ -36,7 +36,7 @@ public:
 
 private:
 
-    Configuration* cfg_;
+    Data* cfg_;
     NodeIdx idx_;
 
 };

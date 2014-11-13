@@ -123,7 +123,7 @@ void test3()
 
 int main(int argc, char **argv)
 {
-    tue::config::Configuration cfg;
+    tue::config::Data cfg;
     tue::config::Writer writer(cfg);
 
     writer.setValue("x", 3.1);

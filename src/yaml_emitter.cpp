@@ -18,7 +18,7 @@ YAMLEmitter::YAMLEmitter()
 
 // ----------------------------------------------------------------------------------------------------
 
-void emitRecursive(std::ostream& out, const tue::config::Configuration& cfg, const NodePtr& n,
+void emitRecursive(std::ostream& out, const tue::config::Data& cfg, const NodePtr& n,
                    const std::string& indent, bool ignore_first_indent = false)
 {
     if (n->type() == ARRAY)
@@ -61,14 +61,14 @@ void emitRecursive(std::ostream& out, const tue::config::Configuration& cfg, con
 
 // ----------------------------------------------------------------------------------------------------
 
-void YAMLEmitter::emit(const tue::config::Configuration& cfg, std::ostream& out, const std::string& indent)
+void YAMLEmitter::emit(const tue::config::Data& cfg, std::ostream& out, const std::string& indent)
 {
     emitRecursive(out, cfg, cfg.nodes[0], indent);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void YAMLEmitter::emit(const tue::config::Configuration& cfg, NodeIdx idx, std::ostream& out, const std::string& indent)
+void YAMLEmitter::emit(const tue::config::Data& cfg, NodeIdx idx, std::ostream& out, const std::string& indent)
 {
     emitRecursive(out, cfg, cfg.nodes[idx], indent);
 }
