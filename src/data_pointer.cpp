@@ -103,6 +103,14 @@ bool DataPointer::add(const DataConstPointer& ptr)
 
 // ----------------------------------------------------------------------------------------------------
 
+DataPointer::DataPointer() : data(new Data), idx(0) {}
+
+// ----------------------------------------------------------------------------------------------------
+
+DataConstPointer::DataConstPointer() : data(new Data), idx(0) {}
+
+// ----------------------------------------------------------------------------------------------------
+
 std::ostream& operator<< (std::ostream& out, const DataConstPointer& d)
 {
     YAMLEmitter emitter;

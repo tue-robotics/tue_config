@@ -17,7 +17,7 @@ class DataConstPointer;
 class DataPointer
 {
 public:
-    DataPointer() : idx(0) {}
+    DataPointer();
     DataPointer(const boost::shared_ptr<Data>& data_, NodeIdx idx_) : data(data_), idx(idx_) {}
     bool valid() const { return data; }
     boost::shared_ptr<Data> data;
@@ -33,7 +33,7 @@ public:
 class DataConstPointer
 {
 public:
-    DataConstPointer() : idx(0) {}
+    DataConstPointer();
     DataConstPointer(const boost::shared_ptr<const Data>& data_, NodeIdx idx_) : data(data_), idx(idx_) {}
     DataConstPointer(const DataPointer& ptr) : data(ptr.data), idx(ptr.idx) {}
     bool valid() const { return data; }
