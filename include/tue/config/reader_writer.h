@@ -19,6 +19,11 @@ enum RequiredOrOoptional
 namespace config
 {
 
+struct Error
+{
+    std::string message;
+};
+
 class Data;
 
 class ReaderWriter
@@ -95,9 +100,9 @@ public:
 
     void addError(const std::string& msg);
 
-    bool hasError() const { return !error_.empty(); }
+    bool hasError() const { return error_ && !error_->message.empty(); }
 
-    const std::string& error() const { return error_; }
+    const std::string& error() const { return error_->message; }
 
     bool loadFromYAMLFile(const std::string& filename);
 
@@ -115,7 +120,7 @@ private:
 
     boost::shared_ptr<Data> cfg_;
 
-    std::string error_;
+    boost::shared_ptr<Error> error_;
 
 
     // Syncing

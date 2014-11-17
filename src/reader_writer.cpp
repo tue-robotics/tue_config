@@ -52,6 +52,7 @@ bool ReaderWriter::read(const std::string& name)
     Label label;
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))
         return true;
+
     return false;
 }
 
@@ -103,6 +104,11 @@ ReaderWriter ReaderWriter::limitScope() const
 
 void ReaderWriter::addError(const std::string& msg)
 {
+    if (!error_)
+        error_.reset(new Error);
+
+    std::string& error_msg = error_->message;
+
     // build context
     std::vector<std::string> context;
 
@@ -116,21 +122,21 @@ void ReaderWriter::addError(const std::string& msg)
 
     if (context.size() > 1)
     {
-        error_ += "In '";
+        error_msg += "In '";
 
         for(int i = context.size() - 2; i > 0; --i)
         {
-            error_ += context[i] + ".";
+            error_msg += context[i] + ".";
         }
 
-        error_ += context[0] + "': \n\n";
+        error_msg += context[0] + "': \n\n";
     }
     else
     {
-        error_ += "In root of configuration:\n\n";
+        error_msg += "In root of configuration:\n\n";
     }
 
-    error_ += "    " + msg + "\n\n";
+    error_msg += "    " + msg + "\n\n";
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -216,7 +222,7 @@ std::string ReaderWriter::toYAMLString() const
 bool ReaderWriter::loadFromYAMLFile(const std::string& filename)
 {
     // Remove possible previous errors
-    error_.clear();
+    error_.reset();
 
     // Reset head
     idx_ = scope_;
