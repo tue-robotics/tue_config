@@ -1,89 +1,177 @@
-#ifndef TUE_CONFIG_VARIANT_H_
-#define TUE_CONFIG_VARIANT_H_
+#ifndef TUE_CONFIG2_VARIANT_H_
+#define TUE_CONFIG2_VARIANT_H_
 
-#include <vector>
-#include <string>
-#include <ostream>
+// Directly taken from http://stackoverflow.com/questions/5319216/implementing-a-variant-class
+
+#include <boost/shared_ptr.hpp>
 
 namespace tue
 {
+namespace config
+{
+
+//template <typename T>
+//struct TypeWrapper
+//{
+//    typedef T TYPE;
+//    typedef const T CONSTTYPE;
+//    typedef T& REFTYPE;
+//    typedef const T& CONSTREFTYPE;
+//};
+
+//template <typename T>
+//struct TypeWrapper<const T>
+//{
+//    typedef T TYPE;
+//    typedef const T CONSTTYPE;
+//    typedef T& REFTYPE;
+//    typedef const T& CONSTREFTYPE;
+//};
+
+//template <typename T>
+//struct TypeWrapper<const T&>
+//{
+//    typedef T TYPE;
+//    typedef const T CONSTTYPE;
+//    typedef T& REFTYPE;
+//    typedef const T& CONSTREFTYPE;
+//};
+
+//template <typename T>
+//struct TypeWrapper<T&>
+//{
+//    typedef T TYPE;
+//    typedef const T CONSTTYPE;
+//    typedef T& REFTYPE;
+//    typedef const T& CONSTREFTYPE;
+//};
+
+//class Variant2
+//{
+//public:
+//    Variant2() { }
+
+//    template<class T>
+//    Variant2(T inValue) :
+//        mImpl(new VariantImpl<typename TypeWrapper<T>::TYPE>(inValue))
+//    {
+//    }
+
+//    template<class T>
+//    typename TypeWrapper<T>::REFTYPE getValue()
+//    {
+//        return dynamic_cast<VariantImpl<typename TypeWrapper<T>::TYPE>&>(*mImpl.get()).mValue;
+//    }
+
+//    template<class T>
+//    typename TypeWrapper<T>::CONSTREFTYPE getValue() const
+//    {
+//        return dynamic_cast<VariantImpl<typename TypeWrapper<T>::TYPE>&>(*mImpl.get()).mValue;
+//    }
+
+//    template<class T>
+//    void setValue(typename TypeWrapper<T>::CONSTREFTYPE inValue)
+//    {
+//        mImpl.reset(new VariantImpl<typename TypeWrapper<T>::TYPE>(inValue));
+//    }
+
+//    friend std::ostream& operator<< (std::ostream& out, const Variant2& v)
+//    {
+//        v.mImpl->print(out);
+//        return out;
+//    }
+
+
+//private:
+//    struct AbstractVariantImpl
+//    {
+//        virtual ~AbstractVariantImpl() {}
+
+//        virtual void print(std::ostream& out) const {}
+//    };
+
+//    template<class T>
+//    struct VariantImpl : public AbstractVariantImpl
+//    {
+//        VariantImpl(T inValue) : mValue(inValue) { }
+
+//        ~VariantImpl() {}
+
+//        T mValue;
+
+//        void print(std::ostream& out) const { out << mValue; }
+//    };
+
+//    boost::shared_ptr<AbstractVariantImpl> mImpl;
+//};
 
 class Variant
 {
 
 public:
 
-    typedef std::vector<Variant>::iterator iterator;
-    typedef std::vector<Variant>::const_iterator const_iterator;
+    Variant() : type_('?') {}
 
-    Variant() : type_(UNDEFINED) {}
-    Variant(const char* v) : type_(STRING), string_(v) {}
-    Variant(const std::string& v) : type_(STRING), string_(v) {}
-    Variant(double v) : type_(REAL), real_(v) {}
-    Variant(int v) : type_(INT), int_(v) {}
+    Variant(const double& d) : type_('d'), d_(d) {}
+    Variant(int i) : type_('i'), i_(i) {}
+    Variant(const std::string& s) : type_('s'), s_(s) {}
+    Variant(const char* s) : type_('s'), s_(s) {}
 
-    ~Variant() {}
+    bool getValue(int& v) { return checkAndGet(i_, 'i', v); }
+    bool getValue(double& v) { return checkAndGet(d_, 'd', v) || checkAndGet((double)i_, 'i', v); }
+    bool getValue(float& v) { return checkAndGet((float)d_, 'd', v) || checkAndGet((float)i_, 'i', v); }
+    bool getValue(std::string& v) { return checkAndGet(s_, 's', v); }
 
-    inline bool isValid() const { return type_ != UNDEFINED; }
-    inline bool isString() const { return type_ == STRING; }
-    inline bool isReal() const { return type_ == REAL || type_ == INT; }
-    inline bool isInt() const { return type_ == INT; }
-    inline bool isArray() const { return type_ == ARRAY; }
-
-    inline const std::string& toString() const { return string_; }
-    inline double toReal() const { return (type_ == INT) ? int_ : real_; }
-    inline int toInt() const { return int_; }
-    inline const std::vector<Variant>& toArray() const { return array_; }
-
-    // Array functions
-
-    inline size_t size() const { return array_.size(); }
-
-    inline iterator begin() { return array_.begin(); }
-    inline iterator end() { return array_.end(); }
-
-    inline const_iterator begin() const { return array_.begin(); }
-    inline const_iterator end() const { return array_.end(); }
-
-    void add(const Variant& v) { type_ = ARRAY; array_.push_back(v); }
-
-    friend std::ostream& operator<< (std::ostream& out, const Variant& v) {
-        switch (v.type_)
-        {
-        case UNDEFINED: out << "?"; break;
-        case STRING: out << v.string_; break;
-        case REAL: out << v.real_; break;
-        case INT: out << v.int_; break;
-        case ARRAY:
-            out << "[";
-            for(const_iterator it = v.begin(); it != v.end(); ++it)
-                out << *it << " ";
-            out << "]";
-            break;
-        }
-        return out;
+    bool getValue(bool& v)
+    {
+        int i;
+        if (!checkAndGet(i_, 'i', i))
+            return false;
+        v = (i == 1);
+        return true;
     }
 
 private:
 
-    enum Type
-    {
-        UNDEFINED,
-        STRING,
-        REAL,
-        INT,
-        ARRAY
+    char type_;
+
+    union {
+        int i_;
+        double d_;
     };
 
-    Type type_;
+    std::string s_;
 
-    std::string string_;
-    double real_;
-    int int_;
-    std::vector<Variant> array_;
+    template<typename T>
+    inline bool checkAndGet(const T& v, char type, T& out)
+    {
+        if (type != type_)
+            return false;
+        out = v;
+        return true;
+    }
+
+    friend std::ostream& operator<< (std::ostream& out, const Variant& v)
+    {
+        switch (v.type_)
+        {
+        case 'i': out << v.i_;
+            break;
+        case 'd': out << v.d_;
+            break;
+        case 's': out << v.s_;
+            break;
+        default: out << "?";
+            break;
+        }
+
+        return out;
+    }
 
 };
 
-}
+} // end namespace tue
+
+} // end namespace config
 
 #endif

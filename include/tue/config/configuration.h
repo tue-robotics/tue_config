@@ -1,127 +1,14 @@
-#ifndef TUE_CONFIG_CONFIGURATION_H_
-#define TUE_CONFIG_CONFIGURATION_H_
+#ifndef TUE_CONFIG_CONFIG_CONFIGURATION_H_
+#define TUE_CONFIG_CONFIG_CONFIGURATION_H_
 
-#include <string>
-
-#include "tue/config/variant.h"
-
-#include <boost/shared_ptr.hpp>
-
-// Sync
-#include <ctime>
-
-class ConfigData;
-class ConfigNode;
+#include "tue/config/reader_writer.h"
 
 namespace tue
 {
 
-enum RequiredOrOoptional
-{
-    REQUIRED,
-    OPTIONAL
-};
+// For backwards compatibility
+typedef tue::config::ReaderWriter Configuration;
 
-class Configuration
-{
-
-public:
-
-    Configuration();
-
-    ~Configuration();
-
-
-    void setValue(const std::string& key, const Variant& value);
-
-    Variant value(const std::string& key, RequiredOrOoptional opt = REQUIRED);
-
-    bool value(const std::string &key, float& f, RequiredOrOoptional opt = REQUIRED);
-
-    bool value(const std::string &key, double& d, RequiredOrOoptional opt = REQUIRED);
-
-    bool value(const std::string &key, int& i, RequiredOrOoptional opt = REQUIRED);
-
-    bool value(const std::string &key, bool& b, RequiredOrOoptional opt = REQUIRED);
-
-    bool value(const std::string &key, std::string& s, RequiredOrOoptional opt = REQUIRED);
-
-    void remove(const std::string& key);
-
-
-    // Group operations
-
-    void writeGroup(const std::string& group);
-
-    bool readGroup(const std::string& group, RequiredOrOoptional opt = OPTIONAL);
-
-    void endGroup();
-
-
-    // Array operations
-
-    void writeArray(const std::string& array);
-
-    bool readArray(const std::string& array, RequiredOrOoptional opt = OPTIONAL);
-
-    void endArray();
-
-    bool nextArrayItem();
-
-    void addArrayItem();
-
-    void endArrayItem();
-
-
-    // Scope operations
-
-    Configuration limitScope() const;
-
-
-    // Merging
-
-    bool add(const Configuration& config);
-
-
-    // Error handling
-
-    bool hasError() const;
-
-    const std::string& error() const;
-
-    void addError(const std::string& msg);
-
-
-    // Syncing and Loading
-
-    bool sync();
-
-    bool loadFromYAMLFile(const std::string& filename);
-
-    std::string toYAMLString() const;
-
-    friend std::ostream& operator<< (std::ostream& out, const Configuration& c);
-
-private:
-
-    boost::shared_ptr<ConfigData> data_;
-
-    ConfigNode* head_;
-
-    ConfigNode* scope_;
-
-    std::string filename_;
-
-    std::time_t source_last_write_time_;
-
-    Configuration(const boost::shared_ptr<ConfigData>& data, ConfigNode* head, ConfigNode* scope);
-
-    bool checkValue(const std::string& key, Variant& v, RequiredOrOoptional opt = REQUIRED);
-
-    void print(std::ostream& out, const ConfigNode& cs, const std::string& indent = "", bool skip_first_indent = false) const;
-
-};
-
-}
+} // end namespace tue
 
 #endif

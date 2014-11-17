@@ -2,9 +2,6 @@
 
 #include "tue/config/configuration.h"
 
-#include "../config_data.h"
-#include "../config_node.h"
-
 // YAML parsing
 #include <fstream>
 #include "yaml-cpp/parser.h"
@@ -39,7 +36,7 @@ Variant yamlScalarToVariant(const YAML::Node& n)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLNode(const YAML::Node& node, Configuration& config)
+bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
 {
 
     for(YAML::Iterator it = node.begin(); it != node.end(); ++it)
@@ -93,7 +90,7 @@ bool loadFromYAMLNode(const YAML::Node& node, Configuration& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLStream(std::istream& stream, tue::Configuration& config)
+bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config)
 {
     try
     {
@@ -122,7 +119,7 @@ bool loadFromYAMLStream(std::istream& stream, tue::Configuration& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLString(const std::string& string, tue::Configuration& config)
+bool loadFromYAMLString(const std::string& string, ReaderWriter& config)
 {
     std::stringstream ss;
     ss << string;
@@ -131,7 +128,7 @@ bool loadFromYAMLString(const std::string& string, tue::Configuration& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLFile(const std::string& filename, tue::Configuration& config)
+bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config)
 {
     // Remove possible previous errors (TODO)
 //    config.data_->error.clear();
