@@ -100,7 +100,7 @@ public:
 
     void addError(const std::string& msg);
 
-    bool hasError() const { return error_ && !error_->message.empty(); }
+    bool hasError() const { return !error_->message.empty(); }
 
     const std::string& error() const { return error_->message; }
 
@@ -112,6 +112,8 @@ public:
 
     inline DataPointer data() const { return DataPointer(cfg_, idx_); }
 
+    inline void setErrorContext(const std::string& context) { error_context_.reset(new std::string(context)); }
+
 private:
 
     NodeIdx idx_;
@@ -121,6 +123,8 @@ private:
     boost::shared_ptr<Data> cfg_;
 
     boost::shared_ptr<Error> error_;
+
+    boost::shared_ptr<std::string> error_context_;
 
 
     // Syncing

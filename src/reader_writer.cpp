@@ -24,13 +24,13 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data)
+ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data), error_(new Error)
 {
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::ReaderWriter(DataPointer& cfg) : idx_(cfg.idx), scope_(0), cfg_(cfg.data)
+ReaderWriter::ReaderWriter(DataPointer& cfg) : idx_(cfg.idx), scope_(0), cfg_(cfg.data), error_(new Error)
 {
     if (!cfg_)
     {
@@ -104,36 +104,42 @@ ReaderWriter ReaderWriter::limitScope() const
 
 void ReaderWriter::addError(const std::string& msg)
 {
-    if (!error_)
-        error_.reset(new Error);
-
     std::string& error_msg = error_->message;
 
     // build context
     std::vector<std::string> context;
 
-    NodeIdx c = idx_;
-    while(c != -1)
+    if (error_context_)
     {
-        const NodePtr& n = cfg_->nodes[c];
-        context.push_back(n->name());
-        c = cfg_->getParent(c);
-    }
-
-    if (context.size() > 1)
-    {
-        error_msg += "In '";
-
-        for(int i = context.size() - 2; i > 0; --i)
-        {
-            error_msg += context[i] + ".";
-        }
-
-        error_msg += context[0] + "': \n\n";
+        error_msg += *error_context_ + "\n\n";
     }
     else
     {
-        error_msg += "In root of configuration:\n\n";
+        // Default error context
+
+        NodeIdx c = idx_;
+        while(c != -1)
+        {
+            const NodePtr& n = cfg_->nodes[c];
+            context.push_back(n->name());
+            c = cfg_->getParent(c);
+        }
+
+        if (context.size() > 1)
+        {
+            error_msg += "In '";
+
+            for(int i = context.size() - 2; i > 0; --i)
+            {
+                error_msg += context[i] + ".";
+            }
+
+            error_msg += context[0] + "': \n\n";
+        }
+        else
+        {
+            error_msg += "In root of configuration:\n\n";
+        }
     }
 
     error_msg += "    " + msg + "\n\n";
@@ -222,7 +228,7 @@ std::string ReaderWriter::toYAMLString() const
 bool ReaderWriter::loadFromYAMLFile(const std::string& filename)
 {
     // Remove possible previous errors
-    error_.reset();
+    error_->message.clear();
 
     // Reset head
     idx_ = scope_;
