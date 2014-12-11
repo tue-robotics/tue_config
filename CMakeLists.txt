@@ -5,35 +5,6 @@ find_package(catkin REQUIRED COMPONENTS
     tue_filesystem
 )
 
-# find_package(Boost REQUIRED COMPONENTS system program_options)
-# find_package(PCL REQUIRED)
-# find_package(OpenCV REQUIRED)
-
-# ------------------------------------------------------------------------------------------------
-#                                     ROS MESSAGES AND SERVICES
-# ------------------------------------------------------------------------------------------------
-
-# Generate messages
-# add_message_files(
-#    FILES
-#    message1.msg
-#    ...
-# )
-
-# Generate services
-# add_service_files(
-#    FILES
-#    service1.srv
-#    ...
-# )
-
-# Generate added messages and services with any dependencies listed here
-# generate_messages(
-#    DEPENDENCIES
-#    geometry_msgs
-#    ...
-# )
-
 # ------------------------------------------------------------------------------------------------
 #                                          CATKIN EXPORT
 # ------------------------------------------------------------------------------------------------
