@@ -56,14 +56,13 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
     {
         std::string key;
         it.first() >> key;
+        const YAML::Node& n = it.second();
 #else
     for(YAML::const_iterator it = node.begin(); it != node.end(); ++it)
     {
         std::string key = it->first.as<std::string>();
         const YAML::Node& n = it->second;
 #endif
-
-        const YAML::Node& n = it.second();
 
         switch (n.Type())
         {
