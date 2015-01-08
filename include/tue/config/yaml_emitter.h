@@ -3,6 +3,8 @@
 
 #include "tue/config/types.h"
 
+#include <string>
+
 namespace tue
 {
 

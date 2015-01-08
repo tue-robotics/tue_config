@@ -5,6 +5,9 @@
 
 #include <boost/shared_ptr.hpp>
 
+#include <string>
+#include <iostream>
+
 namespace tue
 {
 namespace config

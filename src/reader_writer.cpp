@@ -254,7 +254,7 @@ bool ReaderWriter::sync() {
         {
              last_write_time = tue::filesystem::Path(filename_).lastWriteTime();
         }
-        catch (boost::filesystem3::filesystem_error& e)
+        catch (boost::filesystem::filesystem_error& e)
         {
             return false;
         }
