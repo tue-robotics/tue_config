@@ -4,8 +4,15 @@
 
 // YAML parsing
 #include <fstream>
-#include "yaml-cpp/parser.h"
-#include "yaml-cpp/node.h"
+
+#ifdef YAML_VERSION_0_3
+    #include "yaml-cpp/parser.h"
+    #include "yaml-cpp/node.h"
+#else
+    #include "yaml-cpp/yaml.h"
+#endif
+
+#include <iostream>
 #include <stdlib.h>
 
 namespace tue
@@ -19,7 +26,12 @@ namespace config
 Variant yamlScalarToVariant(const YAML::Node& n)
 {
     std::string s;
+
+#ifdef YAML_VERSION_0_3
     n.GetScalar(s);
+#else
+    s = n.as<std::string>();
+#endif
 
     char* pEnd;
 
@@ -39,10 +51,17 @@ Variant yamlScalarToVariant(const YAML::Node& n)
 bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
 {
 
+#ifdef YAML_VERSION_0_3
     for(YAML::Iterator it = node.begin(); it != node.end(); ++it)
     {
         std::string key;
         it.first() >> key;
+#else
+    for(YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+    {
+        std::string key = it->first.as<std::string>();
+        const YAML::Node& n = it->second;
+#endif
 
         const YAML::Node& n = it.second();
 
@@ -55,7 +74,11 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         {
             config.writeArray(key);
 
+#ifdef YAML_VERSION_0_3
             for(YAML::Iterator it2 = n.begin(); it2 != n.end(); ++it2)
+#else
+            for(YAML::const_iterator it2 = n.begin(); it2 != n.end(); ++it2)
+#endif
             {
                 const YAML::Node& n2 = *it2;
                 if (n2.Type() != YAML::NodeType::Map)
@@ -94,10 +117,15 @@ bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config)
 {
     try
     {
+
+#ifdef YAML_VERSION_0_3
         // load yaml
         YAML::Parser parser(stream);
         YAML::Node doc;
         parser.GetNextDocument(doc);
+#else
+        YAML::Node doc = YAML::Load(stream);
+#endif
 
         if (doc.Type() != YAML::NodeType::Map)
         {
