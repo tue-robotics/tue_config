@@ -4,6 +4,8 @@
 #include "tue/config/types.h"
 #include "tue/config/data.h"
 
+#include <iostream>
+
 // Sync
 #include <ctime>
 
@@ -39,14 +41,14 @@ public:
 
     // ---- READING -----------------------------------------------------------------------
 
-    bool read(const std::string& name);
+    bool read(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL);
 
     bool end();
 
     bool next();
 
     template<typename T>
-    bool value(const std::string& name, T& value, tue::RequiredOrOoptional opt = tue::REQUIRED) const
+    bool value(const std::string& name, T& value, tue::RequiredOrOoptional opt = tue::REQUIRED)
     {
         Label label;
         if (!cfg_->getLabel(name, label))
@@ -54,10 +56,18 @@ public:
 
         Variant v;
         if (!cfg_->nodes[idx_]->value(label, v))
+        {
+            if (opt == tue::REQUIRED)
+                addError("Expected property '" + name + "', not found.");
             return false;
+        }
 
         if (!v.getValue(value))
+        {
+            if (opt == tue::REQUIRED)
+                addError("Property '" + name + "' has invalid type.");
             return false;
+        }
 
         return true;
     }
@@ -68,8 +78,8 @@ public:
 
 //    bool add(const ReaderWriter& rw);
 
-    bool readArray(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name); }
-    bool readGroup(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name); }
+    bool readArray(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name, opt); }
+    bool readGroup(const std::string& name, tue::RequiredOrOoptional opt = tue::OPTIONAL) { return read(name, opt); }
     bool endArray() { return end(); }
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
