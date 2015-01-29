@@ -34,20 +34,20 @@ Variant yamlScalarToVariant(const YAML::Node& n, std::stringstream& error)
     s = n.as<std::string>();
 #endif
 
+    // Check and resolve possible resolve functions ( "$( ... )" )
+    std::string s_resolved;
+    if (!resolve(s, s_resolved, error))
+        return Variant();
+
     char* pEnd;
 
-    int i = strtol(s.c_str(), &pEnd, 10);
+    int i = strtol(s_resolved.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
         return Variant(i);
 
-    double d = strtod(s.c_str(), &pEnd);
+    double d = strtod(s_resolved.c_str(), &pEnd);
     if (pEnd[0] == 0)
         return Variant(d);
-
-    // Check and resolve possible resolve functions ( "$( ... )" )
-    std::string s_resolved;
-    if (!resolve(s, s_resolved, error))       
-        return Variant();
 
     return Variant(s_resolved);
 }
