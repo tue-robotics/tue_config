@@ -5,6 +5,8 @@ find_package(catkin REQUIRED COMPONENTS
     tue_filesystem
 )
 
+find_package(roslib)
+
 # ------------------------------------------------------------------------------------------------
 #                                          CATKIN EXPORT
 # ------------------------------------------------------------------------------------------------
@@ -62,10 +64,14 @@ add_library(tue_config
     src/binary_reader.cpp
     src/reader_writer.cpp
     src/loaders/yaml.cpp
-	src/data_pointer.cpp
+    src/loaders/resolve_functions.cpp
+    src/data_pointer.cpp
     ${HEADER_FILES}
 )
-target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp)
+target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES})
 
 add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
+
+add_executable(test_read_and_show test/test_read_and_show.cpp)
+target_link_libraries(test_read_and_show tue_config)

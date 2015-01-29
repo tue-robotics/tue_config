@@ -134,6 +134,8 @@ public:
         return true;
     }
 
+    bool inline valid() const { return type_ != '?'; }
+
 private:
 
     char type_;

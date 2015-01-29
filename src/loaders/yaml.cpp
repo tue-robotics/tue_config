@@ -1,6 +1,7 @@
 #include "tue/config/loaders/yaml.h"
 
 #include "tue/config/configuration.h"
+#include "resolve_functions.h"
 
 // YAML parsing
 #include <fstream>
@@ -23,7 +24,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Variant yamlScalarToVariant(const YAML::Node& n)
+Variant yamlScalarToVariant(const YAML::Node& n, std::stringstream& error)
 {
     std::string s;
 
@@ -43,7 +44,12 @@ Variant yamlScalarToVariant(const YAML::Node& n)
     if (pEnd[0] == 0)
         return Variant(d);
 
-    return Variant(s);
+    // Check and resolve possible resolve functions ( "$( ... )" )
+    std::string s_resolved;
+    if (!resolve(s, s_resolved, error))       
+        return Variant();
+
+    return Variant(s_resolved);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -67,8 +73,15 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         switch (n.Type())
         {
         case YAML::NodeType::Scalar:
-            config.setValue(key, yamlScalarToVariant(n));
+        {
+            std::stringstream error;
+            Variant v = yamlScalarToVariant(n, error);
+            if (v.valid())
+                config.setValue(key, v);
+            else
+                config.addError("While reading key '" + key +"': " + error.str());
             break;
+        }
         case YAML::NodeType::Sequence:
         {
             config.writeArray(key);
