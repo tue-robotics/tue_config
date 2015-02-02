@@ -198,7 +198,12 @@ int main(int argc, char **argv)
     tue::config::DataPointer cfg;
     tue::config::Writer writer(cfg);
 
+    std::cout << "Empty: " << cfg.empty() << std::endl;
+
     writer.setValue("x", 3.1);
+
+    std::cout << "Empty: " << cfg.empty() << std::endl;
+
     writer.setValue("y", 4);
 
     writer.writeGroup("foo");

@@ -38,6 +38,8 @@ public:
 
     virtual bool value(const Label& label, Variant& value) const { return false; }
 
+    virtual bool empty() const = 0;
+
 
     // WRITE
 

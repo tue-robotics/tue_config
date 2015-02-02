@@ -43,6 +43,10 @@ public:
 
     NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const;
 
+    virtual bool empty() const
+    {
+        return children_.empty();
+    }
 
 };
 

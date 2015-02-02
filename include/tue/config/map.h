@@ -49,6 +49,11 @@ public:
         return true;
     }
 
+    virtual bool empty() const
+    {
+        return (map_.empty() && values.empty());
+    }
+
     // --- COPY
 
     NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const;
