@@ -24,7 +24,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Variant yamlScalarToVariant(const YAML::Node& n, std::stringstream& error)
+Variant yamlScalarToVariant(const YAML::Node& n, std::string& error)
 {
     std::string s;
 
@@ -36,8 +36,12 @@ Variant yamlScalarToVariant(const YAML::Node& n, std::stringstream& error)
 
     // Check and resolve possible resolve functions ( "$( ... )" )
     std::string s_resolved;
-    if (!resolve(s, s_resolved, error))
+    std::stringstream s_error;
+    if (!resolve(s, s_resolved, s_error))
+    {
+        error = s_error.str();
         return Variant();
+    }
 
     char* pEnd;
 
@@ -74,12 +78,12 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         {
         case YAML::NodeType::Scalar:
         {
-            std::stringstream error;
+            std::string error;
             Variant v = yamlScalarToVariant(n, error);
             if (v.valid())
                 config.setValue(key, v);
             else
-                config.addError("While reading key '" + key +"': " + error.str());
+                config.addError("While reading key '" + key +"': " + error);
             break;
         }
         case YAML::NodeType::Sequence:
