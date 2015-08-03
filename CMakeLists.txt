@@ -70,6 +70,42 @@ add_library(tue_config
 )
 target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES})
 
+# ------------------------------------------------------------------------------------------------
+#                                           TUE_CONFIG2
+# ------------------------------------------------------------------------------------------------
+
+set(HEADER_FILES2
+    include/tue/config2/error.h
+    include/tue/config2/data.h
+    include/tue/config2/reader.h
+    include/tue/config2/data_reader.h
+    include/tue/config2/data_writer.h
+    include/tue/config2/yaml.h
+    include/tue/config2/writer.h
+    include/tue/config2/json_writer.h
+    include/tue/config2/json.h
+    include/tue/config2/emitter.h
+)
+
+add_library(tue_config2
+    src/config2/json.cpp
+    src/config2/data_writer.cpp
+    src/config2/writer.cpp
+    src/config2/yaml.cpp
+    src/config2/json_writer.cpp
+    src/config2/reader.cpp
+    src/config2/data_reader.cpp
+    src/config2/error.cpp
+    src/config2/emitter.cpp
+    ${HEADER_FILES2}
+)
+
+target_link_libraries(tue_config2 ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES})
+
+# ------------------------------------------------------------------------------------------------
+#                                              TESTS
+# ------------------------------------------------------------------------------------------------
+
 add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
 
