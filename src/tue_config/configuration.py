@@ -54,7 +54,7 @@ def from_file(filename, relative=True):
         import commands
         (stat, output) = commands.getstatusoutput("python {}".format(full_filename))
         if stat != 0:
-            raise AttributeError, output
+            raise IOError, output
 
         import yaml
         cfg.__dict__["_d"] = yaml.load(output)
@@ -64,14 +64,20 @@ def from_file(filename, relative=True):
         with open(full_filename, 'r') as f:
             cfg.__dict__["_d"] = yaml.load(f)
     else:
-        raise AttributeError, "Unknown config file format: {}".format(filename)
+        raise IOError, "Unknown config file format: {}".format(filename)
 
     return cfg
 
 # ----------------------------------------------------------------------------------------------------
 
+def to_yaml(config):
+    import yaml
+    return yaml.dump(config._dict(), default_flow_style=True, width=1e9)
+
+# ----------------------------------------------------------------------------------------------------
+
 def write_yaml(config):
     import yaml
-    print yaml.dump(config._dict(), default_flow_style=True, width=1e9)
+    print to_yaml(config)
 
 

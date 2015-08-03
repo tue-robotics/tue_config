@@ -9,5 +9,5 @@ if __name__ == "__main__":
         print "Please specify a configuration file (.py, .yaml or .json)"
         sys.exit(1)
 
-    cfg = tue_config.load_file(sys.argv[1], relative=False)
+    cfg = tue_config.from_file(sys.argv[1], relative=False)
     tue_config.write_yaml(cfg)
