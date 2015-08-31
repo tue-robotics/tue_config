@@ -4,13 +4,19 @@
 #include <ros/package.h>
 #include <stdlib.h>     /* getenv */
 
+#include <tue/filesystem/path.h>
+
+#include <iostream>
+
 namespace tue
 {
 
 namespace config
 {
 
-bool executeResolvefunction(const std::vector<std::string>& args, std::string& result, std::stringstream& error)
+// ----------------------------------------------------------------------------------------------------
+
+bool executeResolvefunction(const std::vector<std::string>& args, const std::string& source, std::string& result, std::stringstream& error)
 {
     if (args[0] == "rospkg" && args.size() == 2)
     {
@@ -43,6 +49,19 @@ bool executeResolvefunction(const std::vector<std::string>& args, std::string& r
         result = env_value;
         return true;
     }
+    else if (args[0] == "file" && args.size() == 2)
+    {
+        const std::string& filename = args[1];
+        if (filename[0] == '/')
+        {
+            result = filename;
+            return true;
+        }
+
+        result = tue::filesystem::Path(source).parentPath().string() + "/" + filename;
+
+        return true;
+    }
 
     error << "Unknown resolve function: '" << args[0] << "' with " << args.size() - 1 << " arguments.";
 
@@ -51,7 +70,7 @@ bool executeResolvefunction(const std::vector<std::string>& args, std::string& r
 
 // ----------------------------------------------------------------------------------------------------
 
-bool parseResolveFunction(const std::string& str, std::size_t& i, std::string& result, std::stringstream& error)
+bool parseResolveFunction(const std::string& str, const std::string& source, std::size_t& i, std::string& result, std::stringstream& error)
 {
     std::vector<std::string> args;
     args.push_back("");
@@ -66,7 +85,7 @@ bool parseResolveFunction(const std::string& str, std::size_t& i, std::string& r
             i += 2;
 
             std::string arg;
-            if (!parseResolveFunction(str, i, arg, error))
+            if (!parseResolveFunction(str, source, i, arg, error))
                 return false;
 
             args.back() += arg;
@@ -87,7 +106,7 @@ bool parseResolveFunction(const std::string& str, std::size_t& i, std::string& r
                 return false;
             }
 
-            return executeResolvefunction(args, result, error);
+            return executeResolvefunction(args, source, result, error);
         }
         else if (c == ' ')
         {
@@ -108,7 +127,7 @@ bool parseResolveFunction(const std::string& str, std::size_t& i, std::string& r
 
 // ----------------------------------------------------------------------------------------------------
 
-bool resolve(const std::string& str, std::string& result, std::stringstream& error)
+bool resolve(const std::string& str, const std::string& source, std::string& result, std::stringstream& error)
 {
     std::size_t i = 0;
 
@@ -127,7 +146,7 @@ bool resolve(const std::string& str, std::string& result, std::stringstream& err
         i = i_sign + 2;
 
         std::string subresult;
-        if (!parseResolveFunction(str, i, subresult, error))
+        if (!parseResolveFunction(str, source, i, subresult, error))
             return false;
 
         result += subresult;

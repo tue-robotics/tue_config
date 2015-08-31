@@ -10,7 +10,7 @@ namespace tue
 namespace config
 {
 
-bool resolve(const std::string& str, std::string& result, std::stringstream& error);
+bool resolve(const std::string& str, const std::string& source, std::string& result, std::stringstream& error);
 
 }
 

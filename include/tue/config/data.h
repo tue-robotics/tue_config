@@ -78,6 +78,8 @@ public:
     std::vector<NodeIdx> parents;
     std::vector<NodeIdx> right_siblings;
 
+    std::string source_;
+
 //    friend std::ostream& operator<< (std::ostream& out, const Data& d);
 
 };

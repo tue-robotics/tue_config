@@ -24,7 +24,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Variant yamlScalarToVariant(const YAML::Node& n, std::string& error)
+bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWriter& config)
 {
     std::string s;
 
@@ -37,23 +37,30 @@ Variant yamlScalarToVariant(const YAML::Node& n, std::string& error)
     // Check and resolve possible resolve functions ( "$( ... )" )
     std::string s_resolved;
     std::stringstream s_error;
-    if (!resolve(s, s_resolved, s_error))
+    if (!resolve(s, config.source(), s_resolved, s_error))
     {
-        error = s_error.str();
-        return Variant();
+        config.addError("While reading key '" + key +"': Could not resolve: " + s_error.str());
+        return false;
     }
 
     char* pEnd;
 
     int i = strtol(s_resolved.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
-        return Variant(i);
+    {
+        config.setValue(key, i);
+        return true;
+    }
 
     double d = strtod(s_resolved.c_str(), &pEnd);
     if (pEnd[0] == 0)
-        return Variant(d);
+    {
+        config.setValue(key, d);
+        return true;
+    }
 
-    return Variant(s_resolved);
+    config.setValue(key, s_resolved);
+    return true;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -78,12 +85,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         {
         case YAML::NodeType::Scalar:
         {
-            std::string error;
-            Variant v = yamlScalarToVariant(n, error);
-            if (v.valid())
-                config.setValue(key, v);
-            else
-                config.addError("While reading key '" + key +"': " + error);
+            yamlScalarToVariant(key, n, config);
             break;
         }
         case YAML::NodeType::Sequence:
@@ -179,6 +181,8 @@ bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config)
 
     // Reset head (TODO)
 //    config.head_ = scope_;
+
+    config.setSource(filename);
 
     std::ifstream fin(filename.c_str());
     if (fin.fail())

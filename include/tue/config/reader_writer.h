@@ -84,6 +84,8 @@ public:
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
 
+    const std::string& source() const { return cfg_->source_; }
+
 
     // ---- WRITING -----------------------------------------------------------------------
 
@@ -102,6 +104,8 @@ public:
     bool addArrayItem();
 
     bool endArrayItem();
+
+    void setSource(const std::string& source) { cfg_->source_ = source; }
 
 
     // ---- ADDITIONAL -----------------------------------------------------------------------
