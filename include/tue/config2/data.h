@@ -20,15 +20,16 @@ enum NodeType
     MAP,
     INT,
     FLOAT,
-    STRING
+    STRING,
+    INVALID
 };
 
 // ----------------------------------------------------------------------------------------------------
 
-struct Node
+struct DataIndex
 {
-    Node() {}
-    Node(unsigned int idx_, NodeType type_) : idx(idx_), type(type_) {}
+    DataIndex() {}
+    DataIndex(unsigned int idx_, NodeType type_) : idx(idx_), type(type_) {}
 
     unsigned int idx;
     NodeType type;
@@ -38,38 +39,115 @@ struct Node
 
 struct Data
 {
-    std::vector<std::vector<Node> > arrays;
-    std::vector<unsigned int> array_parents;
+    Data()
+    {
+        // Add the root map
+        maps.push_back(std::map<std::string, DataIndex>());
+        map_parents.push_back(DataIndex(0, INVALID));
+    }
 
-    std::vector<std::map<std::string, Node> > maps;
-    std::vector<unsigned int> map_parents;
+    std::vector<std::vector<DataIndex> > arrays;
+    std::vector<DataIndex> array_parents;
+
+    std::vector<std::map<std::string, DataIndex> > maps;
+    std::vector<DataIndex> map_parents;
 
     std::vector<char> pods;
 
-    void addFloat(const Node& n, const std::string& label, double v)
+    void addFloat(const DataIndex& n, const std::string& label, double v)
     {
-        maps[n.idx][label] = Node(addPOD(v), FLOAT);
+        maps[n.idx][label] = DataIndex(addPOD(v), FLOAT);
     }
 
-    void addInt(const Node& n, const std::string& label, int v)
+    void addInt(const DataIndex& n, const std::string& label, int v)
     {
-        maps[n.idx][label] = Node(addPOD(v), INT);
+        maps[n.idx][label] = DataIndex(addPOD(v), INT);
     }
 
-    void addString(const Node& n, const std::string& label, const std::string& v)
+    void addString(const DataIndex& n, const std::string& label, const std::string& v)
     {
-        Node& m = maps[n.idx][label];
+        DataIndex& m = maps[n.idx][label];
         m.idx = pods.size();
+        m.type = STRING;
         pods.resize(m.idx + v.size() + 1);
         memcpy(&pods[m.idx], v.c_str(), v.size() + 1);
     }
 
-    const char* getString(const Node& n)
+    const char* getString(const DataIndex& n) const
     {
         return &pods[n.idx];
     }
 
-    unsigned int getParent(const Node& n)
+    double getFloat(const DataIndex& n) const
+    {
+        return pod<double>(n.idx);
+    }
+
+    int getInt(const DataIndex& n) const
+    {
+        return pod<int>(n.idx);
+    }
+
+    DataIndex addGroup(const DataIndex& n, const std::string& name)
+    {
+        std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::iterator it = current_map.find(name);
+
+        if (it != current_map.end())
+        {
+            // Group already exists
+            DataIndex& m = it->second;
+            if (m.type == MAP)
+                return m;
+        }
+
+        // Group does not yet exist
+        DataIndex& m = current_map[name];
+        m.idx = maps.size();
+        m.type = MAP;
+        maps.push_back(std::map<std::string, DataIndex>());
+        map_parents.push_back(n);
+        return m;
+    }
+
+    DataIndex addArray(const DataIndex& n, const std::string& name)
+    {
+        std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::iterator it = current_map.find(name);
+
+        if (it != current_map.end())
+        {
+            // Array already exists
+            DataIndex& m = it->second;
+            if (m.type == ARRAY)
+                return m;
+        }
+
+        // Array does not yet exist
+        DataIndex& m = current_map[name];
+        m.idx = arrays.size();
+        m.type = ARRAY;
+        arrays.push_back(std::vector<DataIndex>());
+        array_parents.push_back(n);
+        return m;
+    }
+
+    DataIndex addArrayItem(const DataIndex& n)
+    {
+        std::vector<DataIndex>& array = arrays[n.idx];
+
+        // Construct new map
+        DataIndex m(maps.size(), MAP);
+        maps.push_back(std::map<std::string, DataIndex>());
+        map_parents.push_back(n);
+
+        // Push index to the map in the array
+        array.push_back(m);
+
+        return m;
+    }
+
+    DataIndex getParent(const DataIndex& n)
     {
         if (n.type == MAP)
             return map_parents[n.idx];
@@ -77,7 +155,7 @@ struct Data
             return array_parents[n.idx];
     }
 
-    Node addGroup();
+    bool empty() const { return maps[0].empty(); }
 
 private:
 
@@ -85,6 +163,12 @@ private:
     T& pod(unsigned int i)
     {
         return *reinterpret_cast<T*>(&pods[i]);
+    }
+
+    template<typename T>
+    const T& pod(unsigned int i) const
+    {
+        return *reinterpret_cast<const T*>(&pods[i]);
     }
 
     template<typename T>

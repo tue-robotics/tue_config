@@ -91,14 +91,14 @@ set(HEADER_FILES2
 
 add_library(tue_config2
     src/config2/json.cpp
-    src/config2/data_writer.cpp
-    src/config2/writer.cpp
+    #src/config2/data_writer.cpp
+    #src/config2/writer.cpp
     src/config2/yaml.cpp
-    src/config2/json_writer.cpp
-    src/config2/reader.cpp
-    src/config2/data_reader.cpp
-    src/config2/error.cpp
-    src/config2/emitter.cpp
+    #src/config2/json_writer.cpp
+    #src/config2/reader.cpp
+    #src/config2/data_reader.cpp
+    #src/config2/error.cpp
+    #src/config2/emitter.cpp
     ${HEADER_FILES2}
 )
 
@@ -113,3 +113,6 @@ target_link_libraries(test_tue_config tue_config)
 
 add_executable(test_read_and_show test/test_read_and_show.cpp)
 target_link_libraries(test_read_and_show tue_config)
+
+add_executable(test_tue_config2 test/test2.cpp)
+target_link_libraries(test_tue_config2 tue_config2)
