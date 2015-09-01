@@ -24,7 +24,6 @@ int main(int argc, char **argv)
 
     w.writeGroup("test");
     w.writeInt("i2", 456);
-    w.endGroup();
 
     w.writeArray("array1");
     for(int x = 0; x < 3; ++x)
@@ -44,6 +43,9 @@ int main(int argc, char **argv)
         w.endArrayItem();
     }
     w.endArray();
+    w.endGroup();
+
+
 
     // - - - - - - - - - - - - - - - - - - - -
 
@@ -54,38 +56,48 @@ int main(int argc, char **argv)
     tue::config2::DataReader r(w.data());
     if (r.readGroup("test"))
     {
-        int i;
-        if (r.readInt("i1", i))
-            std::cout << "i1 = " << i << std::endl;
+        if (r.readArray("array1"))
+        {
+            while(r.nextArrayItem())
+            {
+                if (r.readArray("array2"))
+                {
+                    while(r.nextArrayItem())
+                    {
+                        double x, y;
+                        r.readFloat("x", x);
+
+                        if (x > 1.5)
+                            r.setErrorContext("BLAAAA");
+
+                        r.readFloat("q", y);
+                        std::cout << "x = " << x << ", y = " << y << std::endl;
+                    }
+                    r.endArray();
+                }
+            }
+
+            r.endArray();
+
+            int i;
+            if (r.readInt("i1", i))
+                std::cout << "i1 = " << i << std::endl;
+        }
+
         r.endGroup();
     }
 
     if (r.readGroup("test2"))
     {
         std::string i;
-        if (r.readString("s2", i))
+        if (r.readString("s", i))
             std::cout << "s2 = " << i << std::endl;
         r.endGroup();
     }
 
-    if (r.readArray("array1"))
+    if (r.hasError())
     {
-        while(r.nextArrayItem())
-        {
-            if (r.readArray("array2"))
-            {
-                while(r.nextArrayItem())
-                {
-                    double x, y;
-                    r.readFloat("x", x);
-                    r.readFloat("y", y);
-                    std::cout << "x = " << x << ", y = " << y << std::endl;
-                }
-                r.endArray();
-            }
-        }
-
-        r.endArray();
+        std::cout << r.error() << std::endl;
     }
 
     // - - - - - - - - - - - - - - - - - - - -
