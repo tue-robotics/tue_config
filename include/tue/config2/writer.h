@@ -17,21 +17,25 @@ public:
 
     virtual ~Writer() {}
 
-    virtual void writeBool(const std::string& key, bool v);
+    virtual void writeBool(const std::string& key, bool v) {}
 
-    virtual void writeInt(const std::string& key, int v);
+    virtual void writeInt(const std::string& key, int v) {}
 
-    virtual void writeFloat(const std::string& key, double v);
+    virtual void writeFloat(const std::string& key, double v) {}
 
-    virtual void writeString(const std::string& key, const std::string& v);
+    virtual void writeString(const std::string& key, const std::string& v) {}
 
-    virtual void writeGroup(const std::string& name);
+    virtual void writeGroup(const std::string& name) {}
 
-    virtual void endGroup();
+    virtual void endGroup() {}
 
-    virtual void writeArray(const std::string& name);
+    virtual void writeArray(const std::string& name) {}
 
-    virtual void endArray();
+    virtual void endArray() {}
+
+    virtual void writeArrayItem() {}
+
+    virtual void endArrayItem() {}
 
 private:
 

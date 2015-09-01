@@ -17,19 +17,19 @@ public:
 
     virtual ~Reader() {}
 
-    virtual bool readInt(const std::string& key, int& v);
+    virtual bool readInt(const std::string& key, int& v) {}
 
-    virtual bool readFloat(const std::string& key, double& v);
+    virtual bool readFloat(const std::string& key, double& v) {}
 
-    virtual bool readString(const std::string& key, std::string& v);
+    virtual bool readString(const std::string& key, std::string& v) {}
 
-    virtual bool readGroup(const std::string& name);
+    virtual bool readGroup(const std::string& name) {}
 
-    virtual bool endGroup();
+    virtual bool endGroup() {}
 
-    virtual bool readArray(const std::string& name);
+    virtual bool readArray(const std::string& name) {}
 
-    virtual bool endArray();
+    virtual bool endArray() {}
 
 private:
 

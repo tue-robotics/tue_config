@@ -1,4 +1,5 @@
 #include <tue/config2/data_writer.h>
+#include <tue/config2/data_reader.h>
 #include <tue/config2/json.h>
 
 int main(int argc, char **argv)
@@ -46,7 +47,55 @@ int main(int argc, char **argv)
 
     // - - - - - - - - - - - - - - - - - - - -
 
-    tue::config2::json::write(w.data(), std::cout, 8);
+    tue::config2::json::write(w.data(), std::cout, 4);
+
+    // - - - - - - - - - - - - - - - - - - - -
+
+    tue::config2::DataReader r(w.data());
+    if (r.readGroup("test"))
+    {
+        int i;
+        if (r.readInt("i1", i))
+            std::cout << "i1 = " << i << std::endl;
+        r.endGroup();
+    }
+
+    if (r.readGroup("test2"))
+    {
+        std::string i;
+        if (r.readString("s2", i))
+            std::cout << "s2 = " << i << std::endl;
+        r.endGroup();
+    }
+
+    if (r.readArray("array1"))
+    {
+        while(r.nextArrayItem())
+        {
+            if (r.readArray("array2"))
+            {
+                while(r.nextArrayItem())
+                {
+                    double x, y;
+                    r.readFloat("x", x);
+                    r.readFloat("y", y);
+                    std::cout << "x = " << x << ", y = " << y << std::endl;
+                }
+                r.endArray();
+            }
+        }
+
+        r.endArray();
+    }
+
+    // - - - - - - - - - - - - - - - - - - - -
+
+    if (argc > 1)
+    {
+        tue::config2::Data data;
+        tue::config2::json::readFromFile(argv[1], data);
+        tue::config2::json::write(data, std::cout, 4);
+    }
 
     return 0;
 }

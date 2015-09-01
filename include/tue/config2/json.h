@@ -17,9 +17,11 @@ bool write(const Data& data, const std::string& filename, int tab_size = 0);
 
 bool write(const Data& data, std::ostream& out, int tab_size = 0);
 
-bool read(const std::string& filename, Data& data);
+bool readFromString(const char* s, Data& data);
 
-bool read(std::istream& in, Data& data);
+bool readFromFile(const std::string& filename, Data& data);
+
+//bool readFromStream(std::istream& in, Data& data);
 
 }
 

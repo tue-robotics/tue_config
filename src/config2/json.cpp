@@ -1,6 +1,11 @@
 #include "tue/config2/json.h"
-
 #include "tue/config2/data.h"
+
+// For parsing
+#include "tue/config2/writer.h"
+#include "tue/config2/data_writer.h"
+#include <rapidjson/reader.h>
+#include <rapidjson/filereadstream.h>
 
 namespace tue
 {
@@ -125,19 +130,141 @@ bool write(const Data& data, std::ostream& out, int tab_size)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool read(const std::string& filename, Data& data)
+struct MyHandler {
+
+    MyHandler(Writer& w_) : w(w_)
+    {
+    }
+
+    bool Null() { return true; }
+
+    bool Bool(bool b) { w.writeBool(key, b); return true; }
+
+    bool Int(int i) { w.writeInt(key, i); return true; }
+
+    bool Uint(unsigned u) { w.writeInt(key, (int)u); return true; }
+
+    bool Int64(int64_t i) { w.writeInt(key, (int)i); return true; }
+
+    bool Uint64(uint64_t u) { w.writeInt(key, (int)u); return true; }
+
+    bool Double(double d) { w.writeFloat(key, d); return true; }
+
+    bool String(const char* str, rapidjson::SizeType length, bool copy)
+    {
+        w.writeString(key, str);
+        return true;
+    }
+
+    bool StartObject()
+    {
+        if (stack.empty())
+        {
+            stack.push_back('g');
+            return true;
+        }
+
+        if (stack.back() == 'a')
+        {
+            stack.push_back('i');
+            w.writeArrayItem();
+        }
+        else
+        {
+            stack.push_back('g');
+            w.writeGroup(key);
+        }
+
+        return true;
+    }
+
+    bool Key(const char* str, rapidjson::SizeType length, bool copy) { key = str; return true; }
+
+    bool EndObject(rapidjson::SizeType memberCount)
+    {
+        if (stack.empty())
+            return true;
+
+        if (stack.back() == 'i')
+            w.endArrayItem();
+        else
+            w.endGroup();
+
+        stack.pop_back();
+        return true;
+    }
+
+    bool StartArray()
+    {
+        w.writeArray(key);
+        stack.push_back('a');
+        return true;
+    }
+
+    bool EndArray(rapidjson::SizeType elementCount)
+    {
+        w.endArray();
+        stack.pop_back();
+        return true;
+    }
+
+    Writer& w;
+    std::string key;
+    std::vector<unsigned char> stack;
+
+};
+
+// ----------------------------------------------------------------------------------------------------
+
+bool readFromString(const char* s, Data& data)
 {
-    return false;
+    DataWriter w(data);
+    MyHandler handler(w);
+    rapidjson::StringStream is(s);
+
+    rapidjson::Reader reader;
+    reader.Parse(is, handler);
+
+    if (reader.HasParseError())
+    {
+//        error_ = "Could not parse string";
+        return false;
+    }
+
+    return true;
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool read(std::istream& in, Data& data)
+bool readFromFile(const std::string& filename, Data& data)
 {
-    return false;
+    FILE* pFile = fopen(filename.c_str(), "rb");
+    char buffer[65536];
+    rapidjson::FileReadStream is(pFile, buffer, sizeof(buffer));
+
+    DataWriter w(data);
+    MyHandler handler(w);
+
+    rapidjson::Reader reader;
+    reader.Parse(is, handler);
+
+    if (reader.HasParseError())
+    {
+//        error_ = "Could not parse string";
+        return false;
+    }
+
+    return true;
 }
 
-}
+// ----------------------------------------------------------------------------------------------------
+
+//bool readFromStream(std::istream& in, Data& data)
+//{
+//    return false;
+//}
+
+} // end namespace json
 
 } // end namespace tue
 

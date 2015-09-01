@@ -78,14 +78,73 @@ struct Data
         return &pods[n.idx];
     }
 
+    bool getString(const DataIndex &n, const std::string& key, std::string& v) const
+    {
+        const std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::const_iterator it = current_map.find(key);
+        if (it == current_map.end())
+            return false;
+
+        const DataIndex& m = it->second;
+        if (m.type != STRING)
+            return false;
+
+        v = getString(m);
+        return true;
+    }
+
     double getFloat(const DataIndex& n) const
     {
         return pod<double>(n.idx);
     }
 
+    bool getFloat(const DataIndex &n, const std::string& key, double& v) const
+    {
+        const std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::const_iterator it = current_map.find(key);
+        if (it == current_map.end())
+            return false;
+
+        const DataIndex& m = it->second;
+        if (m.type == FLOAT)
+            v = pod<double>(m.idx);
+        else if (m.type == INT)
+            v = pod<int>(m.idx);
+        else
+            return false;
+
+        return true;
+    }
+
     int getInt(const DataIndex& n) const
     {
         return pod<int>(n.idx);
+    }
+
+    bool getInt(const DataIndex &n, const std::string& key, int& v) const
+    {
+        const std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::const_iterator it = current_map.find(key);
+        if (it == current_map.end())
+            return false;
+
+        const DataIndex& m = it->second;
+        if (m.type != INT)
+            return false;
+
+        v = pod<int>(m.idx);
+        return true;
+    }
+
+    DataIndex readGroup(const DataIndex& n, const std::string& name) const
+    {
+        const std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::const_iterator it = current_map.find(name);
+
+        if (it == current_map.end() || it->second.type != MAP)
+            return DataIndex(0, INVALID);
+
+        return it->second;
     }
 
     DataIndex addGroup(const DataIndex& n, const std::string& name)
@@ -108,6 +167,17 @@ struct Data
         maps.push_back(std::map<std::string, DataIndex>());
         map_parents.push_back(n);
         return m;
+    }
+
+    DataIndex readArray(const DataIndex& n, const std::string& name) const
+    {
+        const std::map<std::string, DataIndex>& current_map = maps[n.idx];
+        std::map<std::string, DataIndex>::const_iterator it = current_map.find(name);
+
+        if (it == current_map.end() || it->second.type != ARRAY)
+            return DataIndex(0, INVALID);
+
+        return it->second;
     }
 
     DataIndex addArray(const DataIndex& n, const std::string& name)
@@ -147,7 +217,7 @@ struct Data
         return m;
     }
 
-    DataIndex getParent(const DataIndex& n)
+    DataIndex getParent(const DataIndex& n) const
     {
         if (n.type == MAP)
             return map_parents[n.idx];
