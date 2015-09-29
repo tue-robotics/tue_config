@@ -42,24 +42,17 @@ struct EmitterImpl
             out << delimiter;
 
             const DataIndex& n = it->second;
-            if (n.type == FLOAT)
+            switch (n.type)
             {
-                out << data.getFloat(n);
-            }
-            else if (n.type == INT)
-            {
-                out << data.getInt(n);
-            }
-            else if (n.type == STRING)
-            {
-                out << "\"" << data.getString(n) << "\"";
-            }
-            else if (n.type == MAP)
-            {
-                emitJSON(data, data.maps[n.idx], new_indent, out);
-            }
-            else if (n.type == ARRAY)
-            {
+            case FLOAT:
+                out << data.getFloat(n); break;
+            case INT:
+                out << data.getInt(n); break;
+            case STRING:
+                out << "\"" << data.getString(n) << "\""; break;
+            case MAP:
+                emitJSON(data, data.maps[n.idx], new_indent, out); break;
+            case ARRAY:
                 out << "[" << newline;
                 const std::vector<DataIndex>& array = data.arrays[n.idx];
                 for(std::vector<DataIndex>::const_iterator it2 = array.begin(); it2 != array.end(); ++it2)
@@ -71,6 +64,7 @@ struct EmitterImpl
                     emitJSON(data, data.maps[it2->idx], new_indent + tab, out);
                 }
                 out << newline << new_indent << "]";
+                break;
             }
         }
 
@@ -87,14 +81,14 @@ struct EmitterImpl
 
 // ----------------------------------------------------------------------------------------------------
 
-bool write(const Data& data, const std::string& filename, int tab_size)
+bool writeToFile(const Data& data, const std::string& filename, int tab_size)
 {
 
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool write(const Data& data, std::ostream& out, int tab_size)
+bool writeToStream(const Data& data, std::ostream& out, int tab_size)
 {
     if (data.maps.empty())
         return false;

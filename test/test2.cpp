@@ -49,7 +49,7 @@ int main(int argc, char **argv)
 
     // - - - - - - - - - - - - - - - - - - - -
 
-    tue::config2::json::write(w.data(), std::cout, 4);
+    tue::config2::json::writeToStream(w.data(), std::cout, 4);
 
     // - - - - - - - - - - - - - - - - - - - -
 
@@ -106,7 +106,7 @@ int main(int argc, char **argv)
     {
         tue::config2::Data data;
         tue::config2::json::readFromFile(argv[1], data);
-        tue::config2::json::write(data, std::cout, 4);
+        tue::config2::json::writeToStream(data, std::cout, 4);
     }
 
     return 0;

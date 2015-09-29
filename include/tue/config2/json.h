@@ -13,9 +13,9 @@ struct Data;
 namespace json
 {
 
-bool write(const Data& data, const std::string& filename, int tab_size = 0);
+bool writeToFile(const Data& data, const std::string& filename, int tab_size = 0);
 
-bool write(const Data& data, std::ostream& out, int tab_size = 0);
+bool writeToStream(const Data& data, std::ostream& out, int tab_size = 0);
 
 bool readFromString(const char* s, Data& data);
 
