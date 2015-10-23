@@ -2,7 +2,8 @@
 #define TUE_CONFIG_READ_H_
 
 #include "tue/config/data_pointer.h"
-#include "tue/config/error.h"
+
+#include <string>
 
 namespace tue
 {
