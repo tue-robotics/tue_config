@@ -52,6 +52,8 @@ set(HEADER_FILES
     include/tue/config/configuration.h
     include/tue/config/loaders/yaml.h
     include/tue/config/data_pointer.h
+    include/tue/config/read.h
+    include/tue/config/write.h
 )
 
 add_library(tue_config
@@ -68,6 +70,8 @@ add_library(tue_config
     src/loaders/yaml.cpp
     src/loaders/resolve_functions.cpp
     src/data_pointer.cpp
+    src/read.cpp
+    src/write.cpp
     ${HEADER_FILES}
 )
 target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES})

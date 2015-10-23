@@ -9,6 +9,8 @@
 
 #include <tue/config/reader_writer.h>
 
+#include <tue/config/write.h>
+
 #include <iostream>
 #include <sstream>
 
@@ -33,7 +35,9 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    std::cout << config.data() << std::endl;
+//    std::cout << config.data() << std::endl;
+
+    tue::config::toStream(std::cout, config.data(), tue::config::YAML, 2);
 
     return 0;
 }

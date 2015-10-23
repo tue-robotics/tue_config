@@ -134,6 +134,10 @@ public:
         return true;
     }
 
+    bool isString() const { return type_ == 's'; }
+    bool isInt() const { return type_ == 'i'; }
+    bool isDouble() const { return type_ == 'i' || type_ == 'd'; }
+
     bool inline valid() const { return type_ != '?'; }
 
 private:
