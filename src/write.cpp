@@ -5,6 +5,7 @@
 #include "tue/config/map.h"
 #include "tue/config/sequence.h"
 
+#include <fstream>
 
 namespace tue
 {
@@ -194,14 +195,20 @@ void toStream(std::ostream& s, const DataConstPointer& data, WriteType write_typ
 
 bool toFile(const std::string& filename, const DataConstPointer& data, WriteType write_type, int indent_size)
 {
-
+    return toFile(filename.c_str(), data, write_type, indent_size);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
 bool toFile(const char* filename, const DataConstPointer& data, WriteType write_type, int indent_size)
 {
+    std::ofstream out;
+    out.open(filename);
+    if (!out.is_open())
+        return false;
 
+    toStream(out, data, write_type, indent_size);
+    return true;
 }
 
 // ----------------------------------------------------------------------------------------------------

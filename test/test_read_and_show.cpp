@@ -10,6 +10,7 @@
 #include <tue/config/reader_writer.h>
 
 #include <tue/config/write.h>
+#include <tue/config/read.h>
 
 #include <iostream>
 #include <sstream>
@@ -26,18 +27,19 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    std::string yaml_filename = argv[1];
-    config.loadFromYAMLFile(yaml_filename);
+    std::string filename = argv[1];
+    tue::config::DataPointer data;
 
-    if (config.hasError())
+    try
     {
-        std::cout << config.error() << std::endl;
-        return 1;
+        data = tue::config::fromFile(filename);
     }
-
-//    std::cout << config.data() << std::endl;
-
-    tue::config::toStream(std::cout, config.data(), tue::config::YAML, 2);
+    catch (tue::config::ParseException& e)
+    {
+        std::cout << "Error: " << e.what() << std::endl;
+        return 0;
+    }
+    tue::config::toStream(std::cout, data, tue::config::YAML, 2);
 
     return 0;
 }
