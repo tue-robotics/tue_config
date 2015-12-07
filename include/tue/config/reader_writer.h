@@ -128,6 +128,11 @@ public:
 
     inline void setErrorContext(const std::string& context) { error_context_.reset(new std::string(context)); }
 
+    inline void setShortErrorContext(const std::string& context)
+    {
+        cfg_->nodes[idx_]->setName(context);
+    }
+
 private:
 
     NodeIdx idx_;

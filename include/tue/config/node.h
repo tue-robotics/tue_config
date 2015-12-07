@@ -60,6 +60,8 @@ public:
 
     inline const NodeType& type() const { return type_; }
 
+    void setName(const std::string& name) { name_ = name; }
+
 
     // --- COPY
 
