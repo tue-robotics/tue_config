@@ -2,10 +2,9 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tue_config)
 
 find_package(catkin REQUIRED COMPONENTS
-    tue_filesystem
+  tue_filesystem
+  roslib
 )
-
-find_package(roslib)
 
 catkin_python_setup()
 
