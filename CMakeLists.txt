@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(tue_config)
 
+find_package(yaml-cpp REQUIRED)
+
 find_package(catkin REQUIRED COMPONENTS
   tue_filesystem
   roslib
@@ -16,7 +18,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tue_config
   CATKIN_DEPENDS tue_filesystem
-  DEPENDS YamlCpp
+  # DEPENDS
 )
 
 # ------------------------------------------------------------------------------------------------
@@ -25,6 +27,7 @@ catkin_package(
 
 include_directories(
   include
+  ${YAML_CPP_INCLUDE_DIR}
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -73,7 +76,7 @@ add_library(tue_config
   src/write.cpp
   ${HEADER_FILES}
 )
-target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES})
+target_link_libraries(tue_config ${catkin_LIBRARIES} ${YAML_CPP_LIBRARIES})
 
 add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
