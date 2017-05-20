@@ -16,7 +16,6 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tue_config
   CATKIN_DEPENDS tue_filesystem
-  DEPENDS YamlCpp
 )
 
 # ------------------------------------------------------------------------------------------------
@@ -27,11 +26,6 @@ include_directories(
   include
   ${catkin_INCLUDE_DIRS}
 )
-
-# Check for old YAML-CPP version
-if(EXISTS "/usr/include/yaml-cpp/node.h")
-  add_definitions(-DYAML_VERSION_0_3)
-endif()
 
 set(HEADER_FILES
   include/tue/config/types.h
