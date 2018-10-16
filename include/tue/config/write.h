@@ -11,6 +11,7 @@ namespace config
 
 enum WriteType
 {
+    XML,
     YAML,
     JSON
 };

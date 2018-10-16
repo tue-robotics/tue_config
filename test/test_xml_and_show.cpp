@@ -34,6 +34,7 @@ int main(int argc, char **argv)
     }
 
     tue::config::DataPointer data = config.data();
+    std::cout << "\nResult: " << std::endl;
     tue::config::toStream(std::cout, data, tue::config::YAML, 2);
 
     return 0;

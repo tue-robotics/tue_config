@@ -89,8 +89,18 @@ public:
 
     // ---- WRITING -----------------------------------------------------------------------
 
+    /**
+     * @brief writeGroup
+     * @param name
+     * @return
+     */
     bool writeGroup(const std::string& name);
 
+    /**
+     * @brief writeArray
+     * @param name
+     * @return
+     */
     bool writeArray(const std::string& name);
 
     template<typename T>

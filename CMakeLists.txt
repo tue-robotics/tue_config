@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 2.8.3)
 project(tue_config)
 
 find_package(catkin REQUIRED COMPONENTS
+  cmake_modules
   tue_filesystem
   roslib
 )
+
+find_package(TinyXML REQUIRED)
 
 catkin_python_setup()
 
@@ -16,6 +19,7 @@ catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tue_config
   CATKIN_DEPENDS tue_filesystem
+  DEPENDS TinyXML
 )
 
 # ------------------------------------------------------------------------------------------------
@@ -69,7 +73,7 @@ add_library(tue_config
   src/write.cpp
   ${HEADER_FILES}
 )
-target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES})
+target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES} ${TinyXML_LIBRARIES})
 
 add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
