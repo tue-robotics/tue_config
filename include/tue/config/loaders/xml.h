@@ -1,6 +1,9 @@
 #ifndef TUE_CONFIG_LOADERS_XML_H_
 #define TUE_CONFIG_LOADERS_XML_H_
 
+#include <istream>
+#include <string>
+
 namespace tue
 {
 

@@ -76,3 +76,6 @@ target_link_libraries(test_tue_config tue_config)
 
 add_executable(test_read_and_show test/test_read_and_show.cpp)
 target_link_libraries(test_read_and_show tue_config)
+
+add_executable(test_xml_and_show test/test_xml_and_show.cpp)
+target_link_libraries(test_xml_and_show tue_config)

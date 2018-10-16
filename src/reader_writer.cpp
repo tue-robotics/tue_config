@@ -8,6 +8,9 @@
 
 #include <boost/make_shared.hpp>
 
+// XML
+#include "tue/config/loaders/xml.h"
+
 // YAML
 #include "tue/config/yaml_emitter.h"
 #include "tue/config/loaders/yaml.h"
@@ -224,6 +227,25 @@ std::string ReaderWriter::toYAMLString() const
     std::stringstream s;
     emitter.emit(DataConstPointer(cfg_, idx_), s);
     return s.str();
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::loadFromXMLFile(const std::string& filename)
+{
+    // Remove possible previous errors
+    error_->message.clear();
+
+    // Reset head
+    idx_ = scope_;
+
+    if (!config::loadFromXMLFile(filename, *this))
+        return false;
+
+    filename_ = filename;
+    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+
+    return true;
 }
 
 // ----------------------------------------------------------------------------------------------------

@@ -118,6 +118,18 @@ public:
 
     const std::string& error() const { return error_->message; }
 
+    /**
+     * @brief loadFromXMLFile loads a xml file into a ReaderWriter class
+     * @param filename input file
+     * @return indicates success
+     */
+    bool loadFromXMLFile(const std::string& filename);
+
+    /**
+     * @brief YAML loads a xml file into a ReaderWriter class
+     * @param filename input file
+     * @return indicates success
+     */
     bool loadFromYAMLFile(const std::string& filename);
 
     bool sync();
