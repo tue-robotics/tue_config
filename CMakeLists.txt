@@ -43,6 +43,7 @@ set(HEADER_FILES
   include/tue/config/binary_reader.h
   include/tue/config/reader_writer.h
   include/tue/config/configuration.h
+  include/tue/config/loaders/xml.h
   include/tue/config/loaders/yaml.h
   include/tue/config/data_pointer.h
   include/tue/config/read.h
@@ -60,6 +61,7 @@ add_library(tue_config
   src/binary_writer.cpp
   src/binary_reader.cpp
   src/reader_writer.cpp
+  src/loaders/xml.cpp
   src/loaders/yaml.cpp
   src/loaders/resolve_functions.cpp
   src/data_pointer.cpp
