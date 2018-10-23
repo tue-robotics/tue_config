@@ -140,7 +140,7 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
 
   // Get the root
   // ToDo: only sdf?
-  TiXmlElement* root = doc.FirstChildElement("sdf");
+  TiXmlElement* root = doc.FirstChildElement();
 
 //  std::string key("model");
   return loadFromXMLElement(*root, config);
