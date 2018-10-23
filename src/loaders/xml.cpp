@@ -65,9 +65,22 @@ bool loadFromXMLElement(TiXmlElement& element, ReaderWriter& config)
 //    name = element.Value();
 //    config.writeArray(name);
 
-    // Recurse through models
+    // Start a new array with the Value of the current element as key
     std::string element_name = element.Value();
     config.writeArray(element_name);
+
+    // Iterate through attributes
+//    for (const tinyxml2::XMLAttribute* attr = element->FirstAttribute(); attr!=0; attr = attr->Next())
+//    {
+//    }
+    for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != NULL; attribute = attribute->Next())
+//    for (auto attribute = element->FirstAttribute(); attribute != NULL; attribute = attribute->Next())
+    {
+        config.addArrayItem();
+        config.setValue(attribute->Name(), attribute->Value());
+    }
+
+    // Recurse through models
     for(TiXmlElement* e = element.FirstChildElement(); e != NULL; e = e->NextSiblingElement())
     {
       std::string candidate_name = e->Value();
@@ -128,6 +141,7 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
   // Get the root
   // ToDo: only sdf?
   TiXmlElement* root = doc.FirstChildElement("sdf");
+
 //  std::string key("model");
   return loadFromXMLElement(*root, config);
 
