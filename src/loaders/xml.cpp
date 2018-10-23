@@ -16,10 +16,7 @@ namespace config
 
 bool loadFromXMLStream(std::istream& stream, ReaderWriter& config)
 {
-//  char bla[10];
-//  stream.read(bla, 9);
-//  std::cout << "Trying to parse " << bla << std::endl;
-//  TiXmlDocument doc()
+  throw tue::config::ParseException("loadFromXMLStream is not yet implemented");
   return false;
 }
 
@@ -27,6 +24,7 @@ bool loadFromXMLStream(std::istream& stream, ReaderWriter& config)
 
 bool loadFromXMLString(const std::string& string, ReaderWriter& config)
 {
+  throw tue::config::ParseException("loadFromXMLString is not yet implemented");
   return false;
 }
 
@@ -34,8 +32,6 @@ bool loadFromXMLString(const std::string& string, ReaderWriter& config)
 
 bool loadFromXMLText(TiXmlElement& element, ReaderWriter& config)
 {
-//  std::string key, value;
-//  element.
   std::string key(element.Value());
   if (element.GetText() == NULL)
   {
@@ -61,21 +57,13 @@ bool loadFromXMLElement(TiXmlElement& element, ReaderWriter& config)
   {
     std::cout << "Parsing element " << std::endl;
 
-//    std::string name = element.Attribute("name");
-//    std::string name;
-//    name = element.Value();
-//    config.writeArray(name);
-
     // Start a new array with the Value of the current element as key
     std::string element_name = element.Value();
     config.writeArray(element_name);
 
     // Iterate through attributes
-//    for (const tinyxml2::XMLAttribute* attr = element->FirstAttribute(); attr!=0; attr = attr->Next())
-//    {
-//    }
+    // ToDo: this does not work if this element does not contain children (we don't end up here)
     for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != NULL; attribute = attribute->Next())
-//    for (auto attribute = element->FirstAttribute(); attribute != NULL; attribute = attribute->Next())
     {
         config.addArrayItem();
         config.setValue(attribute->Name(), attribute->Value());
@@ -85,14 +73,8 @@ bool loadFromXMLElement(TiXmlElement& element, ReaderWriter& config)
     for(TiXmlElement* e = element.FirstChildElement(); e != NULL; e = e->NextSiblingElement())
     {
       std::string candidate_name = e->Value();
-//      std::cout << "Name: " << candidate_name << std::endl;
       config.addArrayItem();
 
-//      if (e->FirstAttribute("name") != NULL)
-//      {
-//        name = e->Attribute("name");
-//        std::cout << "Parsing " << name << std::endl;
-//        config.writeGroup(name);
       if (!loadFromXMLElement(*e, config))
       {
         std::stringstream error_msg;
@@ -102,7 +84,6 @@ bool loadFromXMLElement(TiXmlElement& element, ReaderWriter& config)
         return false;
       }
       config.endArrayItem();
-//      config.endGroup();
     }
     config.endArray();
   }
