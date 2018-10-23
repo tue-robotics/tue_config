@@ -66,12 +66,12 @@ bool loadFromXMLElement(TiXmlElement& element, ReaderWriter& config)
 //    config.writeArray(name);
 
     // Recurse through models
-    std::string element_name;
-    config.writeArray(std::string("bla"));
+    std::string element_name = element.Value();
+    config.writeArray(element_name);
     for(TiXmlElement* e = element.FirstChildElement(); e != NULL; e = e->NextSiblingElement())
     {
       std::string candidate_name = e->Value();
-      std::cout << "Name: " << candidate_name << std::endl;
+//      std::cout << "Name: " << candidate_name << std::endl;
       config.addArrayItem();
 
 //      if (e->FirstAttribute("name") != NULL)
