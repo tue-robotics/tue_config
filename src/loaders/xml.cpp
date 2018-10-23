@@ -4,6 +4,7 @@
 
 #include "tue/config/configuration.h"
 #include "tue/config/loaders/xml.h"
+#include "tue/config/read.h"
 
 namespace tue
 {
@@ -141,6 +142,11 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
   // Get the root
   // ToDo: only sdf?
   TiXmlElement* root = doc.FirstChildElement();
+
+  if (root->NextSibling() != NULL)
+  {
+    throw tue::config::ParseException("A valid XML file should only contain one root element");
+  }
 
 //  std::string key("model");
   return loadFromXMLElement(*root, config);
