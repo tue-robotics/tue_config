@@ -67,6 +67,7 @@ bool loadFromXMLElement(TiXmlElement& element, ReaderWriter& config)
     {
         config.addArrayItem();
         config.setValue(attribute->Name(), attribute->Value());
+        config.endArrayItem();
     }
 
     // Recurse through models
