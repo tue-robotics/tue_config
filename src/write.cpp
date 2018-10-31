@@ -173,7 +173,11 @@ void toStream(std::ostream& s, const DataConstPointer& data, WriteType write_typ
 
     WriterImpl writer(s, *data.data);
 
-    if (write_type == YAML)
+    if (write_type == XML)
+    {
+        std::cout << "Writing XML is not yet implemented" << std::endl;
+    }
+    else if (write_type == YAML)
     {
         writer.delimiter = ":";
         writer.setIndentSize(std::max<int>(indent_size, 2));
