@@ -1,6 +1,7 @@
 #ifndef TUE_CONFIG2_NODE_H_
 #define TUE_CONFIG2_NODE_H_
 
+#include "tue/config/node_type.h"
 #include "tue/config/types.h"
 #include "tue/config/variant.h"
 #include "tue/config/label.h"
@@ -14,12 +15,6 @@ namespace tue
 
 namespace config
 {
-
-enum NodeType
-{
-    MAP,
-    ARRAY
-};
 
 class Node
 {

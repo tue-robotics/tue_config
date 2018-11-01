@@ -36,6 +36,7 @@ public:
         return true;
     }
 
+    // addGroup never return false, therefore overwriting is possible.
     bool addGroup(const Label& label, const NodeIdx& n, NodeIdx& idx)
     {
         map_[label] = n;

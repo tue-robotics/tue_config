@@ -162,7 +162,7 @@ bool ReaderWriter::writeGroup(const std::string& name)
 
     NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
         return false;
 
     return true;
@@ -179,7 +179,7 @@ bool ReaderWriter::writeArray(const std::string& name)
 
     NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
         return false;
 
     return true;
@@ -286,7 +286,13 @@ bool ReaderWriter::sync() {
 
         if (last_write_time > source_last_write_time_)
         {
-            loadFromYAMLFile(filename_);
+            std::string extension = tue::filesystem::Path(filename_).extension();
+            if ( extension == ".sdf" || extension == ".xml")
+                loadFromXMLFile(filename_);
+            else if (extension == ".yml" || extension == ".yaml")
+                loadFromYAMLFile(filename_);
+            else
+                std::cout << "[ReaderWriter::Sync] extension: '" << extension << "'  is not supported." << std::endl;
             source_last_write_time_ = last_write_time;
             return true;
         }

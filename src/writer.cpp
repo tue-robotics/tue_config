@@ -49,7 +49,7 @@ bool Writer::writeGroup(const std::string& name)
 
     NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
         return false;
 
     return true;
@@ -69,7 +69,7 @@ bool Writer::writeArray(const std::string& name)
 
     NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
         return false;
 
     return true;
