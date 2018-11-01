@@ -21,8 +21,6 @@ catkin_python_setup()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tue_config
-  CATKIN_DEPENDS tue_filesystem
-  DEPENDS TinyXML
 )
 
 # ------------------------------------------------------------------------------------------------
