@@ -257,20 +257,20 @@ int main(int argc, char **argv)
         if (reader.value("x", x) && reader.value("y", y) && reader.value("z", z))
             std::cout << "x = " << x << ", y = " << y << ", z = " << z << std::endl;
 
-        reader.read("foo");
+        reader.read("foo", tue::config::MAP);
 
         int bla;
         reader.value("bla", bla);
         std::cout << "bla = " << bla << std::endl;
 
-        reader.read("array");
+        reader.read("array", tue::config::ARRAY);
         while(reader.next())
         {
             int x;
             if (reader.value("x", x))
                 std::cout << " - x = " << x << std::endl;
 
-            if (reader.read("array2"))
+            if (reader.read("array2", tue::config::ARRAY))
             {
                 while(reader.next())
                 {

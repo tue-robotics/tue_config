@@ -10,7 +10,7 @@ namespace tue
 namespace config
 {
 
-enum RequiredOrOoptional
+enum RequiredOrOptional
 {
     REQUIRED,
     OPTIONAL
