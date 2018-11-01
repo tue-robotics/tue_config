@@ -72,8 +72,8 @@ public:
 
 //    bool add(const ReaderWriter& rw);
 
-    bool readArray(const std::string& name, RequiredOrOptional opt = OPTIONAL) { std::cout << "readArray" << std::endl; return read(name, ARRAY, opt); }
-    bool readGroup(const std::string& name, RequiredOrOptional opt = OPTIONAL) { std::cout << "readGroup" << std::endl; return read(name, MAP, opt); }
+    bool readArray(const std::string& name, RequiredOrOptional opt = OPTIONAL) { return read(name, ARRAY, opt); }
+    bool readGroup(const std::string& name, RequiredOrOptional opt = OPTIONAL) { return read(name, MAP, opt); }
     bool endArray() { return end(); }
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
