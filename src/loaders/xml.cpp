@@ -36,6 +36,24 @@ bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
         return true;
     }
     std::string value(element.GetText());
+
+    // parsing to int/double
+    char* pEnd;
+
+    int i = std::strtol(value.c_str(), &pEnd, 10);
+    if (pEnd[0] == 0)
+    {
+        config.setValue(key, i);
+        return true;
+    }
+
+    double d = std::strtod(value.c_str(), &pEnd);
+    if (pEnd[0] == 0)
+    {
+        config.setValue(key, d);
+        return true;
+    }
+
     config.setValue(key, value);
     return true;
 }
@@ -72,12 +90,26 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::
         // Iterate through attributes
         // ToDo: this does not work if this element does not contain children (we don't end up here)
         for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
-            config.setValue(attribute->Name(), attribute->Value());
+        {
+            double d;
+            if (attribute->QueryDoubleValue(&d) == TIXML_SUCCESS)
+            {
+                config.setValue(attribute->NameTStr(), d);
+                continue;
+            }
+            int i;
+            if (attribute->QueryIntValue(&i) == TIXML_SUCCESS)
+            {
+                config.setValue(attribute->NameTStr(), i);
+                continue;
+            }
+            config.setValue(attribute->NameTStr(), attribute->ValueStr());
+        }
 
         // Iterate through elements
         for(const TiXmlElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
-            std::string candidate_name = e->Value();
+            std::string candidate_name = e->ValueStr();
             tue::config::NodeType candidate_node_type = getNodeType(array_elements, candidate_name);
             // Because potentially childs of same type could be read, interupted by an other type. Hence opening and closing of the array is need for each child.
             // First try to read the array. If not yet created, write a new one. (writing never fails at the moment)
@@ -94,7 +126,7 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::
             if (!loadFromXMLElement(*e, config, candidate_node_type))
             {
                 std::stringstream error;
-                error << "Error parsing " << e->Value();
+                error << "Error parsing " << candidate_name;
                 config.addError(error.str());
                 std::cout << error.str() << std::endl;
                 return false;
