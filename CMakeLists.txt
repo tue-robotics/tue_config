@@ -42,7 +42,6 @@ set(HEADER_FILES
   include/tue/config/node.h
   include/tue/config/node_type.h
   include/tue/config/map.h
-  include/tue/config/value.h
   include/tue/config/data.h
   include/tue/config/label.h
   include/tue/config/binary_writer.h
