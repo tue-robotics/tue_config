@@ -133,8 +133,17 @@ bool loadFromXMLDocument(const TiXmlDocument& doc, ReaderWriter& config)
 
 bool loadFromXMLStream(std::istream& stream, ReaderWriter& config)
 {
-    throw tue::config::ParseException("loadFromXMLStream is not yet implemented");
-    return false;
+    TiXmlDocument doc;
+    stream >> doc;
+    if (doc.Error())
+    {
+        std::stringstream error;
+        error << "Error loading stream:" << std::endl << stream.rdbuf() << std::endl;
+        error << doc.ErrorDesc() << " at row " << doc.ErrorRow() << ", col " << doc.ErrorCol();
+        config.addError(error.str());
+        return false;
+    }
+    return loadFromXMLDocument(doc, config);
 }
 
 // ----------------------------------------------------------------------------------------------------
