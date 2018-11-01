@@ -24,9 +24,17 @@ Reader::~Reader()
 bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
 {
     Label label;
-    std::cout << cfg_->nodes[idx_]->type() << std::endl;
-    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))
-        return true;
+    NodeIdx child_idx; // Needed for type checking, before changing idx_
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        if (cfg_->nodes[child_idx]->type() == type)
+        {
+            idx_ = child_idx;
+            return true;
+        }
+    }
+
     return false;
 }
 

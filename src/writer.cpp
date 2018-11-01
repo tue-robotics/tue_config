@@ -47,9 +47,10 @@ bool Writer::writeGroup(const std::string& name)
     if (cfg_->nodes[idx_]->readGroup(label, idx_))
         return true;
 
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
         return false;
 
     return true;
@@ -67,9 +68,10 @@ bool Writer::writeArray(const std::string& name)
     if (cfg_->nodes[idx_]->readGroup(label, idx_))
         return true;
 
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
         return false;
 
     return true;

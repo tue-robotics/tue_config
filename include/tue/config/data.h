@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_CONFIGURATION_H_
-#define TUE_CONFIG2_CONFIGURATION_H_
+#ifndef TUE_CONFIG_DATA_H_
+#define TUE_CONFIG_DATA_H_
 
 #include "tue/config/types.h"
 

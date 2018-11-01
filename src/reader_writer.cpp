@@ -53,8 +53,16 @@ ReaderWriter::~ReaderWriter()
 bool ReaderWriter::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
 {
     Label label;
-    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))
-        return true;
+    NodeIdx child_idx; // Needed for type checking, before changing idx_
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        if (cfg_->nodes[child_idx]->type() == type)
+        {
+            idx_ = child_idx;
+            return true;
+        }
+    }
 
     if (opt == REQUIRED)
         addError("Expected group: '" + name + "', found none.");
@@ -160,9 +168,13 @@ bool ReaderWriter::writeGroup(const std::string& name)
 
     Label label = cfg_->getOrAddLabel(name);
 
+    if (cfg_->nodes[idx_]->readGroup(label, idx_))
+        return true;
+
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
         return false;
 
     return true;
@@ -177,9 +189,13 @@ bool ReaderWriter::writeArray(const std::string& name)
 
     Label label = cfg_->getOrAddLabel(name);
 
+    if (cfg_->nodes[idx_]->readGroup(label, idx_))
+        return true;
+
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_)) // This never returns false. So overwriting is possible.
+    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
         return false;
 
     return true;
