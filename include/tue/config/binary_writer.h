@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_BINARY_WRITER_H_
-#define TUE_CONFIG2_BINARY_WRITER_H_
+#ifndef TUE_CONFIG_BINARY_WRITER_H_
+#define TUE_CONFIG_BINARY_WRITER_H_
 
 #include <string>
 #include <vector>

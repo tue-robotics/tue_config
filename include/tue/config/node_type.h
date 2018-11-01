@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_NODE_TYPE_H_
-#define TUE_CONFIG2_NODE_TYPE_H_
+#ifndef TUE_CONFIG_NODE_TYPE_H_
+#define TUE_CONFIG_NODE_TYPE_H_
 
 namespace tue
 {
@@ -13,7 +13,7 @@ enum NodeType
     ARRAY
 };
 
-}
+} // end namespace config
 
 } // end namespace tue
 

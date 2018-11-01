@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_TYPES_H_
-#define TUE_CONFIG2_TYPES_H_
+#ifndef TUE_CONFIG_TYPES_H_
+#define TUE_CONFIG_TYPES_H_
 
 #include <boost/shared_ptr.hpp>
 #include "tue/config/data_pointer.h"

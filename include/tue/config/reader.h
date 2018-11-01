@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_CONFIG_READER_H_
-#define TUE_CONFIG2_CONFIG_READER_H_
+#ifndef TUE_CONFIG_READER_H_
+#define TUE_CONFIG_READER_H_
 
 #include "tue/config/types.h"
 #include "tue/config/data.h"

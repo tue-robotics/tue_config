@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_NODE_H_
-#define TUE_CONFIG2_NODE_H_
+#ifndef TUE_CONFIG_NODE_H_
+#define TUE_CONFIG_NODE_H_
 
 #include "tue/config/node_type.h"
 #include "tue/config/types.h"

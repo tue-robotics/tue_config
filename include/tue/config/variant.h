@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_VARIANT_H_
-#define TUE_CONFIG2_VARIANT_H_
+#ifndef TUE_CONFIG_VARIANT_H_
+#define TUE_CONFIG_VARIANT_H_
 
 // Directly taken from http://stackoverflow.com/questions/5319216/implementing-a-variant-class
 

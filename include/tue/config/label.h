@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_LABEL_H_
-#define TUE_CONFIG2_LABEL_H_
+#ifndef TUE_CONFIG_LABEL_H_
+#define TUE_CONFIG_LABEL_H_
 
 #include <string>
 

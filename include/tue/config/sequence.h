@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_SEQUENCE_H_
-#define TUE_CONFIG2_SEQUENCE_H_
+#ifndef TUE_CONFIG_SEQUENCE_H_
+#define TUE_CONFIG_SEQUENCE_H_
 
 #include "node.h"
 
