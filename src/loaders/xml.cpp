@@ -30,7 +30,7 @@ tue::config::NodeType getNodeType (const std::set<std::string>& array_elements, 
 bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
 {
     std::string key(element.ValueStr());
-    if (element.GetText() == NULL)
+    if (element.GetText() == nullptr)
     {
         std::cout << "Skipping " << key << std::endl;
         return true;
@@ -44,7 +44,7 @@ bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
 
 bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::config::NodeType node_type = tue::config::MAP)
 {
-    if (element.FirstChildElement() == NULL)
+    if (element.FirstChildElement() == nullptr)
     {
         return loadFromXMLText(element, config);
     }
@@ -52,7 +52,7 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::
     {
         // Check which child elements are occuring multiple times. These should be added as elements to an array.
         std::set<std::string> child_elements, array_elements;
-        for (const TiXmlElement* e = element.FirstChildElement(); e != NULL; e = e->NextSiblingElement())
+        for (const TiXmlElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
             if(!child_elements.insert(e->ValueStr()).second) // When inserting fails, value is already in set. So that child has to be an array item.
             {
@@ -71,11 +71,11 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::
 
         // Iterate through attributes
         // ToDo: this does not work if this element does not contain children (we don't end up here)
-        for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != NULL; attribute = attribute->Next())
+        for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
             config.setValue(attribute->Name(), attribute->Value());
 
         // Iterate through elements
-        for(const TiXmlElement* e = element.FirstChildElement(); e != NULL; e = e->NextSiblingElement())
+        for(const TiXmlElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
             std::string candidate_name = e->Value();
             tue::config::NodeType candidate_node_type = getNodeType(array_elements, candidate_name);
@@ -121,7 +121,7 @@ bool loadFromXMLDocument(const TiXmlDocument& doc, ReaderWriter& config)
 {
     const TiXmlElement* root = doc.FirstChildElement();
 
-    if (root->NextSibling() != NULL)
+    if (root->NextSibling() != nullptr)
     {
         throw tue::config::ParseException("A valid XML file should only contain one root element");
     }
