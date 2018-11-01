@@ -29,7 +29,7 @@ public:
     bool next();
 
     template<typename T>
-    bool value(const std::string& name, T& value, RequiredOrOoptional opt = REQUIRED) const
+    bool value(const std::string& name, T& value, const RequiredOrOptional opt = REQUIRED) const
     {
         Label label;
         if (!cfg_->getLabel(name, label))
@@ -45,8 +45,8 @@ public:
         return true;
     }
 
-    bool readArray(const std::string& name, RequiredOrOoptional opt = OPTIONAL) { return read(name); }
-    bool readGroup(const std::string& name, RequiredOrOoptional opt = OPTIONAL) { return read(name); }
+    bool readArray(const std::string& name, const RequiredOrOptional opt = OPTIONAL) { return read(name, opt); }
+    bool readGroup(const std::string& name, const RequiredOrOptional opt = OPTIONAL) { return read(name, opt); }
     bool endArray() { return end(); }
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
