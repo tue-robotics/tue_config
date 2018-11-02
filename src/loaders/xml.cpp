@@ -112,8 +112,8 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::
             std::string candidate_name = e->ValueStr();
             tue::config::NodeType candidate_node_type = getNodeType(array_elements, candidate_name);
             // Because potentially childs of same type could be read, interupted by an other type. Hence opening and closing of the array is need for each child.
-            // First try to read the array. If not yet created, write a new one. (writing never fails at the moment)
-            if (candidate_node_type == tue::config::ARRAY && !(config.readArray(candidate_name, REQUIRED) || config.writeArray(candidate_name)))
+            // wirteArray will open the array if existing.
+            if (candidate_node_type == tue::config::ARRAY && !config.writeArray(candidate_name))
             {
                 std::stringstream error;
                 error << "Could not write or read array: " << candidate_name;
