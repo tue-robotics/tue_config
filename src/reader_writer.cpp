@@ -47,13 +47,13 @@ ReaderWriter::~ReaderWriter()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ReaderWriter::read(const std::string& name, tue::RequiredOrOoptional opt)
+bool ReaderWriter::read(const std::string& name, const RequiredOrOptional opt)
 {
     Label label;
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))
         return true;
 
-    if (opt == tue::REQUIRED)
+    if (opt == REQUIRED)
         addError("Expected group: '" + name + "', found none.");
 
     return false;
