@@ -21,7 +21,7 @@ Reader::~Reader()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Reader::read(const std::string& name)
+bool Reader::read(const std::string& name, const RequiredOrOptional opt)
 {
     Label label;
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))

@@ -22,7 +22,7 @@ public:
 
     virtual ~Reader();
 
-    bool read(const std::string& name);
+    bool read(const std::string& name, const RequiredOrOptional opt = OPTIONAL);
 
     bool end();
 
