@@ -91,16 +91,16 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config, tue::
         // ToDo: this does not work if this element does not contain children (we don't end up here)
         for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
         {
-            double d;
-            if (attribute->QueryDoubleValue(&d) == TIXML_SUCCESS)
-            {
-                config.setValue(attribute->NameTStr(), d);
-                continue;
-            }
             int i;
             if (attribute->QueryIntValue(&i) == TIXML_SUCCESS)
             {
                 config.setValue(attribute->NameTStr(), i);
+                continue;
+            }
+            double d;
+            if (attribute->QueryDoubleValue(&d) == TIXML_SUCCESS)
+            {
+                config.setValue(attribute->NameTStr(), d);
                 continue;
             }
             config.setValue(attribute->NameTStr(), attribute->ValueStr());
