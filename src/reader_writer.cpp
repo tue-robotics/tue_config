@@ -9,6 +9,9 @@
 #include <boost/make_shared.hpp>
 
 // XML
+#include "tue/config/loaders/sdf.h"
+
+// XML
 #include "tue/config/loaders/xml.h"
 
 // YAML
@@ -247,6 +250,25 @@ std::string ReaderWriter::toYAMLString() const
 
 // ----------------------------------------------------------------------------------------------------
 
+bool ReaderWriter::loadFromSDFFile(const std::string& filename)
+{
+    // Remove possible previous errors
+    error_->message.clear();
+
+    // Reset head
+    idx_ = scope_;
+
+    if (!config::loadFromSDFFile(filename, *this))
+        return false;
+
+    filename_ = filename;
+    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 bool ReaderWriter::loadFromXMLFile(const std::string& filename)
 {
     // Remove possible previous errors
@@ -303,7 +325,9 @@ bool ReaderWriter::sync() {
         if (last_write_time > source_last_write_time_)
         {
             std::string extension = tue::filesystem::Path(filename_).extension();
-            if ( extension == ".sdf" || extension == ".xml")
+            if ( extension == ".sdf")
+                loadFromSDFFile(filename_);
+            else if (extension == ".xml")
                 loadFromXMLFile(filename_);
             else if (extension == ".yml" || extension == ".yaml")
                 loadFromYAMLFile(filename_);

@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 
     if (argc < 2)
     {
-        std::cout << "Please provide xml config file." << std::endl;
+        std::cout << "Please provide sdf config file." << std::endl;
         return 1;
     }
 
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 
     try
     {
-      if (!config.loadFromXMLFile(filename))
+      if (!config.loadFromSDFFile(filename))
       {
         std::cout << "Error: could not load config from " << filename << std::endl;
       }

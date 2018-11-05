@@ -21,6 +21,7 @@ catkin_python_setup()
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES tue_config
+  DEPENDS TinyXML
 )
 
 # ------------------------------------------------------------------------------------------------
@@ -48,6 +49,7 @@ set(HEADER_FILES
   include/tue/config/binary_reader.h
   include/tue/config/reader_writer.h
   include/tue/config/configuration.h
+  include/tue/config/loaders/sdf.h
   include/tue/config/loaders/xml.h
   include/tue/config/loaders/yaml.h
   include/tue/config/data_pointer.h
@@ -66,6 +68,7 @@ add_library(tue_config
   src/binary_writer.cpp
   src/binary_reader.cpp
   src/reader_writer.cpp
+  src/loaders/sdf.cpp
   src/loaders/xml.cpp
   src/loaders/yaml.cpp
   src/loaders/resolve_functions.cpp
@@ -79,8 +82,11 @@ target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES
 add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
 
-add_executable(test_read_and_show test/test_read_and_show.cpp)
-target_link_libraries(test_read_and_show tue_config)
+add_executable(test_yaml_and_show test/test_yaml_and_show.cpp)
+target_link_libraries(test_yaml_and_show tue_config)
 
 add_executable(test_xml_and_show test/test_xml_and_show.cpp)
 target_link_libraries(test_xml_and_show tue_config)
+
+add_executable(test_sdf_and_show test/test_sdf_and_show.cpp)
+target_link_libraries(test_sdf_and_show tue_config)

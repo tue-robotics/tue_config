@@ -127,10 +127,17 @@ public:
      * @param filename input file
      * @return indicates success
      */
+    bool loadFromSDFFile(const std::string& filename);
+
+    /**
+     * @brief loadFromXMLFile loads a xml file into a ReaderWriter class
+     * @param filename input file
+     * @return indicates success
+     */
     bool loadFromXMLFile(const std::string& filename);
 
     /**
-     * @brief YAML loads a xml file into a ReaderWriter class
+     * @brief loadFromYAMLFile loads a yaml file into a ReaderWriter class
      * @param filename input file
      * @return indicates success
      */

@@ -3,6 +3,7 @@
 
 #include <istream>
 #include <string>
+#include <tinyxml.h>
 
 namespace tue
 {
@@ -14,6 +15,15 @@ namespace config
  * Forward declaration of ReaderWriter class
  */
 class ReaderWriter;
+
+/**
+ * @brief loadFromXMLText writes a value from xml element into config object.
+ * Stored as double, int or string
+ * @param element TinyXML element
+ * @param config object in which the data is stored
+ * @return indicates succes
+ */
+bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config);
 
 /**
  * @brief loadFromXMLStream loads a xml stream into a ReaderWriter class

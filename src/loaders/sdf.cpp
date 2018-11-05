@@ -1,10 +1,13 @@
 #include <fstream>
 #include <sstream>
+#include <set>
 #include <tinyxml.h>
 
 #include "tue/config/configuration.h"
+#include "tue/config/loaders/sdf.h"
 #include "tue/config/loaders/xml.h"
 #include "tue/config/read.h"
+#include "tue/config/node_type.h"
 
 #include "tue/filesystem/path.h"
 
@@ -16,39 +19,38 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
+static const std::set<std::string> SDF_ARRAY_SET {"include", "link" , "collision", "visual", "joint",
+                                                 "shape", "areas"}; //temp for development.
+static const std::set<std::string> SDF_MAP_SET {"sdf", "world", "audio", "wind", "pose", "atmosphere", "gui", "camera",
+                                          "track_visual", "plugin", "model", "gripper", "geometry", "box",
+                                          "cylinder", "heightmap", "blend", "image", "mesh", "texture", "plane",
+                                          "polyline", "sphere" };
+static const std::set<std::string> SDF_VALUE_SET {"device", "linear_velocity", "uri", "name", "static", "pose", "gravity",
+                                            "magnetic_field", "type", "temperature", "pressure", "temperature_gradient",
+                                            "fullscreen", "view_controller", "projection_type", "min_dist", "max_dist",
+                                            "use_model_frame", "xyz", "inherit_yaw", "filename", "empty", "size",
+                                            "radius", "length", "pos", "diffuse", "normal", "min_height", "fade_dist",
+                                            "sampling", "point", "height" };
+
+
+// ----------------------------------------------------------------------------------------------------
+
+tue::config::NodeType getSDFNodeType (const std::string& element_name)
 {
-    std::string key(element.ValueStr());
-    if (element.GetText() == nullptr)
-    {
-        std::cout << "Skipping " << key << std::endl;
-        return true;
-    }
-    std::string value(element.GetText());
-    // parsing to int/double
-    char* pEnd;
+    std::set<std::string>::const_iterator it = SDF_ARRAY_SET.find(element_name);
+    if (it != SDF_ARRAY_SET.end())
+        return ARRAY;
 
-    int i = std::strtol(value.c_str(), &pEnd, 10);
-    if (pEnd[0] == 0)
-    {
-        config.setValue(key, i);
-        return true;
-    }
+    it = SDF_MAP_SET.find(element_name);
+    if (it == SDF_MAP_SET.end())
+        std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as type." << std::endl;
 
-    double d = std::strtod(value.c_str(), &pEnd);
-    if (pEnd[0] == 0)
-    {
-        config.setValue(key, d);
-        return true;
-    }
-
-    config.setValue(key, value);
-    return true;
+    return MAP;
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
+bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const NodeType node_type)
 {
     if (element.FirstChildElement() == nullptr)
     {
@@ -56,9 +58,14 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
     }
     else
     {
-        // Start a new array with the Value of the current element as key
-        std::string element_name = element.ValueStr();
-        config.writeArray(element_name);
+        // Start new group or array item
+        // in case of array the array is opened on parent level. Only need to add array items on this level.
+        if (node_type == ARRAY)
+            config.addArrayItem();
+        else
+            // Start a new group
+            config.writeGroup(element.ValueStr());
+
 
         // Iterate through attributes
         // ToDo: this does not work if this element does not contain children (we don't end up here)
@@ -83,19 +90,35 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
         for(const TiXmlElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
             std::string candidate_name = e->ValueStr();
-            config.addArrayItem();
+            tue::config::NodeType candidate_node_type = getSDFNodeType(candidate_name);
+            // Because potentially childs of same type could be read, interupted by an other type. Hence opening and closing of the array is need for each child.
+            // wirteArray will open the array if existing.
+            if (candidate_node_type == ARRAY && !config.writeArray(candidate_name))
+            {
+                std::stringstream error;
+                error << "Could not write or read array: " << candidate_name;
+                config.addError(error.str());
+                return false;
+            }
 
-            if (!loadFromXMLElement(*e, config))
+            // load child element
+            if (!loadFromSDFElement(*e, config, candidate_node_type))
             {
                 std::stringstream error;
                 error << "Error parsing " << candidate_name;
                 config.addError(error.str());
-                std::cout << error.str() << std::endl;
                 return false;
             }
-            config.endArrayItem();
+
+            // end array
+            if (candidate_node_type == ARRAY)
+                config.endArray();
         }
-        config.endArray();
+        // Ending array item or group
+        if (node_type == ARRAY)
+            config.endArrayItem();
+        else
+            config.endGroup();
     }
 
     return true;
@@ -104,7 +127,7 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLDocument(const TiXmlDocument& doc, ReaderWriter& config)
+bool loadFromSDFDocument(const TiXmlDocument& doc, ReaderWriter& config)
 {
     const TiXmlElement* root = doc.FirstChildElement();
 
@@ -113,12 +136,12 @@ bool loadFromXMLDocument(const TiXmlDocument& doc, ReaderWriter& config)
         throw tue::config::ParseException("A valid XML file should only contain one root element");
     }
 
-    return loadFromXMLElement(*root, config);
+    return loadFromSDFElement(*root, config, MAP);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLStream(std::istream& stream, ReaderWriter& config)
+bool loadFromSDFStream(std::istream& stream, ReaderWriter& config)
 {
     TiXmlDocument doc;
     stream >> doc;
@@ -130,12 +153,12 @@ bool loadFromXMLStream(std::istream& stream, ReaderWriter& config)
         config.addError(error.str());
         return false;
     }
-    return loadFromXMLDocument(doc, config);
+    return loadFromSDFDocument(doc, config);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLString(const std::string& string, ReaderWriter& config)
+bool loadFromSDFString(const std::string& string, ReaderWriter& config)
 {
     TiXmlDocument doc;
     doc.Parse(string.c_str());
@@ -147,12 +170,12 @@ bool loadFromXMLString(const std::string& string, ReaderWriter& config)
         config.addError(error.str());
         return false;
     }
-    return loadFromXMLDocument(doc, config);
+    return loadFromSDFDocument(doc, config);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
+bool loadFromSDFFile(const std::string& filename, ReaderWriter& config)
 {
     config.setSource(filename);
 
@@ -160,7 +183,7 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
     if (!path.exists())
     {
         std::stringstream error;
-        error << "[loadFromXMLFile] file '" << filename << "' doesn't exist." << std::endl;
+        error << "[loadFromSDFFile] file '" << filename << "' doesn't exist." << std::endl;
         config.addError(error.str());
         return false;
     }
@@ -178,7 +201,7 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
     }
 
     // read the document
-    return loadFromXMLDocument(doc, config);
+    return loadFromSDFDocument(doc, config);
 }
 
 // ----------------------------------------------------------------------------------------------------
