@@ -8,7 +8,7 @@
 
 #include <boost/make_shared.hpp>
 
-// XML
+// SDF
 #include "tue/config/loaders/sdf.h"
 
 // XML
