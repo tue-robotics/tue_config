@@ -18,13 +18,14 @@ namespace config
 {
 
 // ----------------------------------------------------------------------------------------------------
-
-static const std::set<std::string> SDF_ARRAY_SET {"include", "link" , "collision", "visual", "joint",
-                                                 "shape", "areas"}; //temp for development.
+// all tags which should be an array(list)
+static const std::set<std::string> SDF_ARRAY_SET {"include", "link" , "collision", "visual", "virtual_area", "joint"};
+// all tags which should be an group(dict)
 static const std::set<std::string> SDF_MAP_SET {"sdf", "world", "audio", "wind", "pose", "atmosphere", "gui", "camera",
-                                          "track_visual", "plugin", "model", "gripper", "geometry", "box",
-                                          "cylinder", "heightmap", "blend", "image", "mesh", "texture", "plane",
-                                          "polyline", "sphere" };
+                                                "track_visual", "plugin", "model", "gripper", "geometry", "box",
+                                                "cylinder", "heightmap", "blend", "image", "mesh", "texture", "plane",
+                                                "polyline", "sphere" };
+// all tags which should be an value
 static const std::set<std::string> SDF_VALUE_SET {"device", "linear_velocity", "uri", "name", "static", "pose", "gravity",
                                             "magnetic_field", "type", "temperature", "pressure", "temperature_gradient",
                                             "fullscreen", "view_controller", "projection_type", "min_dist", "max_dist",
