@@ -71,9 +71,8 @@ public:
     ReaderWriter limitScope() const;
 
 //    bool add(const ReaderWriter& rw);
-
-    bool readArray(const std::string& name, RequiredOrOptional opt = OPTIONAL) { return read(name, ARRAY, opt); }
-    bool readGroup(const std::string& name, RequiredOrOptional opt = OPTIONAL) { return read(name, MAP, opt); }
+    bool readArray(const std::string& name, const RequiredOrOptional opt = OPTIONAL) { return read(name, ARRAY, opt); }
+    bool readGroup(const std::string& name, const RequiredOrOptional opt = OPTIONAL) { return read(name, MAP, opt); }
     bool endArray() { return end(); }
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
