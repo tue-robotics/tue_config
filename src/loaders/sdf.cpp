@@ -38,14 +38,17 @@ static const std::set<std::string> SDF_VALUE_SET {"device", "linear_velocity", "
 
 tue::config::NodeType getSDFNodeType (const std::string& element_name)
 {
+    // check if the element name is in the array set
     std::set<std::string>::const_iterator it = SDF_ARRAY_SET.find(element_name);
     if (it != SDF_ARRAY_SET.end())
         return ARRAY;
 
+    // check if the element name is in the map set
     it = SDF_MAP_SET.find(element_name);
     if (it == SDF_MAP_SET.end())
         std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as type." << std::endl;
 
+    // return MAP, even if it is not in the map set.
     return MAP;
 }
 
