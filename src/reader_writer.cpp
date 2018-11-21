@@ -56,7 +56,7 @@ ReaderWriter::~ReaderWriter()
 bool ReaderWriter::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
 {
     Label label;
-    NodeIdx child_idx; // Needed for type checking, before changing idx_
+    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
     {
         // check if child matches the type you want to read.
