@@ -50,6 +50,7 @@ bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
 
 bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
 {
+    // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
     {
         return loadFromXMLText(element, config);
@@ -61,7 +62,7 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
         config.writeArray(element_name);
 
         // Iterate through attributes
-        // ToDo: this does not work if this element does not contain children (we don't end up here)
+        // if this element does not contain children, we don't end up here
         for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
         {
             int i;

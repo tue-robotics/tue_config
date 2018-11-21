@@ -56,6 +56,7 @@ tue::config::NodeType getSDFNodeType (const std::string& element_name)
 
 bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const NodeType node_type)
 {
+    // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
     {
         return loadFromXMLText(element, config);
@@ -72,7 +73,7 @@ bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const
 
 
         // Iterate through attributes
-        // ToDo: this does not work if this element does not contain children (we don't end up here)
+        // if this element does not contain children, we don't end up here
         for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
         {
             int i;
