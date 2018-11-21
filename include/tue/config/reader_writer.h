@@ -83,16 +83,16 @@ public:
     // ---- WRITING -----------------------------------------------------------------------
 
     /**
-     * @brief writeGroup
-     * @param name
-     * @return
+     * @brief writeGroup starts writing a group. Or start extending it, if it already exists.
+     * @param name of the group
+     * @return indicates succes
      */
     bool writeGroup(const std::string& name);
 
     /**
-     * @brief writeArray
-     * @param name
-     * @return
+     * @brief writeArray starts writing an array. Or start extending it, if it already exists.
+     * @param name of the array
+     * @return indicates succes
      */
     bool writeArray(const std::string& name);
 

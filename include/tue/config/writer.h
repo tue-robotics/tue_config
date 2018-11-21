@@ -20,8 +20,18 @@ public:
 
     virtual ~Writer();
 
+    /**
+     * @brief writeGroup starts writing a group. Or start extending it, if it already exists.
+     * @param name of the group
+     * @return indicates succes
+     */
     bool writeGroup(const std::string& name);
 
+    /**
+     * @brief writeArray starts writing an array. Or start extending it, if it already exists.
+     * @param name of the array
+     * @return indicates succes
+     */
     bool writeArray(const std::string& name);
 
     bool addArrayItem();
