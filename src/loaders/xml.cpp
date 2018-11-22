@@ -14,20 +14,9 @@ namespace tue
 namespace config
 {
 
-// ----------------------------------------------------------------------------------------------------
-
-bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
+bool setValue(const std::string& key, const std::string& value, ReaderWriter& config)
 {
-    std::string key(element.ValueStr());
-    if (element.GetText() == nullptr)
-    {
-        std::cout << "Skipping " << key << std::endl;
-        return true;
-    }
-    std::string value(element.GetText());
-    // parsing to int/double
     char* pEnd;
-
     int i = std::strtol(value.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
     {
@@ -44,6 +33,20 @@ bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
 
     config.setValue(key, value);
     return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
+{
+    std::string key(element.ValueStr());
+    if (element.GetText() == nullptr)
+    {
+        std::cout << "Skipping " << key << std::endl;
+        return false;
+    }
+    std::string value(element.GetText());
+    return setValue(key, value, config);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -65,19 +68,7 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
         // if this element does not contain children, we don't end up here
         for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
         {
-            int i;
-            if (attribute->QueryIntValue(&i) == TIXML_SUCCESS)
-            {
-                config.setValue(attribute->NameTStr(), i);
-                continue;
-            }
-            double d;
-            if (attribute->QueryDoubleValue(&d) == TIXML_SUCCESS)
-            {
-                config.setValue(attribute->NameTStr(), d);
-                continue;
-            }
-            config.setValue(attribute->NameTStr(), attribute->ValueStr());
+            setValue(attribute->NameTStr(), attribute->ValueStr(), config);
         }
 
         // Iterate through elements

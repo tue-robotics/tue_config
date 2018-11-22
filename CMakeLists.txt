@@ -33,29 +33,7 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
 )
 
-set(HEADER_FILES
-  include/tue/config/types.h
-  include/tue/config/variant.h
-  include/tue/config/yaml_emitter.h
-  include/tue/config/reader.h
-  include/tue/config/writer.h
-  include/tue/config/sequence.h
-  include/tue/config/node.h
-  include/tue/config/node_type.h
-  include/tue/config/map.h
-  include/tue/config/data.h
-  include/tue/config/label.h
-  include/tue/config/binary_writer.h
-  include/tue/config/binary_reader.h
-  include/tue/config/reader_writer.h
-  include/tue/config/configuration.h
-  include/tue/config/loaders/sdf.h
-  include/tue/config/loaders/xml.h
-  include/tue/config/loaders/yaml.h
-  include/tue/config/data_pointer.h
-  include/tue/config/read.h
-  include/tue/config/write.h
-)
+file(GLOB_RECURSE HEADER_FILES include/*.h)
 
 add_library(tue_config
   src/data.cpp
@@ -90,3 +68,8 @@ target_link_libraries(test_xml_and_show tue_config)
 
 add_executable(test_sdf_and_show test/test_sdf_and_show.cpp)
 target_link_libraries(test_sdf_and_show tue_config)
+
+if (CATKIN_ENABLE_TESTING)
+  catkin_add_gtest(sdf_gtest test/sdf_gtest.cpp)
+  target_link_libraries(sdf_gtest tue_config ${catkin_LIBRARIES})
+endif()

@@ -17,6 +17,15 @@ namespace config
 class ReaderWriter;
 
 /**
+ * @brief setValue sets the value as a double, int or string
+ * @param key name of the node
+ * @param value value of the node
+ * @param config ReaderWriter object to add it to
+ * @return indicates succes
+ */
+bool setValue(const std::string& key, const std::string& value, ReaderWriter& config);
+
+/**
  * @brief loadFromXMLText writes a value from xml element into config object.
  * Stored as double, int or string
  * @param element TinyXML element
