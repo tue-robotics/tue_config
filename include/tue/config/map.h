@@ -36,7 +36,7 @@ public:
         return true;
     }
 
-    // addGroup never returns false, therefore overwriting is possible. Use readGroup before to prevent overwriting
+    // add a new group with label "label". Overwrites a group if it exsist with the same label.
     bool addGroup(const Label& label, const NodeIdx& n, NodeIdx& idx)
     {
         map_[label] = n;
