@@ -175,7 +175,7 @@ void toStream(std::ostream& s, const DataConstPointer& data, WriteType write_typ
 
     if (write_type == XML)
     {
-        std::cout << "Writing XML is not yet implemented" << std::endl;
+        throw std::logic_error("Writing XML is not yet implemented");
     }
     else if (write_type == YAML)
     {
