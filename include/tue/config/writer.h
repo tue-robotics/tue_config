@@ -36,8 +36,6 @@ public:
 
     bool addArrayItem();
 
-    bool end();
-
     template<typename T>
     void setValue(const std::string& name, const T& value)
     {
@@ -53,6 +51,8 @@ public:
     inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
 
 private:
+
+    bool end();
 
     boost::shared_ptr<Data> cfg_;
     NodeIdx idx_;

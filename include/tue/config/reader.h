@@ -22,12 +22,6 @@ public:
 
     virtual ~Reader();
 
-    bool read(const std::string& name, const NodeType type, const RequiredOrOptional opt = OPTIONAL);
-
-    bool end();
-
-    bool next();
-
     template<typename T>
     bool value(const std::string& name, T& value, const RequiredOrOptional opt = REQUIRED) const
     {
@@ -54,6 +48,12 @@ public:
     inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
 
 private:
+
+    bool read(const std::string& name, const NodeType type, const RequiredOrOptional opt = OPTIONAL);
+
+    bool end();
+
+    bool next();
 
     NodeIdx idx_;
 

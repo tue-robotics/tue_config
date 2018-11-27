@@ -35,12 +35,6 @@ public:
 
     // ---- READING -----------------------------------------------------------------------
 
-    bool read(const std::string& name, const NodeType type, RequiredOrOptional opt = OPTIONAL);
-
-    bool end();
-
-    bool next();
-
     template<typename T>
     bool value(const std::string& name, T& value, RequiredOrOptional opt = REQUIRED)
     {
@@ -156,6 +150,12 @@ public:
     }
 
 private:
+
+    bool read(const std::string& name, const NodeType type, RequiredOrOptional opt = OPTIONAL);
+
+    bool end();
+
+    bool next();
 
     NodeIdx idx_;
 

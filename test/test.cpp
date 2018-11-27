@@ -215,7 +215,7 @@ int main(int argc, char **argv)
     writer.addArrayItem();
     writer.setValue("x", 123);
     writer.setValue("y", 567);
-    writer.end();
+    writer.endArrayItem();
 
     writer.addArrayItem();
     writer.setValue("x", 456);
@@ -226,15 +226,15 @@ int main(int argc, char **argv)
     writer.addArrayItem();
     writer.setValue("foo", 1);
     writer.setValue("bar", 2);
-    writer.end();
+    writer.endArrayItem();
 
-    writer.end();
+    writer.endArray(); // end array2
 
-    writer.end();
+    writer.endArrayItem();
 
-    writer.end();
+    writer.endArray(); // end array
 
-    writer.end(); // end foo
+    writer.endGroup(); // end foo
 
 
     // TODO: "z" is still not placed right!
@@ -257,32 +257,32 @@ int main(int argc, char **argv)
         if (reader.value("x", x) && reader.value("y", y) && reader.value("z", z))
             std::cout << "x = " << x << ", y = " << y << ", z = " << z << std::endl;
 
-        reader.read("foo", tue::config::MAP);
+        reader.readGroup("foo");
 
         int bla;
         reader.value("bla", bla);
         std::cout << "bla = " << bla << std::endl;
 
-        reader.read("array", tue::config::ARRAY);
-        while(reader.next())
+        reader.readArray("array");
+        while(reader.nextArrayItem())
         {
             int x;
             if (reader.value("x", x))
                 std::cout << " - x = " << x << std::endl;
 
-            if (reader.read("array2", tue::config::ARRAY))
+            if (reader.readArray("array2"))
             {
-                while(reader.next())
+                while(reader.nextArrayItem())
                 {
                     int bar;
                     if (reader.value("bar", bar))
                         std::cout << "   array2.bar = " << bar << std::endl;
                 }
-                reader.end();
+                reader.endArray();
             }
         }
 
-        reader.end();
+        reader.endArray();
 
         reader.value("bla", bla);
         std::cout << "bla = " << bla << std::endl;
