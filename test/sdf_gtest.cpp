@@ -16,25 +16,51 @@ TEST(SDF, LoadSDF)
     EXPECT_TRUE(config.readGroup("sdf"));
 }
 
+TEST(SDF, readGroup)
+{
+    EXPECT_FALSE(config.readArray("model"));
+    EXPECT_TRUE(config.readGroup("model"));
+    EXPECT_TRUE(config.endGroup());
+}
 
 TEST(SDF, AttributeString)
 {
     std::string name;
-    EXPECT_TRUE(config.readGroup("model"));
+    double nameD = 0.;
+    int nameI = 0;
+    config.readGroup("model");
+    EXPECT_FALSE(config.value("name", nameD));
+    EXPECT_FALSE(config.value("name", nameI));
     EXPECT_TRUE(config.value("name", name));
-    EXPECT_TRUE(config.endGroup());
+    config.endGroup();
+    EXPECT_STREQ("robotics_testlabs_sdf/battery_table", name.c_str());
 }
 
 TEST(SDF, AttributeDouble)
 {
-    double version = 0;
+    double version = 0.;
+    int versionI = 0;
+    std::string versionS = "";
+    EXPECT_FALSE(config.value("version", versionI));
+    EXPECT_FALSE(config.value("version", versionS));
     EXPECT_TRUE(config.value("version", version));
+    EXPECT_DOUBLE_EQ(1.6, version);
 }
 
 TEST(SDF, AttributeInt)
 {
     EXPECT_TRUE(true);
 }
+
+TEST(SDF, readArray)
+{
+    config.readGroup("model");
+    EXPECT_FALSE(config.readGroup("link"));
+    EXPECT_TRUE(config.readArray("link"));
+    EXPECT_TRUE(config.nextArrayItem());
+    EXPECT_TRUE(config.endArray());
+}
+
 
 // Run all the tests that were declared with TEST()
 int main(int argc, char **argv)
