@@ -47,19 +47,25 @@ TEST(SDF, AttributeDouble)
     EXPECT_DOUBLE_EQ(1.6, version);
 }
 
-TEST(SDF, AttributeInt)
-{
-    EXPECT_TRUE(true);
-}
-
 TEST(SDF, readArray)
 {
     config.readGroup("model");
     EXPECT_FALSE(config.readGroup("link"));
     EXPECT_TRUE(config.readArray("link"));
     EXPECT_TRUE(config.nextArrayItem());
+}
+
+TEST(SDF, AttributeInt)
+{
+    int linkname = 0;
+    double linknameD = 0.;
+    std::string linknameS = "";
+    EXPECT_TRUE(config.value("name", linknameD));
+    EXPECT_FALSE(config.value("name", linknameS));
+    EXPECT_TRUE(config.value("name", linkname));
     EXPECT_TRUE(config.endArray());
 }
+
 
 
 // Run all the tests that were declared with TEST()

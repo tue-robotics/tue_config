@@ -2,7 +2,7 @@
 <sdf version="1.6">
     <model name="robotics_testlabs_sdf/battery_table">
         <static>1</static>
-        <link name="link">
+        <link name="1">
             <collision name="main object">
                 <pose>0 0 0.35 0 0 0</pose>
                 <geometry>
