@@ -23,7 +23,7 @@ TEST(SDF, readGroup)
     EXPECT_TRUE(config.endGroup());
 }
 
-TEST(SDF, AttributeString)
+TEST(SDF, String)
 {
     std::string name;
     double nameD = 0.;
@@ -36,7 +36,7 @@ TEST(SDF, AttributeString)
     EXPECT_STREQ("robotics_testlabs_sdf/battery_table", name.c_str());
 }
 
-TEST(SDF, AttributeDouble)
+TEST(SDF, Double)
 {
     double version = 0.;
     int versionI = 0;
@@ -55,7 +55,7 @@ TEST(SDF, readArray)
     EXPECT_TRUE(config.nextArrayItem());
 }
 
-TEST(SDF, AttributeInt)
+TEST(SDF, Int)
 {
     int linkname = 0;
     double linknameD = 0.;
