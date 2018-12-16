@@ -68,7 +68,9 @@ bool loadFromXMLElement(const TiXmlElement& element, ReaderWriter& config)
         // if this element does not contain children, we don't end up here
         for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
         {
+            config.addArrayItem();
             setValue(attribute->NameTStr(), attribute->ValueStr(), config);
+            config.endArrayItem();
         }
 
         // Iterate through elements
