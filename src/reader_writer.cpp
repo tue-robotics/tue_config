@@ -325,7 +325,7 @@ bool ReaderWriter::sync() {
         if (last_write_time > source_last_write_time_)
         {
             std::string extension = tue::filesystem::Path(filename_).extension();
-            if ( extension == ".sdf")
+            if ( extension == ".sdf" || extension == ".world")
                 loadFromSDFFile(filename_);
             else if (extension == ".xml")
                 loadFromXMLFile(filename_);
