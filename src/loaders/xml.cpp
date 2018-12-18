@@ -42,8 +42,8 @@ bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config)
     std::string key(element.ValueStr());
     if (element.GetText() == nullptr)
     {
-        std::cout << "Skipping " << key << std::endl;
-        return true;
+        std::cout << "Empty key: " << key << std::endl;
+        return setValue(key, "", config);
     }
     std::string value(element.GetText());
     return setValue(key, value, config);
