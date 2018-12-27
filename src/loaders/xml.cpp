@@ -17,7 +17,7 @@ namespace config
 bool setValue(const std::string& key, const std::string& value, ReaderWriter& config)
 {
     char* pEnd;
-    int i = std::strtol(value.c_str(), &pEnd, 10);
+    int i = (int) std::strtol(value.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
     {
         config.setValue(key, i);

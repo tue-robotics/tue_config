@@ -36,7 +36,7 @@ static const std::set<std::string> SDF_VALUE_SET {"device", "linear_velocity", "
 
 // ----------------------------------------------------------------------------------------------------
 
-tue::config::NodeType getSDFNodeType (const std::string& element_name)
+tue::config::NodeType getSDFNodeType(const std::string& element_name)
 {
     // check if the element name is in the array set
     std::set<std::string>::const_iterator it = SDF_ARRAY_SET.find(element_name);
@@ -46,7 +46,7 @@ tue::config::NodeType getSDFNodeType (const std::string& element_name)
     // check if the element name is in the map set
     it = SDF_MAP_SET.find(element_name);
     if (it == SDF_MAP_SET.end())
-        std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as type." << std::endl;
+        std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as Node type." << std::endl;
 
     // return MAP, even if it is not in the map set.
     return MAP;
@@ -84,7 +84,8 @@ bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const
         {
             std::string candidate_name = e->ValueStr();
             tue::config::NodeType candidate_node_type = getSDFNodeType(candidate_name);
-            // Because potentially childs of same type could be read, interupted by an other type. Hence opening and closing of the array is need for each child.
+            // Because potentially childs of same type could be read, alternated by an other type.
+            // Hence opening and closing of the array is needed for each child.
             // wirteArray will open the array if existing.
             if (candidate_node_type == ARRAY && !config.writeArray(candidate_name))
             {
