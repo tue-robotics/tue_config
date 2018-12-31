@@ -22,10 +22,11 @@ TEST(SDF, String)
     double nameD = 0.;
     int nameI = 0;
     config.readArray("model");
+    config.nextArrayItem();
     EXPECT_FALSE(config.value("name", nameD));
     EXPECT_FALSE(config.value("name", nameI));
     EXPECT_TRUE(config.value("name", name));
-    config.endGroup();
+    config.endArray();
     EXPECT_STREQ("robotics_testlabs_sdf/battery_table", name.c_str());
 }
 
