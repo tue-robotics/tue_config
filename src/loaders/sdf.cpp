@@ -19,10 +19,10 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 // all tags which should be an array(list)
-static const std::set<std::string> SDF_ARRAY_SET {"include", "link" , "collision", "visual", "virtual_area", "joint"};
+static const std::set<std::string> SDF_ARRAY_SET {"include", "link", "model" , "collision", "visual", "virtual_area", "joint"};
 // all tags which should be an group(dict)
 static const std::set<std::string> SDF_MAP_SET {"sdf", "world", "audio", "wind", "pose", "atmosphere", "gui", "camera",
-                                                "track_visual", "plugin", "model", "gripper", "geometry", "box",
+                                                "track_visual", "plugin", "gripper", "geometry", "box",
                                                 "cylinder", "heightmap", "blend", "image", "mesh", "texture", "plane",
                                                 "polyline", "sphere" };
 // all tags which should be an value
