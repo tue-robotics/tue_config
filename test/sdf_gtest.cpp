@@ -52,6 +52,8 @@ TEST(SDF, readArray)
 
 TEST(SDF, Int)
 {
+    config.readArray("model");
+    config.nextArrayItem();
     config.readArray("link");
     config.nextArrayItem();
     int linkname = 0;
