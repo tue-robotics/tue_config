@@ -70,6 +70,21 @@ bool Reader::next()
     return true;
 }
 
+
+// ----------------------------------------------------------------------------------------------------
+
+bool Reader::hasChild(const std::string& name, NodeType type) const
+{
+    Label label;
+    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        return cfg_->nodes[child_idx]->type() == type;
+    }
+    return false;
+}
+
 } // end namespace config
 
 } // end namespace tue

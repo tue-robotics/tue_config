@@ -71,6 +71,9 @@ public:
     bool endGroup() { return end(); }
     bool nextArrayItem() { return next(); }
 
+    bool hasArray(const std::string& name) { return hasChild(name, ARRAY); }
+    bool hasGroup(const std::string& name) { return hasChild(name, MAP); }
+
     const std::string& source() const { return cfg_->source_; }
 
 
@@ -156,6 +159,8 @@ private:
     bool end();
 
     bool next();
+
+    bool hasChild(const std::string& name, NodeType type) const;
 
     NodeIdx idx_;
 
