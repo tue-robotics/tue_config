@@ -43,10 +43,14 @@ tue::config::NodeType getSDFNodeType(const std::string& element_name)
     if (it != SDF_ARRAY_SET.end())
         return ARRAY;
 
+    static std::set<std::string> already_printed;
+
     // check if the element name is in the map set
-    it = SDF_MAP_SET.find(element_name);
-    if (it == SDF_MAP_SET.end())
+    if (SDF_MAP_SET.find(element_name) == SDF_MAP_SET.end() && already_printed.find(element_name) == already_printed.end())
+    {
+        already_printed.insert(element_name);
         std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as Node type." << std::endl;
+    }
 
     // return MAP, even if it is not in the map set.
     return MAP;
