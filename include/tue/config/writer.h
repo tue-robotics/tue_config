@@ -85,8 +85,9 @@ private:
      */
     bool end();
 
-    boost::shared_ptr<Data> cfg_;  // Data pointer
     NodeIdx idx_; // Current node index
+
+    boost::shared_ptr<Data> cfg_;  // Data pointer
 
 };
 

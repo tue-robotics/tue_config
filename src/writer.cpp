@@ -109,6 +109,10 @@ bool Writer::end()
 
     idx_ = parent;
 
+    // If the parent is an array, go up one more
+    if (cfg_->nodes[idx_]->type() == ARRAY)
+        idx_ = cfg_->getParent(idx_);
+
     return true;
 }
 
