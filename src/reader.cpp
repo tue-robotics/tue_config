@@ -21,11 +21,20 @@ Reader::~Reader()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Reader::read(const std::string& name, const RequiredOrOptional opt)
+bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
 {
     Label label;
-    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))
-        return true;
+    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        if (cfg_->nodes[child_idx]->type() == type)
+        {
+            idx_ = child_idx;
+            return true;
+        }
+    }
+
     return false;
 }
 
@@ -59,6 +68,21 @@ bool Reader::next()
 
     idx_ = right_sibling;
     return true;
+}
+
+
+// ----------------------------------------------------------------------------------------------------
+
+bool Reader::hasChild(const std::string& name, NodeType type) const
+{
+    Label label;
+    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        return cfg_->nodes[child_idx]->type() == type;
+    }
+    return false;
 }
 
 } // end namespace config

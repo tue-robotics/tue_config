@@ -33,7 +33,7 @@ bool executeResolvefunction(const std::vector<std::string>& args, const std::str
     {
         char* env_value;
         env_value = getenv(args[1].c_str());
-        if (env_value == 0)
+        if (env_value == nullptr)
         {
             if (args.size() == 3)
             {

@@ -10,12 +10,33 @@ namespace tue
 namespace config
 {
 
+/**
+ * Forward declaration of ReaderWriter class
+ */
 class ReaderWriter;
 
+/**
+ * @brief loadFromYAMLStream loads a yaml stream into a ReaderWriter class
+ * @param stream input stream
+ * @param config object in which the data is stored
+ * @return indicates success
+ */
 bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config);
 
+/**
+ * @brief loadFromYAMLString loads a yaml string into a ReaderWriter class
+ * @param string input string (yaml)
+ * @param config object in which the data is stored
+ * @return indicates success
+ */
 bool loadFromYAMLString(const std::string& string, ReaderWriter& config);
 
+/**
+ * @brief loadFromYAMLFile loads a yaml file into a ReaderWriter class
+ * @param filename input file
+ * @param config object in which the data is stored
+ * @return indicates success
+ */
 bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config);
 
 }

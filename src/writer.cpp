@@ -47,6 +47,7 @@ bool Writer::writeGroup(const std::string& name)
     if (cfg_->nodes[idx_]->readGroup(label, idx_))
         return true;
 
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
     if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
@@ -67,6 +68,7 @@ bool Writer::writeArray(const std::string& name)
     if (cfg_->nodes[idx_]->readGroup(label, idx_))
         return true;
 
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
     if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
@@ -106,6 +108,10 @@ bool Writer::end()
         return false;
 
     idx_ = parent;
+
+    // If the parent is an array, go up one more
+    if (cfg_->nodes[idx_]->type() == ARRAY)
+        idx_ = cfg_->getParent(idx_);
 
     return true;
 }

@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG2_MAP_H_
-#define TUE_CONFIG2_MAP_H_
+#ifndef TUE_CONFIG_MAP_H_
+#define TUE_CONFIG_MAP_H_
 
 #include "node.h"
 
@@ -36,6 +36,7 @@ public:
         return true;
     }
 
+    // add a new group with label "label". Overwrites a group if it exsist with the same label.
     bool addGroup(const Label& label, const NodeIdx& n, NodeIdx& idx)
     {
         map_[label] = n;

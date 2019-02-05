@@ -8,6 +8,12 @@
 
 #include <boost/make_shared.hpp>
 
+// SDF
+#include "tue/config/loaders/sdf.h"
+
+// XML
+#include "tue/config/loaders/xml.h"
+
 // YAML
 #include "tue/config/yaml_emitter.h"
 #include "tue/config/loaders/yaml.h"
@@ -47,11 +53,19 @@ ReaderWriter::~ReaderWriter()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ReaderWriter::read(const std::string& name, const RequiredOrOptional opt)
+bool ReaderWriter::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
 {
     Label label;
-    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, idx_))
-        return true;
+    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        if (cfg_->nodes[child_idx]->type() == type)
+        {
+            idx_ = child_idx;
+            return true;
+        }
+    }
 
     if (opt == REQUIRED)
         addError("Expected group: '" + name + "', found none.");
@@ -101,6 +115,20 @@ ReaderWriter ReaderWriter::limitScope() const
     ReaderWriter r(*this);
     r.scope_ = r.idx_;
     return r;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::hasChild(const std::string& name, NodeType type) const
+{
+    Label label;
+    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
+    {
+        // check if child matches the type you want to read.
+        return cfg_->nodes[child_idx]->type() == type;
+    }
+    return false;
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -157,6 +185,10 @@ bool ReaderWriter::writeGroup(const std::string& name)
 
     Label label = cfg_->getOrAddLabel(name);
 
+    if (cfg_->nodes[idx_]->readGroup(label, idx_))
+        return true;
+
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
     if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
@@ -174,6 +206,10 @@ bool ReaderWriter::writeArray(const std::string& name)
 
     Label label = cfg_->getOrAddLabel(name);
 
+    if (cfg_->nodes[idx_]->readGroup(label, idx_))
+        return true;
+
+    // If no child node with name is known, create a new one.
     NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
     if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
@@ -228,6 +264,44 @@ std::string ReaderWriter::toYAMLString() const
 
 // ----------------------------------------------------------------------------------------------------
 
+bool ReaderWriter::loadFromSDFFile(const std::string& filename)
+{
+    // Remove possible previous errors
+    error_->message.clear();
+
+    // Reset head
+    idx_ = scope_;
+
+    if (!config::loadFromSDFFile(filename, *this))
+        return false;
+
+    filename_ = filename;
+    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+bool ReaderWriter::loadFromXMLFile(const std::string& filename)
+{
+    // Remove possible previous errors
+    error_->message.clear();
+
+    // Reset head
+    idx_ = scope_;
+
+    if (!config::loadFromXMLFile(filename, *this))
+        return false;
+
+    filename_ = filename;
+    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+
+    return true;
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 bool ReaderWriter::loadFromYAMLFile(const std::string& filename)
 {
     // Remove possible previous errors
@@ -264,7 +338,15 @@ bool ReaderWriter::sync() {
 
         if (last_write_time > source_last_write_time_)
         {
-            loadFromYAMLFile(filename_);
+            std::string extension = tue::filesystem::Path(filename_).extension();
+            if ( extension == ".sdf" || extension == ".world")
+                loadFromSDFFile(filename_);
+            else if (extension == ".xml")
+                loadFromXMLFile(filename_);
+            else if (extension == ".yml" || extension == ".yaml")
+                loadFromYAMLFile(filename_);
+            else
+                std::cout << "[ReaderWriter::Sync] extension: '" << extension << "'  is not supported." << std::endl;
             source_last_write_time_ = last_write_time;
             return true;
         }

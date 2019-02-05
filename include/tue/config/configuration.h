@@ -1,5 +1,5 @@
-#ifndef TUE_CONFIG_CONFIG_CONFIGURATION_H_
-#define TUE_CONFIG_CONFIG_CONFIGURATION_H_
+#ifndef TUE_CONFIG_CONFIGURATION_H_
+#define TUE_CONFIG_CONFIGURATION_H_
 
 #include "tue/config/reader_writer.h"
 
