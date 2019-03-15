@@ -159,6 +159,20 @@ public:
     }
 
     /**
+     * @brief setValue<string> set child value with key 'name' and value 'value', value is stripped from leading and trailing whitespace
+     * @param name name of the key
+     * @param value value of the value
+     */
+    void setValue(const std::string& name, std::string value)
+    {
+        trim(value);
+
+        Variant var(value);
+        Label label = cfg_->getOrAddLabel(name);
+        cfg_->nodes[idx_]->setValue(label, var);
+    }
+
+    /**
      * @brief addArrayItem create a new item in the array
      * @return indicates succes, can fail if current node isn't in an array
      */
