@@ -60,20 +60,6 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     return true;
 #else
 
-    try
-    {
-        config.setValue(key, n.as<int>());
-        return true;
-    }
-    catch (YAML::BadConversion& e) {}
-
-    try
-    {
-        config.setValue(key, n.as<double>());
-        return true;
-    }
-    catch (YAML::BadConversion& e) {}
-
     s = n.as<std::string>();
 
     // Check and resolve possible resolve functions ( "$( ... )" )
