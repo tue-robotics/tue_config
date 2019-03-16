@@ -159,7 +159,8 @@ public:
     }
 
     /**
-     * @brief setValue<string> set child value with key 'name' and value 'value', value is stripped from leading and trailing whitespace
+     * @brief setValue<string> set child value with key 'name' and value 'value',
+     * value is stripped from leading and trailing whitespace
      * @param name name of the key
      * @param value value of the value
      */

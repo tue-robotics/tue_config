@@ -54,6 +54,21 @@ public:
     }
 
     /**
+     * @brief setValue<string> set child value with key 'name' and value 'value',
+     * value is stripped from leading and trailing whitespace
+     * @param name name of the key
+     * @param value value of the value
+     */
+    void setValue(const std::string& name, std::string value)
+    {
+        trim(value);
+
+        Variant var(value);
+        Label label = cfg_->getOrAddLabel(name);
+        cfg_->nodes[idx_]->setValue(label, var);
+    }
+
+    /**
      * @brief endArray go to parrent of current array, wrapping end() for readibility
      * @return indicates succes, see end() for more information
      */
