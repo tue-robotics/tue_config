@@ -85,6 +85,21 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
         return false;
     }
 
+    char* pEnd;
+    int i = (int) std::strtol(s_resolved.c_str(), &pEnd, 10);
+    if (pEnd[0] == 0)
+    {
+        config.setValue(key, i);
+        return true;
+    }
+
+    double d = std::strtod(s_resolved.c_str(), &pEnd);
+    if (pEnd[0] == 0)
+    {
+        config.setValue(key, d);
+        return true;
+    }
+
     config.setValue(key, s_resolved);
     return true;
 
