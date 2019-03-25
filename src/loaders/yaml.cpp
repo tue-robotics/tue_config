@@ -71,6 +71,13 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
         return false;
     }
 
+    // Make sure that empty strings("") are set as string
+    if (s_resolved.empty())
+    {
+        config.setValue(key, s_resolved);
+        return true;
+    }
+
     char* pEnd;
     int i = (int) std::strtol(s_resolved.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
