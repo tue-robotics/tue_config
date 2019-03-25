@@ -6,7 +6,7 @@
 
 #include "tue/filesystem/path.h"
 
-static tue::config::ReaderWriter config;
+tue::config::ReaderWriter config;
 
 TEST(SDF, LoadSDF)
 {
