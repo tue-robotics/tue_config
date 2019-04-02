@@ -60,20 +60,6 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     return true;
 #else
 
-    try
-    {
-        config.setValue(key, n.as<int>());
-        return true;
-    }
-    catch (YAML::BadConversion& e) {}
-
-    try
-    {
-        config.setValue(key, n.as<double>());
-        return true;
-    }
-    catch (YAML::BadConversion& e) {}
-
     s = n.as<std::string>();
 
     // Check and resolve possible resolve functions ( "$( ... )" )
@@ -83,6 +69,28 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     {
         config.addError("While reading key '" + key +"': Could not resolve: " + s_error.str());
         return false;
+    }
+
+    // Make sure that empty strings("") are set as string
+    if (s_resolved.empty())
+    {
+        config.setValue(key, s_resolved);
+        return true;
+    }
+
+    char* pEnd;
+    int i = (int) std::strtol(s_resolved.c_str(), &pEnd, 10);
+    if (pEnd[0] == 0)
+    {
+        config.setValue(key, i);
+        return true;
+    }
+
+    double d = std::strtod(s_resolved.c_str(), &pEnd);
+    if (pEnd[0] == 0)
+    {
+        config.setValue(key, d);
+        return true;
     }
 
     config.setValue(key, s_resolved);

@@ -19,8 +19,6 @@
 
 int main(int argc, char **argv)
 {
-    tue::config::ReaderWriter config;
-
     if (argc < 2)
     {
         std::cout << "Please provide yaml config file." << std::endl;
