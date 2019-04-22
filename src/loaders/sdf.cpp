@@ -62,10 +62,19 @@ tue::config::NodeType getSDFNodeType(const std::string& element_name)
 
 bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const NodeType node_type)
 {
+    std::string element_name = element.ValueStr();
     // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
     {
-        return loadFromXMLText(element, config);
+        if (node_type == MAP)
+            return loadFromXMLText(element, config);
+        else
+        {
+            config.addArrayItem();
+            if (!loadFromXMLText(element, config))
+                return false;
+            config.endArrayItem();
+        }
     }
     else
     {
@@ -75,7 +84,7 @@ bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const
             config.addArrayItem();
         else
             // Start a new group
-            config.writeGroup(element.ValueStr());
+            config.writeGroup(element_name);
 
 
         // Iterate through attributes
