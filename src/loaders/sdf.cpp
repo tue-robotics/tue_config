@@ -19,19 +19,21 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 // all tags which should be an array(list)
-static const std::set<std::string> SDF_ARRAY_SET {"include", "link", "model" , "collision", "visual", "virtual_volume", "joint"};
+static const std::set<std::string> SDF_ARRAY_SET {"collision", "include", "joint", "link", "model", "point", "visual",
+                                                  "virtual_volume"};
+
 // all tags which should be an group(dict)
-static const std::set<std::string> SDF_MAP_SET {"sdf", "world", "audio", "wind", "pose", "atmosphere", "gui", "camera",
-                                                "track_visual", "plugin", "gripper", "geometry", "box",
-                                                "cylinder", "heightmap", "blend", "image", "mesh", "texture", "plane",
-                                                "polyline", "sphere" };
+static const std::set<std::string> SDF_MAP_SET {"atmosphere", "audio", "blend", "box", "camera", "cylinder", "geometry",
+                                                "gripper", "gui", "heightmap", "image", "mesh", "plane", "plugin",
+                                                "polyline", "pose", "sdf", "sphere", "texture", "track_visual", "wind",
+                                                "world" };
 // all tags which should be an value
-static const std::set<std::string> SDF_VALUE_SET {"device", "linear_velocity", "uri", "name", "static", "pose", "gravity",
-                                            "magnetic_field", "type", "temperature", "pressure", "temperature_gradient",
-                                            "fullscreen", "view_controller", "projection_type", "min_dist", "max_dist",
-                                            "use_model_frame", "xyz", "inherit_yaw", "filename", "empty", "size",
-                                            "radius", "length", "pos", "diffuse", "normal", "min_height", "fade_dist",
-                                            "sampling", "point", "height" };
+static const std::set<std::string> SDF_VALUE_SET {"device", "diffuse", "empty", "fade_dist", "filename", "fullscreen",
+                                                  "gravity", "height", "inherit_yaw", "length", "linear_velocity",
+                                                  "magnetic_field", "max_dist", "min_dist", "min_height", "name",
+                                                  "normal", "pos", "pose", "pressure", "projection_type", "radius",
+                                                  "sampling", "size", "static", "temperature", "temperature_gradient",
+                                                  "type", "uri", "use_model_frame", "view_controller", "xyz" };
 
 
 // ----------------------------------------------------------------------------------------------------
@@ -63,7 +65,15 @@ bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const
     // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
     {
-        return loadFromXMLText(element, config);
+        if (node_type == MAP)
+            return loadFromXMLText(element, config);
+        else
+        {
+            config.addArrayItem();
+            if (!loadFromXMLText(element, config))
+                return false;
+            config.endArrayItem();
+        }
     }
     else
     {
