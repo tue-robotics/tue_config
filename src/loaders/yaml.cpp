@@ -24,6 +24,16 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
+std::string dirnameOf(const std::string& fname)
+{
+     size_t pos = fname.find_last_of("\\/");
+     return (std::string::npos == pos)
+         ? ""
+         : fname.substr(0, pos);
+}
+
+// ----------------------------------------------------------------------------------------------------
+
 bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWriter& config)
 {
     std::string s;
@@ -61,6 +71,17 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 #else
 
     s = n.as<std::string>();
+
+    if (key == "extend" || key == "extends")
+    {
+        std::string filename;
+        if (s.substr(0) == "/")
+            filename = s;
+        else
+            filename = dirnameOf(config.source()) + "/" + s;
+
+        return loadFromYAMLFile(filename, config);
+    }
 
     // Check and resolve possible resolve functions ( "$( ... )" )
     std::string s_resolved;
@@ -103,7 +124,7 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 
 bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
 {
-
+    bool success = true;
 #ifdef YAML_VERSION_0_3
     for(YAML::Iterator it = node.begin(); it != node.end(); ++it)
     {
@@ -121,7 +142,8 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         {
         case YAML::NodeType::Scalar:
         {
-            yamlScalarToVariant(key, n, config);
+            if (!yamlScalarToVariant(key, n, config))
+                success = false;
             break;
         }
         case YAML::NodeType::Sequence:
@@ -162,7 +184,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         }
     }
 
-    return true;
+    return success;
 }
 
 // ----------------------------------------------------------------------------------------------------
