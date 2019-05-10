@@ -3,6 +3,8 @@
 #include "tue/config/configuration.h"
 #include "resolve_functions.h"
 
+#include <tue/filesystem/path.h>
+
 // YAML parsing
 #include <fstream>
 
@@ -21,16 +23,6 @@ namespace tue
 
 namespace config
 {
-
-// ----------------------------------------------------------------------------------------------------
-
-std::string dirnameOf(const std::string& fname)
-{
-     size_t pos = fname.find_last_of("\\/");
-     return (std::string::npos == pos)
-         ? ""
-         : fname.substr(0, pos);
-}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -72,13 +64,16 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 
     s = n.as<std::string>();
 
-    if (key == "extend" || key == "extends")
+    if (key == "include")
     {
         std::string filename;
         if (s.substr(0) == "/")
             filename = s;
         else
-            filename = dirnameOf(config.source()) + "/" + s;
+        {
+            tue::filesystem::Path filepath(config.source());
+            filename = filepath.parentPath().join(s).string();
+        }
 
         return loadFromYAMLFile(filename, config);
     }
