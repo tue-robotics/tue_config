@@ -95,6 +95,16 @@ persons:
   name: David
 ```
 
+## Special values
+Special values are resolved on parsing. The resolve function all have the same structure: `$(CMD args)`. The following
+commands are available:
+- **rospkg** (PKG_NAME): **rospkg** resolves to the root folder of the ros package. The only argument is required and is
+  the name of the ros package you want to find. If the package isn't found, parsing fails.
+- **env** (ENV_VARIABLE [DEFAULT]): **env** resolves to an environment variable. If the environment variable isn't
+  available and a default value is provided, this value will be returned. If no default value is provided, parsing fails.
+- **file** (FILE_NAME): **file** resolves to an absolute/relative file path. This depends on if the root file was an
+  absolute or relative path. This function never returns a false. No file existence check is done.
+
 # Old
 ## TO DO
 
