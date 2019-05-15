@@ -49,7 +49,10 @@ add_library(tue_config
   src/loaders/sdf.cpp
   src/loaders/xml.cpp
   src/loaders/yaml.cpp
+  src/loaders/loader_functions.cpp
+  src/loaders/loader_functions.h
   src/loaders/resolve_functions.cpp
+  src/loaders/resolve_functions.h
   src/data_pointer.cpp
   src/read.cpp
   src/write.cpp

@@ -2,6 +2,7 @@
 
 #include "tue/config/configuration.h"
 #include "resolve_functions.h"
+#include "loader_functions.h"
 
 #include <tue/filesystem/path.h>
 
@@ -106,6 +107,13 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     if (pEnd[0] == 0)
     {
         config.setValue(key, d);
+        return true;
+    }
+
+    bool b;
+    if (strToBool(s_resolved, b))
+    {
+        config.setValue(key, b);
         return true;
     }
 
