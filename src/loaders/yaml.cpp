@@ -59,6 +59,13 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
         return true;
     }
 
+    bool b;
+    if (strToBool(s_resolved, b))
+    {
+        config.setValue(key, b);
+        return true;
+    }
+
     config.setValue(key, s_resolved);
     return true;
 #else
