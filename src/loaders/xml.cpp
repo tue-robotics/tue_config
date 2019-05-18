@@ -5,6 +5,7 @@
 #include "tue/config/configuration.h"
 #include "tue/config/loaders/xml.h"
 #include "tue/config/read.h"
+#include "loader_functions.h"
 
 #include "tue/filesystem/path.h"
 
@@ -28,6 +29,13 @@ bool setValue(const std::string& key, const std::string& value, ReaderWriter& co
     if (pEnd[0] == 0)
     {
         config.setValue(key, d);
+        return true;
+    }
+
+    bool b = false;
+    if (strToBool(value, b))
+    {
+        config.setValue(key, b);
         return true;
     }
 

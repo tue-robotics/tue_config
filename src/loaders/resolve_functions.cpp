@@ -58,11 +58,11 @@ bool executeResolvefunction(const std::vector<std::string>& args, const std::str
             return true;
         }
 
-        std::string parent_path = tue::filesystem::Path(source).parentPath().string();
-        if (parent_path.empty())
+        tue::filesystem::Path parent_path = tue::filesystem::Path(source).parentPath();
+        if (parent_path.string().empty())
             result = filename;
         else
-            result = parent_path + "/" + filename;
+            result = parent_path.join(filename).string();
 
         return true;
     }

@@ -115,18 +115,21 @@ public:
 
     Variant() : type_('?') {}
 
+    Variant(const bool& b) : type_('b'), b_(b) {}
     Variant(const double& d) : type_('d'), d_(d) {}
     Variant(int i) : type_('i'), i_(i) {}
     Variant(const std::string& s) : type_('s'), s_(s) {}
     Variant(const char* s) : type_('s'), s_(s) {}
 
-    bool getValue(int& v) { return checkAndGet(i_, 'i', v); }
+    bool getValue(int& v) { return checkAndGet(i_, 'i', v) || checkAndGet((int)b_, 'b', v); }
     bool getValue(double& v) { return checkAndGet(d_, 'd', v) || checkAndGet((double)i_, 'i', v); }
     bool getValue(float& v) { return checkAndGet((float)d_, 'd', v) || checkAndGet((float)i_, 'i', v); }
     bool getValue(std::string& v) { return checkAndGet(s_, 's', v); }
 
     bool getValue(bool& v)
     {
+        if (checkAndGet(b_, 'b', v))
+            return true;
         int i;
         if (!checkAndGet(i_, 'i', i))
             return false;
@@ -137,6 +140,7 @@ public:
     bool isString() const { return type_ == 's'; }
     bool isInt() const { return type_ == 'i'; }
     bool isDouble() const { return type_ == 'i' || type_ == 'd'; }
+    bool isBoolean() const { return type_ == 'b'; }
 
     bool inline valid() const { return type_ != '?'; }
 
@@ -147,6 +151,7 @@ private:
     union {
         int i_;
         double d_;
+        bool b_;
     };
 
     std::string s_;
@@ -169,6 +174,8 @@ private:
         case 'd': out << v.d_;
             break;
         case 's': out << v.s_;
+            break;
+        case 'b': out << v.b_;
             break;
         default: out << "?";
             break;

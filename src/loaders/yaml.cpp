@@ -2,6 +2,9 @@
 
 #include "tue/config/configuration.h"
 #include "resolve_functions.h"
+#include "loader_functions.h"
+
+#include <tue/filesystem/path.h>
 
 // YAML parsing
 #include <fstream>
@@ -56,11 +59,32 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
         return true;
     }
 
+    bool b;
+    if (strToBool(s_resolved, b))
+    {
+        config.setValue(key, b);
+        return true;
+    }
+
     config.setValue(key, s_resolved);
     return true;
 #else
 
     s = n.as<std::string>();
+
+    if (key == "include")
+    {
+        std::string filename;
+        if (s.substr(0) == "/")
+            filename = s;
+        else
+        {
+            tue::filesystem::Path filepath(config.source());
+            filename = filepath.parentPath().join(s).string();
+        }
+
+        return loadFromYAMLFile(filename, config);
+    }
 
     // Check and resolve possible resolve functions ( "$( ... )" )
     std::string s_resolved;
@@ -93,6 +117,13 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
         return true;
     }
 
+    bool b;
+    if (strToBool(s_resolved, b))
+    {
+        config.setValue(key, b);
+        return true;
+    }
+
     config.setValue(key, s_resolved);
     return true;
 
@@ -103,7 +134,7 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 
 bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
 {
-
+    bool success = true;
 #ifdef YAML_VERSION_0_3
     for(YAML::Iterator it = node.begin(); it != node.end(); ++it)
     {
@@ -121,7 +152,8 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         {
         case YAML::NodeType::Scalar:
         {
-            yamlScalarToVariant(key, n, config);
+            if (!yamlScalarToVariant(key, n, config))
+                success = false;
             break;
         }
         case YAML::NodeType::Sequence:
@@ -162,7 +194,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         }
     }
 
-    return true;
+    return success;
 }
 
 // ----------------------------------------------------------------------------------------------------
