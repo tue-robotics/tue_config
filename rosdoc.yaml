@@ -1,0 +1,11 @@
+- builder: sphinx
+  sphinx_root_dir: docs/python
+  name: Python API
+  output_dir: python
+- builder: doxygen
+  name: C++ API
+  output_dir: cpp
+  file_patterns: '*.c *.cpp *.h *.hpp'
+  tab_size: 4
+  use_mdfile_as_mainpage: README.md
+  exclude_patterns: 'docs* *.py'
