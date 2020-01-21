@@ -24,4 +24,13 @@
 
   <test_depend>rosunit</test_depend>
 
+  <doc_depend>doxygen</doc_depend>
+  <doc_depend>python-sphinx</doc_depend>
+  <doc_depend>python-sphinx-autoapi-pip</doc_depend>
+  <doc_depend>python-sphinx-rtd-theme-pip</doc_depend>
+
+  <export>
+    <rosdoc config="rosdoc.yaml" />
+  </export>
+
 </package>
