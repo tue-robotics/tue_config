@@ -1,7 +1,7 @@
 #include <fstream>
 #include <sstream>
 #include <set>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 #include "tue/config/configuration.h"
 #include "tue/config/loaders/sdf.h"
@@ -60,7 +60,7 @@ tue::config::NodeType getSDFNodeType(const std::string& element_name)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const NodeType node_type)
+bool loadFromSDFElement(const tinyxml2::XMLElement& element, ReaderWriter& config, const NodeType node_type)
 {
     // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
@@ -83,20 +83,20 @@ bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const
             config.addArrayItem();
         else
             // Start a new group
-            config.writeGroup(element.ValueStr());
+            config.writeGroup(element.Value());
 
 
         // Iterate through attributes
         // if this element does not contain children, we don't end up here
-        for (const TiXmlAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
+        for (const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
         {
-            setValue(attribute->NameTStr(), attribute->ValueStr(), config);
+            setValue(attribute->Name(), attribute->Value(), config);
         }
 
         // Iterate through elements
-        for(const TiXmlElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
+        for(const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
-            std::string candidate_name = e->ValueStr();
+            std::string candidate_name = e->Value();
             tue::config::NodeType candidate_node_type = getSDFNodeType(candidate_name);
             // Because potentially childs of same type could be read, alternated by an other type.
             // Hence opening and closing of the array is needed for each child.
@@ -135,9 +135,9 @@ bool loadFromSDFElement(const TiXmlElement& element, ReaderWriter& config, const
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromSDFDocument(const TiXmlDocument& doc, ReaderWriter& config)
+bool loadFromSDFDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& config)
 {
-    const TiXmlElement* root = doc.FirstChildElement();
+    const tinyxml2::XMLElement* root = doc.FirstChildElement();
 
     if (root->NextSibling() != nullptr)
     {
@@ -151,13 +151,15 @@ bool loadFromSDFDocument(const TiXmlDocument& doc, ReaderWriter& config)
 
 bool loadFromSDFStream(std::istream& stream, ReaderWriter& config)
 {
-    TiXmlDocument doc;
-    stream >> doc;
+    tinyxml2::XMLDocument doc;
+    std::string stream_string;
+    stream >> stream_string;
+    doc.Parse(stream_string.c_str());
     if (doc.Error())
     {
         std::stringstream error;
         error << "Error loading stream:" << std::endl << stream.rdbuf() << std::endl;
-        error << doc.ErrorDesc() << " at row " << doc.ErrorRow() << ", col " << doc.ErrorCol();
+        error << doc.ErrorStr() << " at line " << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
     }
@@ -168,13 +170,13 @@ bool loadFromSDFStream(std::istream& stream, ReaderWriter& config)
 
 bool loadFromSDFString(const std::string& string, ReaderWriter& config)
 {
-    TiXmlDocument doc;
+    tinyxml2::XMLDocument doc;
     doc.Parse(string.c_str());
     if (doc.Error())
     {
         std::stringstream error;
         error << "Error loading string:" << std::endl << string << std::endl;
-        error << doc.ErrorDesc() << " at row " << doc.ErrorRow() << ", col " << doc.ErrorCol();
+        error << doc.ErrorStr() << " at line" << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
     }
@@ -197,13 +199,13 @@ bool loadFromSDFFile(const std::string& filename, ReaderWriter& config)
     }
 
     // Load the file
-    TiXmlDocument doc(filename);
-    doc.LoadFile();
+    tinyxml2::XMLDocument doc;
+    doc.LoadFile(filename.c_str());
     if (doc.Error())
     {
         std::stringstream error;
         error << "Error loading " << filename << ": ";
-        error << doc.ErrorDesc() << " at row " << doc.ErrorRow() << ", col " << doc.ErrorCol();
+        error << doc.ErrorStr() << " at line " << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
     }

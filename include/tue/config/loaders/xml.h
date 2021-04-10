@@ -3,7 +3,7 @@
 
 #include <istream>
 #include <string>
-#include <tinyxml.h>
+#include <tinyxml2.h>
 
 namespace tue
 {
@@ -28,11 +28,11 @@ bool setValue(const std::string& key, const std::string& value, ReaderWriter& co
 /**
  * @brief loadFromXMLText writes a value from xml element into config object.
  * Stored as double, int or string
- * @param element TinyXML element
+ * @param element TinyXML2 element
  * @param config object in which the data is stored
  * @return indicates succes
  */
-bool loadFromXMLText(const TiXmlElement& element, ReaderWriter& config);
+bool loadFromXMLText(const tinyxml2::XMLElement& element, ReaderWriter& config);
 
 /**
  * @brief loadFromXMLStream loads a xml stream into a ReaderWriter class
