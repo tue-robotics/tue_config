@@ -4,6 +4,8 @@
 #include <boost/shared_ptr.hpp>
 #include "tue/config/data_pointer.h"
 
+#include <string>
+
 namespace tue
 {
 
