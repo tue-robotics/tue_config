@@ -21,32 +21,28 @@ BinaryWriter::~BinaryWriter()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool BinaryWriter::writeGroup(const std::string& name) {
+void BinaryWriter::writeGroup(const std::string& name) {
     data_.push_back('G');
     data_.insert(data_.end(), name.begin(), name.end() + 1);
-    return true; // To match api with non-binary writer
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool BinaryWriter::writeArray(const std::string& name) {
+void BinaryWriter::writeArray(const std::string& name) {
     data_.push_back('A');
     data_.insert(data_.end(), name.begin(), name.end() + 1);
-    return true; // To match api with non-binary writer
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool BinaryWriter::nextArrayItem() {
+void BinaryWriter::nextArrayItem() {
     data_.push_back('I');
-    return true; // To match api with non-binary writer
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool BinaryWriter::end() {
+void BinaryWriter::end() {
     data_.push_back('E');
-    return true; // To match api with non-binary writer
 }
 
 // ----------------------------------------------------------------------------------------------------
