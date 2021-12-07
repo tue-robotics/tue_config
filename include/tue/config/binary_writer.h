@@ -18,13 +18,13 @@ public:
 
     virtual ~BinaryWriter();
 
-    bool writeGroup(const std::string& name);
+    void writeGroup(const std::string& name);
 
-    bool writeArray(const std::string& name);
+    void writeArray(const std::string& name);
 
-    bool nextArrayItem();
+    void nextArrayItem();
 
-    bool end();
+    void end();
 
     void setValue(const std::string& name, int value);
 
