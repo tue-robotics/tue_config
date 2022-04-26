@@ -302,7 +302,7 @@ bool ReaderWriter::loadFromXMLFile(const std::string& filename)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ReaderWriter::loadFromYAMLFile(const std::string& filename)
+bool ReaderWriter::loadFromYAMLFile(const std::string& filename, const ResolveConfig& resolve_config)
 {
     // Remove possible previous errors
     error_->message.clear();
@@ -310,11 +310,12 @@ bool ReaderWriter::loadFromYAMLFile(const std::string& filename)
     // Reset head
     idx_ = scope_;
 
-    if (!config::loadFromYAMLFile(filename, *this))
+    if (!config::loadFromYAMLFile(filename, *this, resolve_config))
         return false;
 
     filename_ = filename;
     source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    resolve_config_ = resolve_config;
 
     return true;
 }
@@ -344,7 +345,7 @@ bool ReaderWriter::sync() {
             else if (extension == ".xml")
                 loadFromXMLFile(filename_);
             else if (extension == ".yml" || extension == ".yaml")
-                loadFromYAMLFile(filename_);
+                loadFromYAMLFile(filename_, resolve_config_);
             else
                 std::cout << "[ReaderWriter::Sync] extension: '" << extension << "'  is not supported." << std::endl;
             source_last_write_time_ = last_write_time;

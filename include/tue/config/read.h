@@ -2,6 +2,7 @@
 #define TUE_CONFIG_READ_H_
 
 #include "tue/config/data_pointer.h"
+#include "tue/config/resolve_config.h"
 
 #include <string>
 
@@ -30,13 +31,13 @@ private:
 
 // ----------------------------------------------------------------------------------------------------
 
-DataPointer fromString(const std::string& s);
+DataPointer fromString(const std::string& s, const ResolveConfig& resolve_config=ResolveConfig());
 
-DataPointer fromStream(std::istream& s);
+DataPointer fromStream(std::istream& s, const ResolveConfig& resolve_config=ResolveConfig());
 
-DataPointer fromFile(const std::string& filename);
+DataPointer fromFile(const std::string& filename, const ResolveConfig& resolve_config=ResolveConfig());
 
-DataPointer fromFile(const char* filename);
+DataPointer fromFile(const char* filename, const ResolveConfig& resolve_config=ResolveConfig());
 
 }
 }

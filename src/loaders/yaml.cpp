@@ -27,7 +27,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWriter& config)
+bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     std::string s;
 
@@ -37,7 +37,7 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     // Check and resolve possible resolve functions ( "$( ... )" )
     std::string s_resolved;
     std::stringstream s_error;
-    if (!resolve(s, config.source(), s_resolved, s_error))
+    if (!resolve(s, config.source(), s_resolved, s_error, resolve_config))
     {
         config.addError("While reading key '" + key +"': Could not resolve: " + s_error.str());
         return false;
@@ -83,13 +83,13 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
             filename = filepath.parentPath().join(s).string();
         }
 
-        return loadFromYAMLFile(filename, config);
+        return loadFromYAMLFile(filename, config, resolve_config);
     }
 
     // Check and resolve possible resolve functions ( "$( ... )" )
     std::string s_resolved;
     std::stringstream s_error;
-    if (!resolve(s, config.source(), s_resolved, s_error))
+    if (!resolve(s, config.source(), s_resolved, s_error, resolve_config))
     {
         config.addError("While reading key '" + key +"': Could not resolve: " + s_error.str());
         return false;
@@ -132,7 +132,7 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
+bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     bool success = true;
 #ifdef YAML_VERSION_0_3
@@ -152,7 +152,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         {
         case YAML::NodeType::Scalar:
         {
-            if (!yamlScalarToVariant(key, n, config))
+            if (!yamlScalarToVariant(key, n, config, resolve_config))
                 success = false;
             break;
         }
@@ -175,7 +175,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
                 else
                 {
                     config.addArrayItem();
-                    loadFromYAMLNode(n2, config);
+                    loadFromYAMLNode(n2, config, resolve_config);
                     config.endArrayItem();
                 }
             }
@@ -186,7 +186,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
         }
         case YAML::NodeType::Map:
             config.writeGroup(key);
-            loadFromYAMLNode(n, config);
+            loadFromYAMLNode(n, config, resolve_config);
             config.endGroup();
             break;
         case YAML::NodeType::Null:
@@ -199,7 +199,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config)
+bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     try
     {
@@ -219,7 +219,7 @@ bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config)
             return false;
         }
 
-        if (!loadFromYAMLNode(doc, config))
+        if (!loadFromYAMLNode(doc, config, resolve_config))
             return false;
     }
     catch(YAML::Exception& e)
@@ -233,16 +233,16 @@ bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLString(const std::string& string, ReaderWriter& config)
+bool loadFromYAMLString(const std::string& string, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     std::stringstream ss;
     ss << string;
-    return loadFromYAMLStream(ss, config);
+    return loadFromYAMLStream(ss, config, resolve_config);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config)
+bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     // Remove possible previous errors (TODO)
 //    config.data_->error.clear();
@@ -259,7 +259,7 @@ bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config)
         return false;
     }
 
-    if (!loadFromYAMLStream(fin, config))
+    if (!loadFromYAMLStream(fin, config, resolve_config))
         return false;
 
     // TODO:

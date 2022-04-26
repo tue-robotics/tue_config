@@ -1,8 +1,9 @@
 #ifndef TUE_CONFIG_READER_WRITER_H_
 #define TUE_CONFIG_READER_WRITER_H_
 
-#include "tue/config/types.h"
 #include "tue/config/data.h"
+#include "tue/config/resolve_config.h"
+#include "tue/config/types.h"
 
 #include <iostream>
 
@@ -225,7 +226,7 @@ public:
      * @param filename input file
      * @return indicates success
      */
-    bool loadFromYAMLFile(const std::string& filename);
+    bool loadFromYAMLFile(const std::string& filename, const ResolveConfig& resolve_config=ResolveConfig());
 
     /**
      * @brief sync re-read the source file if the file has changed since last reading time.
@@ -309,6 +310,8 @@ private:
     std::string filename_; // filename of the source file
 
     std::time_t source_last_write_time_; // last writing time of the source file at time of reading.
+
+    ResolveConfig resolve_config_; // Needs to be stored for sync
 
 };
 
