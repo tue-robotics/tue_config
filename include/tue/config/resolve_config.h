@@ -17,7 +17,13 @@ class ResolveConfig
 {
 public:
 
-    ResolveConfig() : env(true), file(true), rospkg(true) {}
+    ResolveConfig(bool env_=true, bool file_=true, bool rospkg_=true) : env(env_), file(file_), rospkg(rospkg_) {}
+
+    /**
+     * @brief Default ResolveConfig that has all resolve options enabled
+     * @return ResolveConfig with everything enabled.
+     */
+    static ResolveConfig defaultConfig() { return ResolveConfig(true, true, true); }
 
     // Resolve environment variables
     bool env;
