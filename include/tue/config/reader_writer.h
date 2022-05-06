@@ -226,7 +226,7 @@ public:
      * @param filename input file
      * @return indicates success
      */
-    bool loadFromYAMLFile(const std::string& filename, const ResolveConfig& resolve_config=ResolveConfig());
+    bool loadFromYAMLFile(const std::string& filename, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
     /**
      * @brief sync re-read the source file if the file has changed since last reading time.

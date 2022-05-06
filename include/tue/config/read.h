@@ -31,13 +31,13 @@ private:
 
 // ----------------------------------------------------------------------------------------------------
 
-DataPointer fromString(const std::string& s, const ResolveConfig& resolve_config=ResolveConfig());
+DataPointer fromString(const std::string& s, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
-DataPointer fromStream(std::istream& s, const ResolveConfig& resolve_config=ResolveConfig());
+DataPointer fromStream(std::istream& s, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
-DataPointer fromFile(const std::string& filename, const ResolveConfig& resolve_config=ResolveConfig());
+DataPointer fromFile(const std::string& filename, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
-DataPointer fromFile(const char* filename, const ResolveConfig& resolve_config=ResolveConfig());
+DataPointer fromFile(const char* filename, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
 }
 }

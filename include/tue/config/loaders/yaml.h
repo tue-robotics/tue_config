@@ -23,7 +23,7 @@ class ReaderWriter;
  * @param config object in which the data is stored
  * @return indicates success
  */
-bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const ResolveConfig& resolve_config=ResolveConfig());
+bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
 /**
  * @brief loadFromYAMLString loads a yaml string into a ReaderWriter class
@@ -31,7 +31,7 @@ bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const Resolv
  * @param config object in which the data is stored
  * @return indicates success
  */
-bool loadFromYAMLString(const std::string& string, ReaderWriter& config, const ResolveConfig& resolve_config=ResolveConfig());
+bool loadFromYAMLString(const std::string& string, ReaderWriter& config, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
 /**
  * @brief loadFromYAMLFile loads a yaml file into a ReaderWriter class
@@ -39,7 +39,7 @@ bool loadFromYAMLString(const std::string& string, ReaderWriter& config, const R
  * @param config object in which the data is stored
  * @return indicates success
  */
-bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const ResolveConfig& resolve_config=ResolveConfig());
+bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
 }
 
