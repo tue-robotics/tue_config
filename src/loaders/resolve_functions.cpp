@@ -7,6 +7,7 @@
 #include <tue/filesystem/path.h>
 
 #include <iostream>
+#include <iterator>
 
 namespace tue
 {
@@ -14,23 +15,50 @@ namespace tue
 namespace config
 {
 
+enum resolveResult
+{
+    failed,
+    success,
+    skipped
+};
+
 // ----------------------------------------------------------------------------------------------------
 
-bool executeResolvefunction(const std::vector<std::string>& args, const std::string& source, std::string& result, std::stringstream& error)
+void argsToString(const std::vector<std::string>& args, std::string& output)
+{
+    output = "$(";
+    for (auto it = args.cbegin(); it != args.cend(); ++it)
+    {
+        if (it != args.cbegin())
+            output += " ";
+        output += *it;
+    }
+    output += ")";
+}
+
+// ----------------------------------------------------------------------------------------------------
+
+resolveResult executeResolvefunction(const std::vector<std::string>& args, const std::string& source, std::string& result, std::stringstream& error, const ResolveConfig& config)
 {
     if (args[0] == "rospkg" && args.size() == 2)
     {
+        if (!config.rospkg)
+            return resolveResult::skipped;
+
         result = ros::package::getPath(args[1]);
         if (result.empty())
         {
             error << "ROS package '" << args[1] << "' unknown.";
-            return false;
+            return resolveResult::failed;
         }
 
-        return true;
+        return resolveResult::success;
     }
     else if (args[0] == "env" && (args.size() == 2 || args.size() == 3))
     {
+        if (!config.env)
+            return resolveResult::skipped;
+
         char* env_value;
         env_value = getenv(args[1].c_str());
         if (env_value == nullptr)
@@ -39,23 +67,26 @@ bool executeResolvefunction(const std::vector<std::string>& args, const std::str
             {
                 // Default value
                 result = args[2];
-                return true;
+                return resolveResult::success;
             }
 
             error << "Environment variable '" << args[1] << "' unknown.";
-            return false;
+            return resolveResult::failed;
         }
 
         result = env_value;
-        return true;
+        return resolveResult::success;
     }
     else if (args[0] == "file" && args.size() == 2)
     {
+        if (!config.file)
+            return resolveResult::skipped;
+
         const std::string& filename = args[1];
         if (filename[0] == '/')
         {
             result = filename;
-            return true;
+            return resolveResult::success;
         }
 
         tue::filesystem::Path parent_path = tue::filesystem::Path(source).parentPath();
@@ -64,20 +95,24 @@ bool executeResolvefunction(const std::vector<std::string>& args, const std::str
         else
             result = parent_path.join(filename).string();
 
-        return true;
+        return resolveResult::success;
     }
 
     error << "Unknown resolve function: '" << args[0] << "' with " << args.size() - 1 << " arguments.";
 
-    return false;
+    return resolveResult::failed;
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool parseResolveFunction(const std::string& str, const std::string& source, std::size_t& i, std::string& result, std::stringstream& error)
+resolveResult parseResolveFunction(const std::string& str, const std::string& source, std::size_t& i, std::string& result, std::stringstream& error, const ResolveConfig& config)
 {
     std::vector<std::string> args;
     args.push_back("");
+
+    bool inner_function_skipped = false;
+
+    std::size_t i_start = i;
 
     for(; i < str.size();)
     {
@@ -89,8 +124,11 @@ bool parseResolveFunction(const std::string& str, const std::string& source, std
             i += 2;
 
             std::string arg;
-            if (!parseResolveFunction(str, source, i, arg, error))
-                return false;
+            resolveResult result = parseResolveFunction(str, source, i, arg, error, config);
+            if (result == resolveResult::failed)
+                return resolveResult::failed;
+            else if (result == resolveResult::skipped)
+                inner_function_skipped = true;
 
             args.back() += arg;
             continue;
@@ -107,10 +145,25 @@ bool parseResolveFunction(const std::string& str, const std::string& source, std
             if (args.empty())
             {
                 error << "Empty resolve function.";
-                return false;
+                return resolveResult::failed;
             }
 
-            return executeResolvefunction(args, source, result, error);
+            resolveResult result_code = executeResolvefunction(args, source, result, error, config);
+            if (result_code == resolveResult::skipped)
+            {
+                argsToString(args, result);
+                return result_code;
+            }
+
+            if (inner_function_skipped)
+            {
+                std::string resolved_args;
+                argsToString(args, resolved_args);
+                error << "Inner resolve function skipped, but not this one: " << resolved_args << ".";
+                return resolveResult::failed;
+            }
+
+            return result_code;
         }
         else if (c == ' ')
         {
@@ -126,15 +179,21 @@ bool parseResolveFunction(const std::string& str, const std::string& source, std
     }
 
     error << "Missing ')'.";
-    return false;
+    return resolveResult::failed;
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool resolve(const std::string& str, const std::string& source, std::string& result, std::stringstream& error)
+bool resolve(const std::string& str, const std::string& source, std::string& result, std::stringstream& error, const ResolveConfig& config)
 {
-    std::size_t i = 0;
+    // Easy way out when nothing needs to be resolved
+    if (config.AllFalse())
+    {
+        result = str;
+        return true;
+    }
 
+    std::size_t i = 0;
     while(i < str.size())
     {
         std::size_t i_sign = str.find("$(", i);
@@ -150,7 +209,7 @@ bool resolve(const std::string& str, const std::string& source, std::string& res
         i = i_sign + 2;
 
         std::string subresult;
-        if (!parseResolveFunction(str, source, i, subresult, error))
+        if (!parseResolveFunction(str, source, i, subresult, error, config)) // failed: 0
             return false;
 
         result += subresult;
