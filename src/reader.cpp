@@ -21,7 +21,7 @@ Reader::~Reader()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
+bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional /*opt*/)
 {
     Label label;
     NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.

@@ -29,9 +29,9 @@ public:
 
     // --- MAP
 
-    virtual bool readGroup(const Label& label, NodeIdx& idx) const { return false; }
+    virtual bool readGroup(const Label& /*label*/, NodeIdx& /*idx*/) const { return false; }
 
-    virtual bool value(const Label& label, Variant& value) const { return false; }
+    virtual bool value(const Label& /*label*/, Variant& /*value*/) const { return false; }
 
     virtual bool empty() const = 0;
 
@@ -40,15 +40,15 @@ public:
 
     // --- MAP
 
-    virtual bool addGroup(const Label& label, const NodeIdx& n, NodeIdx& idx) { return false; }
+    virtual bool addGroup(const Label& /*label*/, const NodeIdx& /*n*/, NodeIdx& /*idx*/) { return false; }
 
-    virtual bool setValue(const Label& label, const Variant& value) { return false; }
+    virtual bool setValue(const Label& /*label*/, const Variant& /*value*/) { return false; }
 
     // --- ARRAY
 
-    virtual bool add(const NodeIdx& n, NodeIdx& previous) { return false; }
+    virtual bool add(const NodeIdx& /*n*/, NodeIdx& /*previous*/) { return false; }
 
-    virtual bool firstChild(NodeIdx& child) { return false; }
+    virtual bool firstChild(NodeIdx& /*child*/) { return false; }
 
 
     inline const Label& name() const { return name_; }
