@@ -81,7 +81,7 @@ bool ReaderWriter::end()
         return false;
 
     NodeIdx parent = cfg_->getParent(idx_);
-    if (parent == -1)
+    if (parent == static_cast<NodeIdx>(-1))
         return false;
 
     idx_ = parent;
@@ -101,7 +101,7 @@ bool ReaderWriter::next()
         return cfg_->nodes[idx_]->firstChild(idx_);
 
     NodeIdx right_sibling = cfg_->getRightSibling(idx_);
-    if (right_sibling == -1)
+    if (right_sibling == static_cast<NodeIdx>(-1))
         return false;
 
     idx_ = right_sibling;
@@ -149,7 +149,7 @@ void ReaderWriter::addError(const std::string& msg)
         // Default error context
 
         NodeIdx c = idx_;
-        while(c != -1)
+        while(c != static_cast<NodeIdx>(-1))
         {
             const NodePtr& n = cfg_->nodes[c];
             context.push_back(n->name());
@@ -232,7 +232,7 @@ bool ReaderWriter::addArrayItem()
     if (!cfg_->nodes[idx_]->add(n, previous))
         return false;
 
-    if (previous != -1)
+    if (previous != static_cast<NodeIdx>(-1))
         cfg_->setRightSibling(previous, n);
 
     idx_ = n;
@@ -245,7 +245,7 @@ bool ReaderWriter::addArrayItem()
 bool ReaderWriter::endArrayItem()
 {
     NodeIdx parent = cfg_->getParent(idx_);
-    if (parent == -1)
+    if (parent == static_cast<NodeIdx>(-1))
         return false;
 
     idx_ = parent;

@@ -91,7 +91,7 @@ bool Writer::addArrayItem()
     if (!cfg_->nodes[idx_]->add(n, previous))
         return false;
 
-    if (previous != -1)
+    if (previous != static_cast<NodeIdx>(-1))
         cfg_->setRightSibling(previous, n);
 
     idx_ = n;
@@ -104,7 +104,7 @@ bool Writer::addArrayItem()
 bool Writer::end()
 {
     NodeIdx parent = cfg_->getParent(idx_);
-    if (parent == -1)
+    if (parent == static_cast<NodeIdx>(-1))
         return false;
 
     idx_ = parent;
