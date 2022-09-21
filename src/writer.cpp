@@ -20,7 +20,7 @@ Writer::Writer() : idx_(0)
 
 // ----------------------------------------------------------------------------------------------------
 
-Writer::Writer(DataPointer& cfg) : cfg_(cfg.data), idx_(cfg.idx)
+Writer::Writer(DataPointer& cfg) : idx_(cfg.idx), cfg_(cfg.data)
 {
     if (!cfg_)
     {
