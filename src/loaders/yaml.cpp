@@ -189,6 +189,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
             loadFromYAMLNode(n, config, resolve_config);
             config.endGroup();
             break;
+        case YAML::NodeType::Undefined:
         case YAML::NodeType::Null:
             break;
         }
