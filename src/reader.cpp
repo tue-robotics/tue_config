@@ -21,7 +21,7 @@ Reader::~Reader()
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
+bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional /*opt*/)
 {
     Label label;
     NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
@@ -43,7 +43,7 @@ bool Reader::read(const std::string& name, const NodeType type, const RequiredOr
 bool Reader::end()
 {   
     NodeIdx parent = cfg_->getParent(idx_);
-    if (parent == -1)
+    if (parent == static_cast<NodeIdx>(-1))
         return false;
 
     idx_ = parent;
@@ -63,7 +63,7 @@ bool Reader::next()
         return cfg_->nodes[idx_]->firstChild(idx_);
 
     NodeIdx right_sibling = cfg_->getRightSibling(idx_);
-    if (right_sibling == -1)
+    if (right_sibling == static_cast<NodeIdx>(-1))
         return false;
 
     idx_ = right_sibling;

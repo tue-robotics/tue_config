@@ -112,8 +112,6 @@ resolveResult parseResolveFunction(const std::string& str, const std::string& so
 
     bool inner_function_skipped = false;
 
-    std::size_t i_start = i;
-
     for(; i < str.size();)
     {
         char c = str[i];

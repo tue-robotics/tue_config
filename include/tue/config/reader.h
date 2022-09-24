@@ -30,7 +30,7 @@ public:
      * @param opt RequiredOrOptional
      * @return indicates succes, can fail if key not available or variable type isn't matching
      */
-    bool value(const std::string& name, T& value, const RequiredOrOptional opt = REQUIRED) const
+    bool value(const std::string& name, T& value, const RequiredOrOptional /*opt*/ = REQUIRED) const
     {
         Label label;
         if (!cfg_->getLabel(name, label))

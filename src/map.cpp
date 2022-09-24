@@ -18,7 +18,7 @@ NodePtr Map::deepCopy(const Data& source, NodeIdx target_idx, Data& target) cons
         target.nodes[child_idx] = source.nodes[it->second]->deepCopy(source, child_idx, target);
         n->map_[it->first] = child_idx;
 
-        if (previous_child_idx != -1)
+        if (previous_child_idx != static_cast<NodeIdx>(-1))
             target.setRightSibling(previous_child_idx, child_idx);
 
         previous_child_idx = child_idx;

@@ -193,7 +193,7 @@ void test4()
 
 // ----------------------------------------------------------------------------------------------------
 
-int main(int argc, char **argv)
+int main()
 {
     tue::config::DataPointer cfg;
     tue::config::Writer writer(cfg);
