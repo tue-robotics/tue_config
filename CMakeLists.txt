@@ -11,6 +11,7 @@ find_package(catkin REQUIRED COMPONENTS
 )
 
 find_package(TinyXML2 REQUIRED)
+find_package(yaml-cpp REQUIRED)
 
 catkin_python_setup()
 
@@ -30,8 +31,10 @@ catkin_package(
 
 include_directories(
   include
-  ${catkin_INCLUDE_DIRS}
+  SYSTEM
   ${TinyXML2_INCLUDE_DIRS}
+  ${YAML_CPP_INCLUDE_DIR}
+  ${catkin_INCLUDE_DIRS}
 )
 
 file(GLOB_RECURSE HEADER_FILES include/*.h)
@@ -59,7 +62,7 @@ add_library(tue_config
   src/write.cpp
   ${HEADER_FILES}
 )
-target_link_libraries(tue_config ${catkin_LIBRARIES} yaml-cpp ${roslib_LIBRARIES} ${TinyXML2_LIBRARIES})
+target_link_libraries(tue_config ${TinyXML2_LIBRARIES} ${YAML_CPP_LIBRARIES} ${catkin_LIBRARIES})
 
 add_executable(test_tue_config test/test.cpp)
 target_link_libraries(test_tue_config tue_config)
@@ -75,5 +78,5 @@ target_link_libraries(test_sdf_and_show tue_config)
 
 if (CATKIN_ENABLE_TESTING)
   catkin_add_gtest(sdf_gtest test/sdf_gtest.cpp)
-  target_link_libraries(sdf_gtest tue_config ${catkin_LIBRARIES})
+  target_link_libraries(sdf_gtest tue_config)
 endif()
