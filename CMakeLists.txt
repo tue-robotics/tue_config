@@ -60,6 +60,10 @@ add_library(${PROJECT_NAME}
   src/read.cpp
   src/reader.cpp
   src/reader_writer.cpp
+
+  # Forward tue_filesystem logging to rosconsole
+  src/rosconsole_bridge.cpp
+
   src/sequence.cpp
   src/write.cpp
   src/writer.cpp

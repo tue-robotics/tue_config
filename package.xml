@@ -21,7 +21,10 @@
   <depend>tue_filesystem</depend>
   <depend>yaml-cpp</depend>
 
+  <build_depend>rosconsole_bridge</build_depend>
+
   <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rosconsole_bridge</exec_depend>
 
   <test_depend>rosunit</test_depend>
 
