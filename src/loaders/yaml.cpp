@@ -160,11 +160,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
         {
             config.writeArray(key);
 
-#ifdef YAML_VERSION_0_3
-            for(YAML::Iterator it2 = n.begin(); it2 != n.end(); ++it2)
-#else
             for(std::size_t i = 0; i < n.size(); ++i)
-#endif
             {
                 const YAML::Node& n2 = n[i];
                 if (n2.Type() != YAML::NodeType::Map)
