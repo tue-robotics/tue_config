@@ -163,16 +163,10 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
 #ifdef YAML_VERSION_0_3
             for(YAML::Iterator it2 = n.begin(); it2 != n.end(); ++it2)
 #else
-            for(YAML::const_iterator it2 = n.begin(); it2 != n.end(); ++it2)
+            for(std::size_t i = 0; i < n.size(); ++i)
 #endif
             {
-                const YAML::Node& n2 = *it2;
-                // This check should not be necessary but it is. Without optimisation the loop condition fails to detect the end of the sequence
-                if (n2.IsNull())
-                {
-                    //std::cout << "Null type object detected in sequence..." << std::endl;
-                    break;
-                }
+                const YAML::Node& n2 = n[i];
                 if (n2.Type() != YAML::NodeType::Map)
                 {
                     config.addError("Sequences must only contains maps");
