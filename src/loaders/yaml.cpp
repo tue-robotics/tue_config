@@ -160,6 +160,10 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
         {
             config.writeArray(key);
 
+            /*
+             * Need to use index iteration instead of iterator for sequences, because it goes behind the end.
+             * See https://github.com/jbeder/yaml-cpp/issues/833
+             */
             for(std::size_t i = 0; i < n.size(); ++i)
             {
                 const YAML::Node& n2 = n[i];
