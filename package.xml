@@ -5,7 +5,7 @@
 <package format="3">
   <name>tue_config</name>
   <version>0.0.0</version>
-  <description>The tue_config package</description>
+  <description>Read and write (binary) configurations</description>
 
   <maintainer email="S.v.d.Dries@tue.nl">Sjoerd van den Dries</maintainer>
 
@@ -15,12 +15,16 @@
 
   <build_depend>cmake_modules</build_depend>
 
+  <depend>libboost-dev</depend>
   <depend>roslib</depend>
   <depend>tinyxml2</depend>
   <depend>tue_filesystem</depend>
   <depend>yaml-cpp</depend>
 
+  <build_depend>rosconsole_bridge</build_depend>
+
   <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>rosconsole_bridge</exec_depend>
 
   <test_depend>rosunit</test_depend>
 
@@ -29,6 +33,8 @@
   <doc_depend>python-sphinx-autoapi-pip</doc_depend>
   <doc_depend>python-sphinx-rtd-theme-pip</doc_depend>
   <doc_depend>python3-yaml</doc_depend>
+
+  <test_depend>catkin_lint_cmake</test_depend>
 
   <export>
     <rosdoc config="rosdoc.yaml" />
