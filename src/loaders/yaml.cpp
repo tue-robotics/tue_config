@@ -9,12 +9,7 @@
 // YAML parsing
 #include <fstream>
 
-#ifdef YAML_VERSION_0_3
-    #include "yaml-cpp/parser.h"
-    #include "yaml-cpp/node.h"
-#else
-    #include "yaml-cpp/yaml.h"
-#endif
+#include "yaml-cpp/yaml.h"
 
 #include <iostream>
 #include <stdlib.h>
@@ -30,45 +25,6 @@ namespace config
 bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     std::string s;
-
-#ifdef YAML_VERSION_0_3
-    n.GetScalar(s);
-
-    // Check and resolve possible resolve functions ( "$( ... )" )
-    std::string s_resolved;
-    std::stringstream s_error;
-    if (!resolve(s, config.source(), s_resolved, s_error, resolve_config))
-    {
-        config.addError("While reading key '" + key +"': Could not resolve: " + s_error.str());
-        return false;
-    }
-
-    char* pEnd;
-
-    int i = strtol(s_resolved.c_str(), &pEnd, 10);
-    if (pEnd[0] == 0)
-    {
-        config.setValue(key, i);
-        return true;
-    }
-
-    double d = strtod(s_resolved.c_str(), &pEnd);
-    if (pEnd[0] == 0)
-    {
-        config.setValue(key, d);
-        return true;
-    }
-
-    bool b;
-    if (strToBool(s_resolved, b))
-    {
-        config.setValue(key, b);
-        return true;
-    }
-
-    config.setValue(key, s_resolved);
-    return true;
-#else
 
     s = n.as<std::string>();
 
@@ -126,8 +82,6 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 
     config.setValue(key, s_resolved);
     return true;
-
-#endif
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -135,18 +89,10 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     bool success = true;
-#ifdef YAML_VERSION_0_3
-    for(YAML::Iterator it = node.begin(); it != node.end(); ++it)
-    {
-        std::string key;
-        it.first() >> key;
-        const YAML::Node& n = it.second();
-#else
     for(YAML::const_iterator it = node.begin(); it != node.end(); ++it)
     {
         std::string key = it->first.as<std::string>();
         const YAML::Node& n = it->second;
-#endif
 
         switch (n.Type())
         {
@@ -205,14 +151,7 @@ bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const Resolv
     try
     {
 
-#ifdef YAML_VERSION_0_3
-        // load yaml
-        YAML::Parser parser(stream);
-        YAML::Node doc;
-        parser.GetNextDocument(doc);
-#else
         YAML::Node doc = YAML::Load(stream);
-#endif
 
         if (doc.Type() != YAML::NodeType::Map)
         {
