@@ -12,7 +12,7 @@ void test1(const std::string& filename)
 
     std::cout << config << std::endl;
 
-    while(true)
+    while (true)
     {
         if (config.sync())
         {
@@ -65,7 +65,7 @@ void test2()
 
     config.readArray("array");
 
-    while(config.nextArrayItem())
+    while (config.nextArrayItem())
     {
         std::cout << config << std::endl;
     }
@@ -160,7 +160,8 @@ void test5()
 
 // ----------------------------------------------------------------------------------------------------
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
 
     tue::Configuration config;
 

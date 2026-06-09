@@ -22,7 +22,7 @@ bool toFile(const std::string& filename, const DataConstPointer& data, WriteType
 
 bool toFile(const char* filename, const DataConstPointer& data, WriteType write_type, int indent_size = 0);
 
-}
-}
+} // namespace config
+} // namespace tue
 
 #endif

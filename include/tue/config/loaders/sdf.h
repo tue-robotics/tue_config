@@ -39,8 +39,8 @@ bool loadFromSDFString(const std::string& string, ReaderWriter& config);
  */
 bool loadFromSDFFile(const std::string& filename, ReaderWriter& config);
 
-}  // End of namespace config
+} // End of namespace config
 
-}  // End of namespace tue
+} // End of namespace tue
 
 #endif // TUE_CONFIG_LOADERS_SDF_H_

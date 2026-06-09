@@ -17,7 +17,6 @@ namespace config
 class ParseException : public std::exception
 {
 public:
-
     ParseException(const std::string message) : message_(message) {}
 
     ~ParseException() throw() {}
@@ -25,7 +24,6 @@ public:
     const char* what() const throw() { return message_.c_str(); }
 
 private:
-
     std::string message_;
 };
 
@@ -39,7 +37,7 @@ DataPointer fromFile(const std::string& filename, const ResolveConfig& resolve_c
 
 DataPointer fromFile(const char* filename, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
-}
-}
+} // namespace config
+} // namespace tue
 
 #endif

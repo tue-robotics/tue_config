@@ -1,10 +1,10 @@
 #ifndef TUE_CONFIG_NODE_H_
 #define TUE_CONFIG_NODE_H_
 
+#include "tue/config/label.h"
 #include "tue/config/node_type.h"
 #include "tue/config/types.h"
 #include "tue/config/variant.h"
-#include "tue/config/label.h"
 
 #include <map>
 
@@ -20,7 +20,6 @@ class Node
 {
 
 public:
-
     Node(const Label& name, NodeType type) : name_(name), type_(type) {}
 
     virtual ~Node() {}
@@ -34,7 +33,6 @@ public:
     virtual bool value(const Label& /*label*/, Variant& /*value*/) const { return false; }
 
     virtual bool empty() const = 0;
-
 
     // WRITE
 
@@ -50,27 +48,23 @@ public:
 
     virtual bool firstChild(NodeIdx& /*child*/) { return false; }
 
-
     inline const Label& name() const { return name_; }
 
     inline const NodeType& type() const { return type_; }
 
     void setName(const std::string& name) { name_ = name; }
 
-
     // --- COPY
 
     virtual NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const = 0;
 
 private:
-
     Label name_;
 
     NodeType type_;
-
 };
 
-}
+} // namespace config
 
 } // end namespace tue
 

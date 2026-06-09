@@ -16,8 +16,8 @@ namespace config
  */
 bool strToBool(std::string s, bool& rhs);
 
-}
+} // namespace config
 
-}
+} // namespace tue
 
 #endif // TUE_CONFIG_LOADERS_LOADER_FUNCTIONS_H_

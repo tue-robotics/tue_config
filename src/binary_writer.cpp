@@ -9,45 +9,46 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-BinaryWriter::BinaryWriter()
-{
-}
+BinaryWriter::BinaryWriter() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-BinaryWriter::~BinaryWriter()
-{
-}
+BinaryWriter::~BinaryWriter() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void BinaryWriter::writeGroup(const std::string& name) {
+void BinaryWriter::writeGroup(const std::string& name)
+{
     data_.push_back('G');
     data_.insert(data_.end(), name.begin(), name.end() + 1);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void BinaryWriter::writeArray(const std::string& name) {
+void BinaryWriter::writeArray(const std::string& name)
+{
     data_.push_back('A');
     data_.insert(data_.end(), name.begin(), name.end() + 1);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void BinaryWriter::nextArrayItem() {
+void BinaryWriter::nextArrayItem()
+{
     data_.push_back('I');
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void BinaryWriter::end() {
+void BinaryWriter::end()
+{
     data_.push_back('E');
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-void BinaryWriter::setValue(const std::string& name, int value) {
+void BinaryWriter::setValue(const std::string& name, int value)
+{
     data_.push_back('V');
     data_.insert(data_.end(), name.begin(), name.end() + 1);
     data_.insert(data_.end(), (char*)&value, (char*)&value + sizeof(value));
@@ -56,15 +57,13 @@ void BinaryWriter::setValue(const std::string& name, int value) {
 void BinaryWriter::print() const
 {
     std::cout << data_.size() << std::endl;
-    for(unsigned int i = 0; i < data_.size(); ++i)
+    for (unsigned int i = 0; i < data_.size(); ++i)
     {
         std::cout << (int)(data_[i]) << " ";
     }
     std::cout << std::endl;
 }
 
+} // namespace config
 
-} // end namespace tue
-
-} // end namespace config
-
+} // namespace tue

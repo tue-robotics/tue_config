@@ -10,13 +10,15 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-BinaryReader::BinaryReader(const std::vector<char>& data)
-    : data_(&data[0]), byte_size_(data.size()), idx_(0), error_(false)
-{}
+BinaryReader::BinaryReader(const std::vector<char>& data) :
+    data_(&data[0]), byte_size_(data.size()), idx_(0), error_(false)
+{
+}
 
-BinaryReader::BinaryReader(const char* data, unsigned int byte_size)
-    : data_(data), byte_size_(byte_size), idx_(0), error_(false)
-{}
+BinaryReader::BinaryReader(const char* data, unsigned int byte_size) :
+    data_(data), byte_size_(byte_size), idx_(0), error_(false)
+{
+}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -80,10 +82,8 @@ bool BinaryReader::value(const std::string& name, int& value)
 
     error_ = true;
     return false;
-
 }
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
-
+} // namespace tue

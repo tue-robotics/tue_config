@@ -15,7 +15,6 @@ class Sequence : public Node
 {
 
 public:
-
     Sequence(const Label& name) : Node(name, ARRAY) {}
 
     bool add(const NodeIdx& n, NodeIdx& previous)
@@ -43,14 +42,10 @@ public:
 
     NodePtr deepCopy(const Data& source, NodeIdx target_idx, Data& target) const;
 
-    virtual bool empty() const
-    {
-        return children_.empty();
-    }
-
+    virtual bool empty() const { return children_.empty(); }
 };
 
-}
+} // namespace config
 
 } // end namespace tue
 

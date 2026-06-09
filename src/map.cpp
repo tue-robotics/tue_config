@@ -12,7 +12,7 @@ NodePtr Map::deepCopy(const Data& source, NodeIdx target_idx, Data& target) cons
     boost::shared_ptr<Map> n(new Map(name()));
 
     NodeIdx previous_child_idx = -1;
-    for(std::map<Label, NodeIdx>::const_iterator it = map_.begin(); it != map_.end(); ++it)
+    for (std::map<Label, NodeIdx>::const_iterator it = map_.begin(); it != map_.end(); ++it)
     {
         NodeIdx child_idx = target.addNode(NodePtr(), target_idx);
         target.nodes[child_idx] = source.nodes[it->second]->deepCopy(source, child_idx, target);
@@ -30,7 +30,6 @@ NodePtr Map::deepCopy(const Data& source, NodeIdx target_idx, Data& target) cons
     return n;
 }
 
-}
+} // namespace config
 
 } // end namespace tue
-

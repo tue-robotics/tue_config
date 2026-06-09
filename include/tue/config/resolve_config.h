@@ -10,14 +10,13 @@ namespace config
 /**
  * @brief Class to config the resolve behaviour of a loader.
  *
- * As the resolve function can be used recursively, the user should always consider whether the choices made will result in the desired behaviour.
- * Outer resolve functions can't be resolved, when inner resolve functions are skipped.
+ * As the resolve function can be used recursively, the user should always consider whether the choices made will result
+ * in the desired behaviour. Outer resolve functions can't be resolved, when inner resolve functions are skipped.
  */
 class ResolveConfig
 {
 public:
-
-    ResolveConfig(bool env_=true, bool file_=true, bool rospkg_=true) : env(env_), file(file_), rospkg(rospkg_) {}
+    ResolveConfig(bool env_ = true, bool file_ = true, bool rospkg_ = true) : env(env_), file(file_), rospkg(rospkg_) {}
 
     /**
      * @brief Default ResolveConfig that has all resolve options enabled
@@ -35,11 +34,10 @@ public:
     inline bool AllTrue() const { return env && file && rospkg; }
 
     inline bool AllFalse() const { return !env && !file && !rospkg; }
-
 };
 
-}
+} // namespace config
 
-}
+} // namespace tue
 
 #endif

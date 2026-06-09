@@ -1,13 +1,13 @@
 #include <fstream>
-#include <sstream>
 #include <set>
+#include <sstream>
 #include <tinyxml2.h>
 
 #include "tue/config/configuration.h"
 #include "tue/config/loaders/sdf.h"
 #include "tue/config/loaders/xml.h"
-#include "tue/config/read.h"
 #include "tue/config/node_type.h"
+#include "tue/config/read.h"
 
 #include "tue/filesystem/path.h"
 
@@ -19,22 +19,47 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 // all tags which should be an array(list)
-static const std::set<std::string> SDF_ARRAY_SET {"collision", "include", "joint", "link", "model", "point", "visual",
-                                                  "virtual_volume"};
+static const std::set<std::string> SDF_ARRAY_SET{
+    "collision", "include", "joint", "link", "model", "point", "visual", "virtual_volume"};
 
 // all tags which should be an group(dict)
-static const std::set<std::string> SDF_MAP_SET {"atmosphere", "audio", "blend", "box", "camera", "cylinder", "geometry",
-                                                "gripper", "gui", "heightmap", "image", "mesh", "plane", "plugin",
-                                                "polyline", "pose", "sdf", "sphere", "texture", "track_visual", "wind",
-                                                "world" };
+static const std::set<std::string> SDF_MAP_SET{
+    "atmosphere", "audio",     "blend",   "box",          "camera", "cylinder", "geometry", "gripper",
+    "gui",        "heightmap", "image",   "mesh",         "plane",  "plugin",   "polyline", "pose",
+    "sdf",        "sphere",    "texture", "track_visual", "wind",   "world"};
 // all tags which should be an value
-static const std::set<std::string> SDF_VALUE_SET {"device", "diffuse", "empty", "fade_dist", "filename", "fullscreen",
-                                                  "gravity", "height", "inherit_yaw", "length", "linear_velocity",
-                                                  "magnetic_field", "max_dist", "min_dist", "min_height", "name",
-                                                  "normal", "pos", "pose", "pressure", "projection_type", "radius",
-                                                  "sampling", "size", "static", "temperature", "temperature_gradient",
-                                                  "type", "uri", "use_model_frame", "view_controller", "xyz" };
-
+static const std::set<std::string> SDF_VALUE_SET{"device",
+                                                 "diffuse",
+                                                 "empty",
+                                                 "fade_dist",
+                                                 "filename",
+                                                 "fullscreen",
+                                                 "gravity",
+                                                 "height",
+                                                 "inherit_yaw",
+                                                 "length",
+                                                 "linear_velocity",
+                                                 "magnetic_field",
+                                                 "max_dist",
+                                                 "min_dist",
+                                                 "min_height",
+                                                 "name",
+                                                 "normal",
+                                                 "pos",
+                                                 "pose",
+                                                 "pressure",
+                                                 "projection_type",
+                                                 "radius",
+                                                 "sampling",
+                                                 "size",
+                                                 "static",
+                                                 "temperature",
+                                                 "temperature_gradient",
+                                                 "type",
+                                                 "uri",
+                                                 "use_model_frame",
+                                                 "view_controller",
+                                                 "xyz"};
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -48,10 +73,12 @@ tue::config::NodeType getSDFNodeType(const std::string& element_name)
     static std::set<std::string> already_printed;
 
     // check if the element name is in the map set
-    if (SDF_MAP_SET.find(element_name) == SDF_MAP_SET.end() && already_printed.find(element_name) == already_printed.end())
+    if (SDF_MAP_SET.find(element_name) == SDF_MAP_SET.end() &&
+        already_printed.find(element_name) == already_printed.end())
     {
         already_printed.insert(element_name);
-        std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as Node type." << std::endl;
+        std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as Node type."
+                  << std::endl;
     }
 
     // return MAP, even if it is not in the map set.
@@ -85,16 +112,16 @@ bool loadFromSDFElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
             // Start a new group
             config.writeGroup(element.Value());
 
-
         // Iterate through attributes
         // if this element does not contain children, we don't end up here
-        for (const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
+        for (const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute != nullptr;
+             attribute = attribute->Next())
         {
             setValue(attribute->Name(), attribute->Value(), config);
         }
 
         // Iterate through elements
-        for(const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
+        for (const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
             std::string candidate_name = e->Value();
             tue::config::NodeType candidate_node_type = getSDFNodeType(candidate_name);
@@ -130,7 +157,6 @@ bool loadFromSDFElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
     }
 
     return true;
-
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -216,6 +242,6 @@ bool loadFromSDFFile(const std::string& filename, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-}  // End of namespace config
+} // End of namespace config
 
-}  // End of namespace tue
+} // End of namespace tue

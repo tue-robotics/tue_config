@@ -1,5 +1,7 @@
 import inspect
 import os
+import subprocess
+
 import yaml
 
 
@@ -8,8 +10,8 @@ class Configuration:
         self.__dict__["_d"] = d if d is not None else dict()
 
     def __getattr__(self, key):
-        if key[0] == '_':
-            return object.__getattr__(self, key)        
+        if key[0] == "_":
+            raise AttributeError(key)
 
         d = self.__dict__["_d"]
         if key in d:
@@ -22,13 +24,11 @@ class Configuration:
         return Configuration(d[key])
 
     def __setattr__(self, key, value):
-        if isinstance(value, Configuration):  
+        if isinstance(value, Configuration):
             self.__dict__["_d"][key] = value.__dict__["_d"]
         elif isinstance(value, list):
             # Replace all occurances of Configuration with the dict equivalent
-            self.__dict__["_d"][key] = [ i.__dict__["_d"] if isinstance(i, Configuration) else i for i in value]
-        elif isinstance(value, Configuration):
-            self.__dict__["_d"][key] = value.__dict__["_d"]
+            self.__dict__["_d"][key] = [i.__dict__["_d"] if isinstance(i, Configuration) else i for i in value]
         else:
             self.__dict__["_d"][key] = value
 
@@ -53,16 +53,15 @@ def from_file(filename, relative=True):
     cfg = Configuration()
 
     if full_filename.endswith(".py"):
-        import commands
-        (stat, output) = commands.getstatusoutput("python {}".format(full_filename))
-        if stat != 0:
-            raise IOError(output)
+        result = subprocess.run(["python3", full_filename], capture_output=True, text=True, check=False)
+        if result.returncode != 0:
+            raise IOError(result.stderr)
 
-        cfg.__dict__["_d"] = yaml.load(output)
+        cfg.__dict__["_d"] = yaml.safe_load(result.stdout)
     elif full_filename.endswith(".yaml") or full_filename.endswith(".yml") or full_filename.endswith(".json"):
         # since JSON is a sub-set of YAML, we can always use the YAML parser
-        with open(full_filename, 'r') as f:
-            cfg.__dict__["_d"] = yaml.load(f, Loader=yaml.Loader)
+        with open(full_filename, "r") as f:
+            cfg.__dict__["_d"] = yaml.safe_load(f)
     else:
         raise IOError("Unknown config file format: {}".format(filename))
 
@@ -70,10 +69,8 @@ def from_file(filename, relative=True):
 
 
 def to_yaml(config):
-    return yaml.dump(config._dict(), default_flow_style=True, width=1e9)
+    return yaml.dump(config._dict(), default_flow_style=True, width=int(1e9))
 
 
 def write_yaml(config):
     print(to_yaml(config))
-
-

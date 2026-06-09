@@ -28,7 +28,8 @@ void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std
     {
         // n1's sequence is completely replaced by n2's sequence
         c1.nodes[me_idx] = n2->deepCopy(c2, me_idx, c1);
-    } else
+    }
+    else
     {
         Map* map1 = static_cast<Map*>(n1.get());
         const Map* map2 = static_cast<const Map*>(n2.get());
@@ -37,7 +38,7 @@ void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std
 
         // Merge children
         const std::map<Label, NodeIdx>& children = map2->map_;
-        for(std::map<Label, NodeIdx>::const_iterator it2 = children.begin(); it2 != children.end(); ++it2)
+        for (std::map<Label, NodeIdx>::const_iterator it2 = children.begin(); it2 != children.end(); ++it2)
         {
             const Label& label2 = it2->first;
             std::map<Label, NodeIdx>::iterator it1 = map1->map_.find(label2);
@@ -57,7 +58,7 @@ void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std
 
         // Merge values
         const std::map<Label, Variant>& values = map2->values;
-        for(std::map<Label, Variant>::const_iterator it2 = values.begin(); it2 != values.end(); ++it2)
+        for (std::map<Label, Variant>::const_iterator it2 = values.begin(); it2 != values.end(); ++it2)
         {
             new_map->values[it2->first] = it2->second;
         }
@@ -125,7 +126,7 @@ bool DataConstPointer::empty() const
 
 // ----------------------------------------------------------------------------------------------------
 
-std::ostream& operator<< (std::ostream& out, const DataConstPointer& d)
+std::ostream& operator<<(std::ostream& out, const DataConstPointer& d)
 {
     YAMLEmitter emitter;
     emitter.emit(d, out);
@@ -134,14 +135,13 @@ std::ostream& operator<< (std::ostream& out, const DataConstPointer& d)
 
 // ----------------------------------------------------------------------------------------------------
 
-std::ostream& operator<< (std::ostream& out, const DataPointer& d)
+std::ostream& operator<<(std::ostream& out, const DataPointer& d)
 {
     YAMLEmitter emitter;
     emitter.emit(d, out);
     return out;
 }
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
-
+} // namespace tue

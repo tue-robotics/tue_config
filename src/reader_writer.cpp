@@ -1,10 +1,10 @@
 #include "tue/config/reader_writer.h"
-#include "tue/config/node.h"
 #include "tue/config/data.h"
+#include "tue/config/node.h"
 
 // Merge
-#include "tue/config/sequence.h"
 #include "tue/config/map.h"
+#include "tue/config/sequence.h"
 
 #include <boost/make_shared.hpp>
 
@@ -15,13 +15,13 @@
 #include "tue/config/loaders/xml.h"
 
 // YAML
-#include "tue/config/yaml_emitter.h"
 #include "tue/config/loaders/yaml.h"
+#include "tue/config/yaml_emitter.h"
 #include <sstream>
 
 // Sync
-#include <tue/filesystem/path.h>
 #include <boost/filesystem.hpp>
+#include <tue/filesystem/path.h>
 
 namespace tue
 {
@@ -30,9 +30,7 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data), error_(new Error)
-{
-}
+ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data), error_(new Error) {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -47,9 +45,7 @@ ReaderWriter::ReaderWriter(DataPointer& cfg) : idx_(cfg.idx), scope_(0), cfg_(cf
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::~ReaderWriter()
-{
-}
+ReaderWriter::~ReaderWriter() {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -76,7 +72,7 @@ bool ReaderWriter::read(const std::string& name, const NodeType type, const Requ
 // ----------------------------------------------------------------------------------------------------
 
 bool ReaderWriter::end()
-{   
+{
     if (idx_ == scope_)
         return false;
 
@@ -149,7 +145,7 @@ void ReaderWriter::addError(const std::string& msg)
         // Default error context
 
         NodeIdx c = idx_;
-        while(c != static_cast<NodeIdx>(-1))
+        while (c != static_cast<NodeIdx>(-1))
         {
             const NodePtr& n = cfg_->nodes[c];
             context.push_back(n->name());
@@ -160,7 +156,7 @@ void ReaderWriter::addError(const std::string& msg)
         {
             error_msg += "In '";
 
-            for(int i = context.size() - 2; i > 0; --i)
+            for (int i = context.size() - 2; i > 0; --i)
             {
                 error_msg += context[i] + ".";
             }
@@ -322,15 +318,16 @@ bool ReaderWriter::loadFromYAMLFile(const std::string& filename, const ResolveCo
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ReaderWriter::sync() {
+bool ReaderWriter::sync()
+{
 
-    if (!filename_.empty() )
+    if (!filename_.empty())
     {
         std::time_t last_write_time;
 
         try
         {
-             last_write_time = tue::filesystem::Path(filename_).lastWriteTime();
+            last_write_time = tue::filesystem::Path(filename_).lastWriteTime();
         }
         catch (boost::filesystem::filesystem_error& e)
         {
@@ -340,7 +337,7 @@ bool ReaderWriter::sync() {
         if (last_write_time > source_last_write_time_)
         {
             std::string extension = tue::filesystem::Path(filename_).extension();
-            if ( extension == ".sdf" || extension == ".world")
+            if (extension == ".sdf" || extension == ".world")
                 loadFromSDFFile(filename_);
             else if (extension == ".xml")
                 loadFromXMLFile(filename_);
@@ -358,7 +355,7 @@ bool ReaderWriter::sync() {
 
 // ----------------------------------------------------------------------------------------------------
 
-std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw)
+std::ostream& operator<<(std::ostream& out, const ReaderWriter& rw)
 {
     out << DataPointer(rw.cfg_, rw.idx_);
     return out;
@@ -367,4 +364,3 @@ std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw)
 } // end namespace config
 
 } // end namespace tue
-

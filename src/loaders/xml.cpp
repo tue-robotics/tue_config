@@ -2,10 +2,10 @@
 #include <sstream>
 #include <tinyxml2.h>
 
+#include "loader_functions.h"
 #include "tue/config/configuration.h"
 #include "tue/config/loaders/xml.h"
 #include "tue/config/read.h"
-#include "loader_functions.h"
 
 #include "tue/filesystem/path.h"
 
@@ -18,7 +18,7 @@ namespace config
 bool setValue(const std::string& key, const std::string& value, ReaderWriter& config)
 {
     char* pEnd;
-    int i = (int) std::strtol(value.c_str(), &pEnd, 10);
+    int i = (int)std::strtol(value.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
     {
         config.setValue(key, i);
@@ -74,7 +74,8 @@ bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
 
         // Iterate through attributes
         // if this element does not contain children, we don't end up here
-        for (const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute != nullptr; attribute = attribute->Next())
+        for (const tinyxml2::XMLAttribute* attribute = element.FirstAttribute(); attribute != nullptr;
+             attribute = attribute->Next())
         {
             config.addArrayItem();
             setValue(attribute->Name(), attribute->Value(), config);
@@ -82,7 +83,7 @@ bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
         }
 
         // Iterate through elements
-        for(const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
+        for (const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
             std::string candidate_name = e->Value();
             config.addArrayItem();
@@ -101,7 +102,6 @@ bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
     }
 
     return true;
-
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -187,6 +187,6 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-}  // End of namespace config
+} // End of namespace config
 
-}  // End of namespace tue
+} // End of namespace tue

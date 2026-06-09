@@ -1,6 +1,6 @@
 #include "tue/config/reader.h"
-#include "tue/config/node.h"
 #include "tue/config/data.h"
+#include "tue/config/node.h"
 
 namespace tue
 {
@@ -9,15 +9,11 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-Reader::Reader(const DataConstPointer& ptr) : idx_(ptr.idx), cfg_(ptr.data)
-{
-}
+Reader::Reader(const DataConstPointer& ptr) : idx_(ptr.idx), cfg_(ptr.data) {}
 
 // ----------------------------------------------------------------------------------------------------
 
-Reader::~Reader()
-{
-}
+Reader::~Reader() {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -41,7 +37,7 @@ bool Reader::read(const std::string& name, const NodeType type, const RequiredOr
 // ----------------------------------------------------------------------------------------------------
 
 bool Reader::end()
-{   
+{
     NodeIdx parent = cfg_->getParent(idx_);
     if (parent == static_cast<NodeIdx>(-1))
         return false;
@@ -70,7 +66,6 @@ bool Reader::next()
     return true;
 }
 
-
 // ----------------------------------------------------------------------------------------------------
 
 bool Reader::hasChild(const std::string& name, NodeType type) const
@@ -88,4 +83,3 @@ bool Reader::hasChild(const std::string& name, NodeType type) const
 } // end namespace config
 
 } // end namespace tue
-
