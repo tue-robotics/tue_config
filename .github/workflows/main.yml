@@ -2,6 +2,9 @@ name: CI
 
 on: [push, pull_request, workflow_dispatch]
 
+permissions:
+  contents: read
+
 jobs:
   tue-ci:
     name: TUe CI - ${{ github.event_name }} (${{ matrix.ros_distro }})
