@@ -1,3 +1,5 @@
+#include <console_bridge/console.h>
+
 #include <fstream>
 #include <set>
 #include <sstream>
@@ -77,8 +79,8 @@ tue::config::NodeType getSDFNodeType(const std::string& element_name)
         already_printed.find(element_name) == already_printed.end())
     {
         already_printed.insert(element_name);
-        std::cout << "Element: '" << element_name << "' not in SDF ARRAY or MAP list. Will return MAP as Node type."
-                  << std::endl;
+        CONSOLE_BRIDGE_logWarn("Element: '%s' not in SDF ARRAY or MAP list. Will return MAP as Node type.",
+                               element_name.c_str());
     }
 
     // return MAP, even if it is not in the map set.

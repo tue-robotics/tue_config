@@ -1,3 +1,5 @@
+#include <console_bridge/console.h>
+
 #include <fstream>
 #include <sstream>
 #include <tinyxml2.h>
@@ -50,7 +52,7 @@ bool loadFromXMLText(const tinyxml2::XMLElement& element, ReaderWriter& config)
     std::string key(element.Value());
     if (element.GetText() == nullptr)
     {
-        std::cout << "Empty key: " << key << std::endl;
+        CONSOLE_BRIDGE_logWarn("Empty key: %s", key.c_str());
         return setValue(key, "", config);
     }
     std::string value(element.GetText());
@@ -93,7 +95,7 @@ bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
                 std::stringstream error;
                 error << "Error parsing " << candidate_name;
                 config.addError(error.str());
-                std::cout << error.str() << std::endl;
+                CONSOLE_BRIDGE_logError("%s", error.str().c_str());
                 return false;
             }
             config.endArrayItem();

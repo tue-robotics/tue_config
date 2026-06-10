@@ -1,6 +1,8 @@
 #include "tue/config/binary_writer.h"
 
-#include <iostream>
+#include <console_bridge/console.h>
+
+#include <sstream>
 
 namespace tue
 {
@@ -56,12 +58,13 @@ void BinaryWriter::setValue(const std::string& name, int value)
 
 void BinaryWriter::print() const
 {
-    std::cout << data_.size() << std::endl;
+    std::stringstream ss;
     for (unsigned int i = 0; i < data_.size(); ++i)
     {
-        std::cout << (int)(data_[i]) << " ";
+        ss << (int)(data_[i]) << " ";
     }
-    std::cout << std::endl;
+    CONSOLE_BRIDGE_logDebug("BinaryWriter size: %zu", data_.size());
+    CONSOLE_BRIDGE_logDebug("%s", ss.str().c_str());
 }
 
 } // namespace config

@@ -6,6 +6,8 @@
 
 #include <boost/make_shared.hpp>
 
+#include <console_bridge/console.h>
+
 namespace tue
 {
 namespace config
@@ -91,7 +93,7 @@ bool DataPointer::add(const DataConstPointer& ptr)
 
     if (!error.empty())
     {
-        std::cout << "DataPointer::add: " << error << std::endl;
+        CONSOLE_BRIDGE_logError("DataPointer::add: %s", error.c_str());
         return false;
     }
 

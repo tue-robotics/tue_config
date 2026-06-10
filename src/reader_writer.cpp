@@ -8,6 +8,8 @@
 
 #include <boost/make_shared.hpp>
 
+#include <console_bridge/console.h>
+
 // SDF
 #include "tue/config/loaders/sdf.h"
 
@@ -359,7 +361,7 @@ bool ReaderWriter::sync()
             else if (extension == ".yml" || extension == ".yaml")
                 loadFromYAMLFile(filename_, resolve_config_);
             else
-                std::cout << "[ReaderWriter::Sync] extension: '" << extension << "'  is not supported." << std::endl;
+                CONSOLE_BRIDGE_logError("[ReaderWriter::Sync] extension: '%s' is not supported.", extension.c_str());
             source_last_write_time_ = last_write_time;
             return true;
         }
