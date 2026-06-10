@@ -16,7 +16,16 @@ find_package(ament_cmake_python REQUIRED)
 find_package(ament_index_cpp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS)
 find_package(console_bridge REQUIRED)
-find_package(TinyXML2 REQUIRED)
+find_package(TinyXML2 QUIET CONFIG)
+if(NOT TinyXML2_FOUND)
+  # Ubuntu 22.04 (Humble) does not ship a CMake config for tinyxml2, so fall
+  # back to pkg-config and expose the conventional imported target name.
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(TinyXML2 REQUIRED IMPORTED_TARGET tinyxml2)
+  if(NOT TARGET tinyxml2::tinyxml2)
+    add_library(tinyxml2::tinyxml2 ALIAS PkgConfig::TinyXML2)
+  endif()
+endif()
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(yaml-cpp REQUIRED)
 

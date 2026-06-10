@@ -92,7 +92,10 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
     for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
     {
         std::string key = it->first.as<std::string>();
-        const YAML::Node& n = it->second;
+        // Copy the node by value: yaml-cpp's iterator returns a temporary
+        // YAML::Node, so binding it to a reference would dangle. YAML::Node
+        // has cheap shared-pointer semantics, so copying is safe.
+        const YAML::Node n = it->second;
 
         switch (n.Type())
         {
@@ -112,7 +115,8 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
              */
             for (std::size_t i = 0; i < n.size(); ++i)
             {
-                const YAML::Node& n2 = n[i];
+                // Copy by value: YAML::Node::operator[] returns a temporary.
+                const YAML::Node n2 = n[i];
                 if (n2.Type() != YAML::NodeType::Map)
                 {
                     config.addError("Sequences must only contains maps");
