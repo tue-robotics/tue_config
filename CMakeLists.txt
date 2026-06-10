@@ -36,6 +36,13 @@ if(NOT TinyXML2_FOUND)
 endif()
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(yaml-cpp REQUIRED)
+# yaml-cpp 0.7 (Ubuntu 22.04 / Humble) exports the bare `yaml-cpp` target,
+# while yaml-cpp >= 0.8 exports the namespaced `yaml-cpp::yaml-cpp` target.
+# Provide an alias for the older version so we can always link against the
+# namespaced name.
+if(NOT TARGET yaml-cpp::yaml-cpp AND TARGET yaml-cpp)
+  add_library(yaml-cpp::yaml-cpp ALIAS yaml-cpp)
+endif()
 
 # to show header files in Qt Creator
 file(GLOB_RECURSE HEADER_FILES include/*.h)
