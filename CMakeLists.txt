@@ -83,7 +83,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${console_bridge_INCLUDE_DIRS}
-  ${YAML_CPP_INCLUDE_DIR}
 )
 
 target_link_libraries(${PROJECT_NAME}
