@@ -18,13 +18,21 @@ find_package(Boost REQUIRED COMPONENTS)
 find_package(console_bridge REQUIRED)
 find_package(TinyXML2 QUIET CONFIG)
 if(NOT TinyXML2_FOUND)
-  # Ubuntu 22.04 (Humble) does not ship a CMake config for tinyxml2, so fall
-  # back to pkg-config and expose the conventional imported target name.
-  find_package(PkgConfig REQUIRED)
-  pkg_check_modules(TinyXML2 REQUIRED IMPORTED_TARGET tinyxml2)
-  if(NOT TARGET tinyxml2::tinyxml2)
-    add_library(tinyxml2::tinyxml2 ALIAS PkgConfig::TinyXML2)
+  # Ubuntu 22.04 (Humble) does not ship a CMake config for tinyxml2 and the
+  # build image does not provide pkg-config either, so locate the library
+  # manually and create the conventional imported target.
+  find_path(TinyXML2_INCLUDE_DIR NAMES tinyxml2.h)
+  find_library(TinyXML2_LIBRARY NAMES tinyxml2)
+  if(NOT TinyXML2_INCLUDE_DIR OR NOT TinyXML2_LIBRARY)
+    message(FATAL_ERROR
+      "Could not find TinyXML2 (headers: ${TinyXML2_INCLUDE_DIR}, "
+      "library: ${TinyXML2_LIBRARY})")
   endif()
+  add_library(tinyxml2::tinyxml2 UNKNOWN IMPORTED)
+  set_target_properties(tinyxml2::tinyxml2 PROPERTIES
+    IMPORTED_LOCATION "${TinyXML2_LIBRARY}"
+    INTERFACE_INCLUDE_DIRECTORIES "${TinyXML2_INCLUDE_DIR}")
+  set(TinyXML2_FOUND TRUE)
 endif()
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(yaml-cpp REQUIRED)
