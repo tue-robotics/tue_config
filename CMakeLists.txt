@@ -58,7 +58,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 target_include_directories(${PROJECT_NAME} SYSTEM PRIVATE
   ${Boost_INCLUDE_DIRS}
   ${console_bridge_INCLUDE_DIRS}
-  ${TinyXML2_INCLUDE_DIRS}
   ${YAML_CPP_INCLUDE_DIR}
 )
 
@@ -66,7 +65,7 @@ target_link_libraries(${PROJECT_NAME}
   ament_index_cpp::ament_index_cpp
   ${Boost_LIBRARIES}
   ${console_bridge_LIBRARIES}
-  ${TinyXML2_LIBRARIES}
+  tinyxml2::tinyxml2
   ${YAML_CPP_LIBRARIES}
 )
 
