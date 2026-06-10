@@ -13,7 +13,6 @@ class BinaryWriter
 {
 
 public:
-
     BinaryWriter();
 
     virtual ~BinaryWriter();
@@ -35,13 +34,11 @@ public:
     const char* dataPointer() const { return &data_[0]; }
 
 private:
-
     std::vector<char> data_;
-
 };
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
+} // namespace tue
 
 #endif

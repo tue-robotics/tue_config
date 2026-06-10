@@ -1,10 +1,10 @@
 #include "resolve_functions.h"
 
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <stdlib.h> /* getenv */
 #include <vector>
-#include <ros/package.h>
-#include <stdlib.h>     /* getenv */
 
-#include <tue/filesystem/path.h>
+#include <filesystem>
 
 #include <iostream>
 #include <iterator>
@@ -38,14 +38,25 @@ void argsToString(const std::vector<std::string>& args, std::string& output)
 
 // ----------------------------------------------------------------------------------------------------
 
-resolveResult executeResolvefunction(const std::vector<std::string>& args, const std::string& source, std::string& result, std::stringstream& error, const ResolveConfig& config)
+resolveResult executeResolvefunction(const std::vector<std::string>& args,
+                                     const std::string& source,
+                                     std::string& result,
+                                     std::stringstream& error,
+                                     const ResolveConfig& config)
 {
     if (args[0] == "rospkg" && args.size() == 2)
     {
         if (!config.rospkg)
             return resolveResult::skipped;
 
-        result = ros::package::getPath(args[1]);
+        try
+        {
+            result = ament_index_cpp::get_package_share_directory(args[1]);
+        }
+        catch (const std::exception&)
+        {
+            result.clear();
+        }
         if (result.empty())
         {
             error << "ROS package '" << args[1] << "' unknown.";
@@ -89,11 +100,11 @@ resolveResult executeResolvefunction(const std::vector<std::string>& args, const
             return resolveResult::success;
         }
 
-        tue::filesystem::Path parent_path = tue::filesystem::Path(source).parentPath();
-        if (parent_path.string().empty())
+        std::filesystem::path parent_path = std::filesystem::path(source).parent_path();
+        if (parent_path.empty())
             result = filename;
         else
-            result = parent_path.join(filename).string();
+            result = (parent_path / filename).string();
 
         return resolveResult::success;
     }
@@ -105,14 +116,19 @@ resolveResult executeResolvefunction(const std::vector<std::string>& args, const
 
 // ----------------------------------------------------------------------------------------------------
 
-resolveResult parseResolveFunction(const std::string& str, const std::string& source, std::size_t& i, std::string& result, std::stringstream& error, const ResolveConfig& config)
+resolveResult parseResolveFunction(const std::string& str,
+                                   const std::string& source,
+                                   std::size_t& i,
+                                   std::string& result,
+                                   std::stringstream& error,
+                                   const ResolveConfig& config)
 {
     std::vector<std::string> args;
     args.push_back("");
 
     bool inner_function_skipped = false;
 
-    for(; i < str.size();)
+    for (; i < str.size();)
     {
         char c = str[i];
 
@@ -182,7 +198,11 @@ resolveResult parseResolveFunction(const std::string& str, const std::string& so
 
 // ----------------------------------------------------------------------------------------------------
 
-bool resolve(const std::string& str, const std::string& source, std::string& result, std::stringstream& error, const ResolveConfig& config)
+bool resolve(const std::string& str,
+             const std::string& source,
+             std::string& result,
+             std::stringstream& error,
+             const ResolveConfig& config)
 {
     // Easy way out when nothing needs to be resolved
     if (config.AllFalse())
@@ -192,7 +212,7 @@ bool resolve(const std::string& str, const std::string& source, std::string& res
     }
 
     std::size_t i = 0;
-    while(i < str.size())
+    while (i < str.size())
     {
         std::size_t i_sign = str.find("$(", i);
         if (i_sign == std::string::npos)
@@ -216,7 +236,6 @@ bool resolve(const std::string& str, const std::string& source, std::string& res
     return true;
 }
 
-}
+} // namespace config
 
-}
-
+} // namespace tue

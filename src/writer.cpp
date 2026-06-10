@@ -1,7 +1,7 @@
 #include "tue/config/writer.h"
-#include "tue/config/node.h"
 #include "tue/config/data.h"
 #include "tue/config/map.h"
+#include "tue/config/node.h"
 #include "tue/config/sequence.h"
 
 #include <boost/make_shared.hpp>
@@ -31,9 +31,7 @@ Writer::Writer(DataPointer& cfg) : idx_(cfg.idx), cfg_(cfg.data)
 
 // ----------------------------------------------------------------------------------------------------
 
-Writer::~Writer()
-{
-}
+Writer::~Writer() {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -116,7 +114,6 @@ bool Writer::end()
     return true;
 }
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
-
+} // namespace tue

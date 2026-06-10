@@ -9,29 +9,35 @@ namespace config
 
 bool strToBool(std::string s, bool& rhs)
 {
-  static const struct {
-    std::string truename, falsename;
-  } names[] = {
-      {"y", "n"}, {"yes", "no"}, {"true", "false"}, {"on", "off"},
-  };
+    static const struct
+    {
+        std::string truename, falsename;
+    } names[] = {
+        {"y", "n"},
+        {"yes", "no"},
+        {"true", "false"},
+        {"on", "off"},
+    };
 
-  std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-  for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); i++) {
-    if (names[i].truename == s) {
-      rhs = true;
-      return true;
+    std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+    for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); i++)
+    {
+        if (names[i].truename == s)
+        {
+            rhs = true;
+            return true;
+        }
+
+        if (names[i].falsename == s)
+        {
+            rhs = false;
+            return true;
+        }
     }
 
-    if (names[i].falsename == s) {
-      rhs = false;
-      return true;
-    }
-  }
-
-  return false;
+    return false;
 }
 
-}
+} // namespace config
 
-}
-
+} // namespace tue

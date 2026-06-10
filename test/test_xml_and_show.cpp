@@ -6,7 +6,7 @@
 
 // ----------------------------------------------------------------------------------------------------
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     tue::config::ReaderWriter config;
 
@@ -20,10 +20,10 @@ int main(int argc, char **argv)
 
     try
     {
-      if (!config.loadFromXMLFile(filename))
-      {
-        std::cout << "Error: could not load config from " << filename << std::endl;
-      }
+        if (!config.loadFromXMLFile(filename))
+        {
+            std::cout << "Error: could not load config from " << filename << std::endl;
+        }
     }
     catch (tue::config::ParseException& e)
     {

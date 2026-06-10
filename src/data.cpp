@@ -20,20 +20,17 @@ Data::Data()
 
 // ----------------------------------------------------------------------------------------------------
 
-Data::~Data()
-{
-}
+Data::~Data() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-//std::ostream& operator<<(std::ostream& out, const Data& d)
+// std::ostream& operator<<(std::ostream& out, const Data& d)
 //{
-//    YAMLEmitter emitter;
-//    emitter.emit(DataPointer(d, d.root()), out);
-//    return out;
-//}
+//     YAMLEmitter emitter;
+//     emitter.emit(DataPointer(d, d.root()), out);
+//     return out;
+// }
 
-}
+} // namespace config
 
 } // end namespace tue
-

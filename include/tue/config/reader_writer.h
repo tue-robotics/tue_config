@@ -27,7 +27,6 @@ class ReaderWriter
 {
 
 public:
-
     ReaderWriter();
 
     ReaderWriter(DataPointer& cfg);
@@ -36,7 +35,7 @@ public:
 
     // ---- READING -----------------------------------------------------------------------
 
-    template<typename T>
+    template <typename T>
     /**
      * @brief value read value of child with key 'name'
      * @param name name of the key
@@ -129,7 +128,6 @@ public:
      */
     const std::string& source() const { return cfg_->source_; }
 
-
     // ---- WRITING -----------------------------------------------------------------------
 
     /**
@@ -146,7 +144,7 @@ public:
      */
     bool writeArray(const std::string& name);
 
-    template<typename T>
+    template <typename T>
     /**
      * @brief setValue set child value with key 'name' and value 'value'
      * @param name name of the key
@@ -192,7 +190,6 @@ public:
      */
     void setSource(const std::string& source) { cfg_->source_ = source; }
 
-
     // ---- ADDITIONAL -----------------------------------------------------------------------
 
     /**
@@ -226,7 +223,8 @@ public:
      * @param filename input file
      * @return indicates success
      */
-    bool loadFromYAMLFile(const std::string& filename, const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
+    bool loadFromYAMLFile(const std::string& filename,
+                          const ResolveConfig& resolve_config = ResolveConfig::defaultConfig());
 
     /**
      * @brief sync re-read the source file if the file has changed since last reading time.
@@ -240,7 +238,7 @@ public:
      * @param rw ReaderWriter object
      * @return
      */
-    friend std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw);
+    friend std::ostream& operator<<(std::ostream& out, const ReaderWriter& rw);
 
     /**
      * @brief data get the data from the current reading/writing point
@@ -258,13 +256,9 @@ public:
      * @brief setShortErrorContext
      * @param context context string
      */
-    inline void setShortErrorContext(const std::string& context)
-    {
-        cfg_->nodes[idx_]->setName(context);
-    }
+    inline void setShortErrorContext(const std::string& context) { cfg_->nodes[idx_]->setName(context); }
 
 private:
-
     /**
      * @brief read read child with key 'name' of type ARRAY or MAP
      * @param name key of the child
@@ -304,7 +298,6 @@ private:
 
     boost::shared_ptr<std::string> error_context_; // Error context pointer
 
-
     // Syncing
 
     std::string filename_; // filename of the source file
@@ -312,7 +305,6 @@ private:
     std::time_t source_last_write_time_; // last writing time of the source file at time of reading.
 
     ResolveConfig resolve_config_; // Needs to be stored for sync
-
 };
 
 } // end namespace config

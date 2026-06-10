@@ -3,8 +3,8 @@
 
 #include "tue/config/resolve_config.h"
 
-#include <string>
 #include <sstream>
+#include <string>
 
 namespace tue
 {
@@ -12,10 +12,14 @@ namespace tue
 namespace config
 {
 
-bool resolve(const std::string& str, const std::string& source, std::string& result, std::stringstream& error, const ResolveConfig& config = ResolveConfig::defaultConfig());
+bool resolve(const std::string& str,
+             const std::string& source,
+             std::string& result,
+             std::stringstream& error,
+             const ResolveConfig& config = ResolveConfig::defaultConfig());
 
 }
 
-}
+} // namespace tue
 
 #endif

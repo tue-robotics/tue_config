@@ -1,12 +1,14 @@
 #include "tue/config/reader_writer.h"
-#include "tue/config/node.h"
 #include "tue/config/data.h"
+#include "tue/config/node.h"
 
 // Merge
-#include "tue/config/sequence.h"
 #include "tue/config/map.h"
+#include "tue/config/sequence.h"
 
 #include <boost/make_shared.hpp>
+
+#include <console_bridge/console.h>
 
 // SDF
 #include "tue/config/loaders/sdf.h"
@@ -15,24 +17,37 @@
 #include "tue/config/loaders/xml.h"
 
 // YAML
-#include "tue/config/yaml_emitter.h"
 #include "tue/config/loaders/yaml.h"
+#include "tue/config/yaml_emitter.h"
 #include <sstream>
 
 // Sync
-#include <tue/filesystem/path.h>
-#include <boost/filesystem.hpp>
+#include <chrono>
+#include <filesystem>
 
 namespace tue
 {
 namespace config
 {
 
+namespace
+{
+
+// Convert a std::filesystem::file_time_type to std::time_t.
+// C++17-portable conversion: assumes file_clock epoch maps to system_clock epoch
+// (true on glibc/libstdc++ and libc++ on Linux).
+std::time_t toTimeT(std::filesystem::file_time_type ftime)
+{
+    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+        ftime - decltype(ftime)::clock::now() + std::chrono::system_clock::now());
+    return std::chrono::system_clock::to_time_t(sctp);
+}
+
+} // namespace
+
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data), error_(new Error)
-{
-}
+ReaderWriter::ReaderWriter() : idx_(0), scope_(0), cfg_(new Data), error_(new Error) {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -47,9 +62,7 @@ ReaderWriter::ReaderWriter(DataPointer& cfg) : idx_(cfg.idx), scope_(0), cfg_(cf
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::~ReaderWriter()
-{
-}
+ReaderWriter::~ReaderWriter() {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -76,7 +89,7 @@ bool ReaderWriter::read(const std::string& name, const NodeType type, const Requ
 // ----------------------------------------------------------------------------------------------------
 
 bool ReaderWriter::end()
-{   
+{
     if (idx_ == scope_)
         return false;
 
@@ -149,7 +162,7 @@ void ReaderWriter::addError(const std::string& msg)
         // Default error context
 
         NodeIdx c = idx_;
-        while(c != static_cast<NodeIdx>(-1))
+        while (c != static_cast<NodeIdx>(-1))
         {
             const NodePtr& n = cfg_->nodes[c];
             context.push_back(n->name());
@@ -160,7 +173,7 @@ void ReaderWriter::addError(const std::string& msg)
         {
             error_msg += "In '";
 
-            for(int i = context.size() - 2; i > 0; --i)
+            for (int i = context.size() - 2; i > 0; --i)
             {
                 error_msg += context[i] + ".";
             }
@@ -276,7 +289,7 @@ bool ReaderWriter::loadFromSDFFile(const std::string& filename)
         return false;
 
     filename_ = filename;
-    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    source_last_write_time_ = toTimeT(std::filesystem::last_write_time(filename_));
 
     return true;
 }
@@ -295,7 +308,7 @@ bool ReaderWriter::loadFromXMLFile(const std::string& filename)
         return false;
 
     filename_ = filename;
-    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    source_last_write_time_ = toTimeT(std::filesystem::last_write_time(filename_));
 
     return true;
 }
@@ -314,7 +327,7 @@ bool ReaderWriter::loadFromYAMLFile(const std::string& filename, const ResolveCo
         return false;
 
     filename_ = filename;
-    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    source_last_write_time_ = toTimeT(std::filesystem::last_write_time(filename_));
     resolve_config_ = resolve_config;
 
     return true;
@@ -322,32 +335,33 @@ bool ReaderWriter::loadFromYAMLFile(const std::string& filename, const ResolveCo
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ReaderWriter::sync() {
+bool ReaderWriter::sync()
+{
 
-    if (!filename_.empty() )
+    if (!filename_.empty())
     {
         std::time_t last_write_time;
 
         try
         {
-             last_write_time = tue::filesystem::Path(filename_).lastWriteTime();
+            last_write_time = toTimeT(std::filesystem::last_write_time(filename_));
         }
-        catch (boost::filesystem::filesystem_error& e)
+        catch (std::filesystem::filesystem_error& e)
         {
             return false;
         }
 
         if (last_write_time > source_last_write_time_)
         {
-            std::string extension = tue::filesystem::Path(filename_).extension();
-            if ( extension == ".sdf" || extension == ".world")
+            std::string extension = std::filesystem::path(filename_).extension().string();
+            if (extension == ".sdf" || extension == ".world")
                 loadFromSDFFile(filename_);
             else if (extension == ".xml")
                 loadFromXMLFile(filename_);
             else if (extension == ".yml" || extension == ".yaml")
                 loadFromYAMLFile(filename_, resolve_config_);
             else
-                std::cout << "[ReaderWriter::Sync] extension: '" << extension << "'  is not supported." << std::endl;
+                CONSOLE_BRIDGE_logError("[ReaderWriter::Sync] extension: '%s' is not supported.", extension.c_str());
             source_last_write_time_ = last_write_time;
             return true;
         }
@@ -358,7 +372,7 @@ bool ReaderWriter::sync() {
 
 // ----------------------------------------------------------------------------------------------------
 
-std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw)
+std::ostream& operator<<(std::ostream& out, const ReaderWriter& rw)
 {
     out << DataPointer(rw.cfg_, rw.idx_);
     return out;
@@ -367,4 +381,3 @@ std::ostream& operator<< (std::ostream& out, const ReaderWriter& rw)
 } // end namespace config
 
 } // end namespace tue
-

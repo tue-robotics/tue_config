@@ -58,8 +58,8 @@ bool loadFromXMLString(const std::string& string, ReaderWriter& config);
  */
 bool loadFromXMLFile(const std::string& filename, ReaderWriter& config);
 
-}  // End of namespace config
+} // End of namespace config
 
-}  // End of namespace tue
+} // End of namespace tue
 
 #endif // TUE_CONFIG_LOADERS_XML_H_

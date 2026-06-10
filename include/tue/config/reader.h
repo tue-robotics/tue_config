@@ -1,9 +1,8 @@
 #ifndef TUE_CONFIG_READER_H_
 #define TUE_CONFIG_READER_H_
 
-#include "tue/config/types.h"
 #include "tue/config/data.h"
-
+#include "tue/config/types.h"
 
 namespace tue
 {
@@ -17,12 +16,11 @@ class Reader
 {
 
 public:
-
     Reader(const DataConstPointer& ptr);
 
     virtual ~Reader();
 
-    template<typename T>
+    template <typename T>
     /**
      * @brief value read value of child with key 'name'
      * @param name name of the key
@@ -101,7 +99,6 @@ public:
     inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
 
 private:
-
     /**
      * @brief read read child with key 'name' of type ARRAY or MAP
      * @param name key of the child
@@ -134,7 +131,6 @@ private:
     NodeIdx idx_; // Current node index
 
     boost::shared_ptr<const Data> cfg_; // Data pointer
-
 };
 
 } // end namespace config

@@ -1,16 +1,14 @@
-#include "tue/config/reader_writer.h"
 #include "tue/config/loaders/sdf.h"
+#include "tue/config/reader_writer.h"
 #include <gtest/gtest.h>
 
-#include <ros/package.h>
-
-#include "tue/filesystem/path.h"
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 tue::config::ReaderWriter config;
 
 TEST(SDF, LoadSDF)
 {
-    std::string path = ros::package::getPath("tue_config");
+    std::string path = ament_index_cpp::get_package_share_directory("tue_config");
     path += "/test/model.sdf";
     EXPECT_TRUE(tue::config::loadFromSDFFile(path, config));
     EXPECT_TRUE(config.readGroup("sdf"));
@@ -49,7 +47,6 @@ TEST(SDF, readArray)
     EXPECT_TRUE(config.endArray());
 }
 
-
 TEST(SDF, Int)
 {
     config.readArray("model");
@@ -65,10 +62,8 @@ TEST(SDF, Int)
     EXPECT_TRUE(config.endArray());
 }
 
-
-
 // Run all the tests that were declared with TEST()
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

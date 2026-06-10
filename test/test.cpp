@@ -1,11 +1,11 @@
+#include <tue/config/data.h>
 #include <tue/config/reader.h>
 #include <tue/config/writer.h>
-#include <tue/config/data.h>
 
 #include <tue/config/yaml_emitter.h>
 
-#include <tue/config/binary_writer.h>
 #include <tue/config/binary_reader.h>
+#include <tue/config/binary_writer.h>
 
 #include <tue/config/configuration.h>
 
@@ -14,9 +14,7 @@
 
 // ----------------------------------------------------------------------------------------------------
 
-void test1()
-{
-}
+void test1() {}
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -236,7 +234,6 @@ int main()
 
     writer.endGroup(); // end foo
 
-
     // TODO: "z" is still not placed right!
 
     writer.setValue("z", 99);
@@ -264,7 +261,7 @@ int main()
         std::cout << "bla = " << bla << std::endl;
 
         reader.readArray("array");
-        while(reader.nextArrayItem())
+        while (reader.nextArrayItem())
         {
             int x;
             if (reader.value("x", x))
@@ -272,7 +269,7 @@ int main()
 
             if (reader.readArray("array2"))
             {
-                while(reader.nextArrayItem())
+                while (reader.nextArrayItem())
                 {
                     int bar;
                     if (reader.value("bar", bar))
@@ -303,8 +300,8 @@ int main()
     test4();
     std::cout << "----------------------------------------------------" << std::endl;
 
-//    tue::config::Configuration cfg2;
-//    tue::config::Writer bw(cfg2);
+    //    tue::config::Configuration cfg2;
+    //    tue::config::Writer bw(cfg2);
 
     tue::config::BinaryWriter bw;
 
@@ -313,7 +310,7 @@ int main()
 
     bw.writeArray("vertices");
 
-    for(unsigned int i = 0; i < 10; ++i)
+    for (unsigned int i = 0; i < 10; ++i)
     {
         bw.nextArrayItem();
         bw.setValue("x", 6);
@@ -326,9 +323,7 @@ int main()
 
     std::cout << "Writing done" << std::endl;
 
-
-//    bw.print();
-
+    //    bw.print();
 
     std::cout << bw.byte_size() << std::endl;
 
@@ -337,7 +332,7 @@ int main()
     br.read("vertices");
 
     int i = 0;
-    while(br.next())
+    while (br.next())
     {
         ++i;
         int x, y, z;
