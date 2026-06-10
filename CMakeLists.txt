@@ -14,10 +14,9 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(ament_index_cpp REQUIRED)
-find_package(Boost REQUIRED COMPONENTS filesystem)
+find_package(Boost REQUIRED COMPONENTS)
 find_package(console_bridge REQUIRED)
 find_package(TinyXML2 REQUIRED)
-find_package(tue_filesystem REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 # to show header files in Qt Creator
@@ -68,7 +67,6 @@ target_link_libraries(${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${console_bridge_LIBRARIES}
   ${TinyXML2_LIBRARIES}
-  tue_filesystem::tue_filesystem
   ${YAML_CPP_LIBRARIES}
 )
 
@@ -131,7 +129,7 @@ install(
 # ------------------------------------------------------------------------------------------------
 
 ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
-ament_export_dependencies(ament_index_cpp Boost console_bridge TinyXML2 tue_filesystem yaml-cpp)
+ament_export_dependencies(ament_index_cpp Boost console_bridge TinyXML2 yaml-cpp)
 
 # ------------------------------------------------------------------------------------------------
 #                                           UNIT TESTS

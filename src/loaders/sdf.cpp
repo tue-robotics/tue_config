@@ -9,7 +9,7 @@
 #include "tue/config/node_type.h"
 #include "tue/config/read.h"
 
-#include "tue/filesystem/path.h"
+#include <filesystem>
 
 namespace tue
 {
@@ -215,8 +215,7 @@ bool loadFromSDFFile(const std::string& filename, ReaderWriter& config)
 {
     config.setSource(filename);
 
-    tue::filesystem::Path path(filename);
-    if (!path.exists())
+    if (!std::filesystem::exists(filename))
     {
         std::stringstream error;
         error << "[loadFromSDFFile] file '" << filename << "' doesn't exist." << std::endl;

@@ -4,7 +4,7 @@
 #include "resolve_functions.h"
 #include "tue/config/configuration.h"
 
-#include <tue/filesystem/path.h>
+#include <filesystem>
 
 // YAML parsing
 #include <fstream>
@@ -38,8 +38,8 @@ bool yamlScalarToVariant(const std::string& key,
             filename = s;
         else
         {
-            tue::filesystem::Path filepath(config.source());
-            filename = filepath.parentPath().join(s).string();
+            std::filesystem::path filepath(config.source());
+            filename = (filepath.parent_path() / s).string();
         }
 
         return loadFromYAMLFile(filename, config, resolve_config);
@@ -206,7 +206,7 @@ bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const R
 
     // TODO:
     //    filename_ = filename;
-    //    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    //    source_last_write_time_ = std::filesystem::last_write_time(filename_);
 
     return true;
 }

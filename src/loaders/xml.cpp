@@ -7,7 +7,7 @@
 #include "tue/config/loaders/xml.h"
 #include "tue/config/read.h"
 
-#include "tue/filesystem/path.h"
+#include <filesystem>
 
 namespace tue
 {
@@ -160,8 +160,7 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
 {
     config.setSource(filename);
 
-    tue::filesystem::Path path(filename);
-    if (!path.exists())
+    if (!std::filesystem::exists(filename))
     {
         std::stringstream error;
         error << "[loadFromXMLFile] file '" << filename << "' doesn't exist." << std::endl;

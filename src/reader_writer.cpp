@@ -20,13 +20,28 @@
 #include <sstream>
 
 // Sync
-#include <boost/filesystem.hpp>
-#include <tue/filesystem/path.h>
+#include <chrono>
+#include <filesystem>
 
 namespace tue
 {
 namespace config
 {
+
+namespace
+{
+
+// Convert a std::filesystem::file_time_type to std::time_t.
+// C++17-portable conversion: assumes file_clock epoch maps to system_clock epoch
+// (true on glibc/libstdc++ and libc++ on Linux).
+std::time_t toTimeT(std::filesystem::file_time_type ftime)
+{
+    auto sctp = std::chrono::time_point_cast<std::chrono::system_clock::duration>(
+        ftime - decltype(ftime)::clock::now() + std::chrono::system_clock::now());
+    return std::chrono::system_clock::to_time_t(sctp);
+}
+
+} // namespace
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -272,7 +287,7 @@ bool ReaderWriter::loadFromSDFFile(const std::string& filename)
         return false;
 
     filename_ = filename;
-    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    source_last_write_time_ = toTimeT(std::filesystem::last_write_time(filename_));
 
     return true;
 }
@@ -291,7 +306,7 @@ bool ReaderWriter::loadFromXMLFile(const std::string& filename)
         return false;
 
     filename_ = filename;
-    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    source_last_write_time_ = toTimeT(std::filesystem::last_write_time(filename_));
 
     return true;
 }
@@ -310,7 +325,7 @@ bool ReaderWriter::loadFromYAMLFile(const std::string& filename, const ResolveCo
         return false;
 
     filename_ = filename;
-    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    source_last_write_time_ = toTimeT(std::filesystem::last_write_time(filename_));
     resolve_config_ = resolve_config;
 
     return true;
@@ -327,16 +342,16 @@ bool ReaderWriter::sync()
 
         try
         {
-            last_write_time = tue::filesystem::Path(filename_).lastWriteTime();
+            last_write_time = toTimeT(std::filesystem::last_write_time(filename_));
         }
-        catch (boost::filesystem::filesystem_error& e)
+        catch (std::filesystem::filesystem_error& e)
         {
             return false;
         }
 
         if (last_write_time > source_last_write_time_)
         {
-            std::string extension = tue::filesystem::Path(filename_).extension();
+            std::string extension = std::filesystem::path(filename_).extension().string();
             if (extension == ".sdf" || extension == ".world")
                 loadFromSDFFile(filename_);
             else if (extension == ".xml")

@@ -4,7 +4,7 @@
 #include <stdlib.h> /* getenv */
 #include <vector>
 
-#include <tue/filesystem/path.h>
+#include <filesystem>
 
 #include <iostream>
 #include <iterator>
@@ -100,11 +100,11 @@ resolveResult executeResolvefunction(const std::vector<std::string>& args,
             return resolveResult::success;
         }
 
-        tue::filesystem::Path parent_path = tue::filesystem::Path(source).parentPath();
-        if (parent_path.string().empty())
+        std::filesystem::path parent_path = std::filesystem::path(source).parent_path();
+        if (parent_path.empty())
             result = filename;
         else
-            result = parent_path.join(filename).string();
+            result = (parent_path / filename).string();
 
         return resolveResult::success;
     }
