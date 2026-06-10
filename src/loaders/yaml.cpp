@@ -2,15 +2,12 @@
 
 #include "loader_functions.h"
 #include "resolve_functions.h"
-#include "tue/config/configuration.h"
+#include "tue/config/reader_writer.h"
+
+#include <yaml-cpp/yaml.h>
 
 #include <filesystem>
-
-// YAML parsing
 #include <fstream>
-
-#include "yaml-cpp/yaml.h"
-
 #include <iostream>
 #include <stdlib.h>
 

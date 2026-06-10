@@ -17,6 +17,7 @@ find_package(ament_index_cpp REQUIRED)
 find_package(Boost REQUIRED COMPONENTS)
 find_package(console_bridge REQUIRED)
 find_package(TinyXML2 REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 # to show header files in Qt Creator
@@ -66,7 +67,7 @@ target_link_libraries(${PROJECT_NAME}
   ${Boost_LIBRARIES}
   ${console_bridge_LIBRARIES}
   tinyxml2::tinyxml2
-  ${YAML_CPP_LIBRARIES}
+  yaml-cpp::yaml-cpp
 )
 
 # ------------------------------------------------------------------------------------------------
