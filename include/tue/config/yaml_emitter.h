@@ -17,11 +17,9 @@ class YAMLEmitter
 {
 
 public:
-
     YAMLEmitter();
 
     void emit(const tue::config::DataConstPointer& cfg, std::ostream& out, const std::string& indent = "");
-
 };
 
 } // end namespace config

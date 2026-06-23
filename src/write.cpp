@@ -1,8 +1,8 @@
 #include "tue/config/write.h"
 
 #include "tue/config/data.h"
-#include "tue/config/node.h"
 #include "tue/config/map.h"
+#include "tue/config/node.h"
 #include "tue/config/sequence.h"
 
 #include <fstream>
@@ -43,10 +43,10 @@ struct WriterImpl
 
         newline = "\n";
 
-        for(int i = 0; i < n; ++i)
+        for (int i = 0; i < n; ++i)
             tab += " ";
 
-        for(int i = 0; i < n - 2; ++i)
+        for (int i = 0; i < n - 2; ++i)
             yaml_array_tab += " ";
     }
 
@@ -62,7 +62,7 @@ struct WriterImpl
         std::string new_indent = indent + tab;
 
         const std::map<Label, Variant>& values = map->values;
-        for(std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
+        for (std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
         {
             if (!first)
                 out << "," << newline;
@@ -79,7 +79,7 @@ struct WriterImpl
         }
 
         const std::map<Label, NodeIdx>& children = map->map_;
-        for(std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
             if (!first)
                 out << "," << newline;
@@ -96,7 +96,7 @@ struct WriterImpl
 
                 Sequence* array = static_cast<Sequence*>(m.get());
                 const std::vector<NodeIdx>& children = array->children_;
-                for(std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+                for (std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
                 {
                     if (it != children.begin())
                         out << "," << newline;
@@ -124,7 +124,7 @@ struct WriterImpl
         Map* map = static_cast<Map*>(n.get());
 
         const std::map<Label, Variant>& values = map->values;
-        for(std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
+        for (std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
         {
             if (array_item_start)
                 array_item_start = false;
@@ -135,7 +135,7 @@ struct WriterImpl
         }
 
         const std::map<Label, NodeIdx>& children = map->map_;
-        for(std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
             if (array_item_start)
                 array_item_start = false;
@@ -150,7 +150,7 @@ struct WriterImpl
             {
                 Sequence* array = static_cast<Sequence*>(m.get());
                 const std::vector<NodeIdx>& children = array->children_;
-                for(std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+                for (std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
                 {
                     out << indent << yaml_array_tab << "- ";
                     writeYAML(cfg.nodes[*it], indent + tab, true);
@@ -217,5 +217,5 @@ bool toFile(const char* filename, const DataConstPointer& data, WriteType write_
 
 // ----------------------------------------------------------------------------------------------------
 
-}
-}
+} // namespace config
+} // namespace tue

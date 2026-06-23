@@ -1,7 +1,8 @@
-#include <tue/config/variant.h>
 #include <iostream>
+#include <tue/config/variant.h>
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv)
+{
 
     tue::Variant v(-56);
     std::cout << v.isInt() << std::endl;

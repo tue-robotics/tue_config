@@ -1,16 +1,13 @@
 #include "tue/config/loaders/yaml.h"
 
-#include "tue/config/configuration.h"
-#include "resolve_functions.h"
 #include "loader_functions.h"
+#include "resolve_functions.h"
+#include "tue/config/reader_writer.h"
 
-#include <tue/filesystem/path.h>
+#include <yaml-cpp/yaml.h>
 
-// YAML parsing
+#include <filesystem>
 #include <fstream>
-
-#include "yaml-cpp/yaml.h"
-
 #include <iostream>
 #include <stdlib.h>
 
@@ -22,7 +19,10 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWriter& config, const ResolveConfig& resolve_config)
+bool yamlScalarToVariant(const std::string& key,
+                         const YAML::Node& n,
+                         ReaderWriter& config,
+                         const ResolveConfig& resolve_config)
 {
     std::string s;
 
@@ -35,8 +35,8 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
             filename = s;
         else
         {
-            tue::filesystem::Path filepath(config.source());
-            filename = filepath.parentPath().join(s).string();
+            std::filesystem::path filepath(config.source());
+            filename = (filepath.parent_path() / s).string();
         }
 
         return loadFromYAMLFile(filename, config, resolve_config);
@@ -47,7 +47,7 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     std::stringstream s_error;
     if (!resolve(s, config.source(), s_resolved, s_error, resolve_config))
     {
-        config.addError("While reading key '" + key +"': Could not resolve: " + s_error.str());
+        config.addError("While reading key '" + key + "': Could not resolve: " + s_error.str());
         return false;
     }
 
@@ -59,7 +59,7 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
     }
 
     char* pEnd;
-    int i = (int) std::strtol(s_resolved.c_str(), &pEnd, 10);
+    int i = (int)std::strtol(s_resolved.c_str(), &pEnd, 10);
     if (pEnd[0] == 0)
     {
         config.setValue(key, i);
@@ -89,10 +89,13 @@ bool yamlScalarToVariant(const std::string& key, const YAML::Node& n, ReaderWrit
 bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     bool success = true;
-    for(YAML::const_iterator it = node.begin(); it != node.end(); ++it)
+    for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
     {
         std::string key = it->first.as<std::string>();
-        const YAML::Node& n = it->second;
+        // Copy the node by value: yaml-cpp's iterator returns a temporary
+        // YAML::Node, so binding it to a reference would dangle. YAML::Node
+        // has cheap shared-pointer semantics, so copying is safe.
+        const YAML::Node n = it->second;
 
         switch (n.Type())
         {
@@ -110,9 +113,10 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
              * Need to use index iteration instead of iterator for sequences, because it goes behind the end.
              * See https://github.com/jbeder/yaml-cpp/issues/833
              */
-            for(std::size_t i = 0; i < n.size(); ++i)
+            for (std::size_t i = 0; i < n.size(); ++i)
             {
-                const YAML::Node& n2 = n[i];
+                // Copy by value: YAML::Node::operator[] returns a temporary.
+                const YAML::Node n2 = n[i];
                 if (n2.Type() != YAML::NodeType::Map)
                 {
                     config.addError("Sequences must only contains maps");
@@ -136,8 +140,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
             config.endGroup();
             break;
         case YAML::NodeType::Undefined:
-        case YAML::NodeType::Null:
-            break;
+        case YAML::NodeType::Null: break;
         }
     }
 
@@ -162,7 +165,7 @@ bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const Resolv
         if (!loadFromYAMLNode(doc, config, resolve_config))
             return false;
     }
-    catch(YAML::Exception& e)
+    catch (YAML::Exception& e)
     {
         config.addError(e.what());
         return false;
@@ -185,10 +188,10 @@ bool loadFromYAMLString(const std::string& string, ReaderWriter& config, const R
 bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     // Remove possible previous errors (TODO)
-//    config.data_->error.clear();
+    //    config.data_->error.clear();
 
     // Reset head (TODO)
-//    config.head_ = scope_;
+    //    config.head_ = scope_;
 
     config.setSource(filename);
 
@@ -203,12 +206,12 @@ bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const R
         return false;
 
     // TODO:
-//    filename_ = filename;
-//    source_last_write_time_ = tue::filesystem::Path(filename_).lastWriteTime();
+    //    filename_ = filename;
+    //    source_last_write_time_ = std::filesystem::last_write_time(filename_);
 
     return true;
 }
 
-}
+} // namespace config
 
-}
+} // namespace tue

@@ -12,30 +12,32 @@ namespace config
 
 // ----------------------------------------------------------------------------------------------------
 
-YAMLEmitter::YAMLEmitter()
-{
-}
+YAMLEmitter::YAMLEmitter() {}
 
 // ----------------------------------------------------------------------------------------------------
 
-void emitRecursive(std::ostream& out, const tue::config::Data& cfg, const NodePtr& n,
-                   const std::string& indent, bool ignore_first_indent = false)
+void emitRecursive(std::ostream& out,
+                   const tue::config::Data& cfg,
+                   const NodePtr& n,
+                   const std::string& indent,
+                   bool ignore_first_indent = false)
 {
     if (n->type() == ARRAY)
     {
         Sequence* array = static_cast<Sequence*>(n.get());
         const std::vector<NodeIdx>& children = array->children_;
-        for(std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
             out << indent << "- ";
             emitRecursive(out, cfg, cfg.nodes[*it], indent + "  ", true);
         }
-    } else
+    }
+    else
     {
         Map* map = static_cast<Map*>(n.get());
 
         const std::map<Label, Variant>& values = map->values;
-        for(std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
+        for (std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
         {
             if (!ignore_first_indent)
                 out << indent;
@@ -46,7 +48,7 @@ void emitRecursive(std::ostream& out, const tue::config::Data& cfg, const NodePt
         }
 
         const std::map<Label, NodeIdx>& children = map->map_;
-        for(std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
         {
             if (!ignore_first_indent)
                 out << indent;
@@ -72,4 +74,3 @@ void YAMLEmitter::emit(const tue::config::DataConstPointer& cfg, std::ostream& o
 } // end namespace config
 
 } // end namespace tue
-

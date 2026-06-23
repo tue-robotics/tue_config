@@ -5,54 +5,54 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include <string>
 #include <iostream>
+#include <string>
 
 namespace tue
 {
 namespace config
 {
 
-//template <typename T>
-//struct TypeWrapper
+// template <typename T>
+// struct TypeWrapper
 //{
-//    typedef T TYPE;
-//    typedef const T CONSTTYPE;
-//    typedef T& REFTYPE;
-//    typedef const T& CONSTREFTYPE;
-//};
+//     typedef T TYPE;
+//     typedef const T CONSTTYPE;
+//     typedef T& REFTYPE;
+//     typedef const T& CONSTREFTYPE;
+// };
 
-//template <typename T>
-//struct TypeWrapper<const T>
+// template <typename T>
+// struct TypeWrapper<const T>
 //{
-//    typedef T TYPE;
-//    typedef const T CONSTTYPE;
-//    typedef T& REFTYPE;
-//    typedef const T& CONSTREFTYPE;
-//};
+//     typedef T TYPE;
+//     typedef const T CONSTTYPE;
+//     typedef T& REFTYPE;
+//     typedef const T& CONSTREFTYPE;
+// };
 
-//template <typename T>
-//struct TypeWrapper<const T&>
+// template <typename T>
+// struct TypeWrapper<const T&>
 //{
-//    typedef T TYPE;
-//    typedef const T CONSTTYPE;
-//    typedef T& REFTYPE;
-//    typedef const T& CONSTREFTYPE;
-//};
+//     typedef T TYPE;
+//     typedef const T CONSTTYPE;
+//     typedef T& REFTYPE;
+//     typedef const T& CONSTREFTYPE;
+// };
 
-//template <typename T>
-//struct TypeWrapper<T&>
+// template <typename T>
+// struct TypeWrapper<T&>
 //{
-//    typedef T TYPE;
-//    typedef const T CONSTTYPE;
-//    typedef T& REFTYPE;
-//    typedef const T& CONSTREFTYPE;
-//};
+//     typedef T TYPE;
+//     typedef const T CONSTTYPE;
+//     typedef T& REFTYPE;
+//     typedef const T& CONSTREFTYPE;
+// };
 
-//class Variant2
+// class Variant2
 //{
-//public:
-//    Variant2() { }
+// public:
+//     Variant2() { }
 
 //    template<class T>
 //    Variant2(T inValue) :
@@ -84,11 +84,10 @@ namespace config
 //        return out;
 //    }
 
-
-//private:
-//    struct AbstractVariantImpl
-//    {
-//        virtual ~AbstractVariantImpl() {}
+// private:
+//     struct AbstractVariantImpl
+//     {
+//         virtual ~AbstractVariantImpl() {}
 
 //        virtual void print(std::ostream& out) const {}
 //    };
@@ -112,7 +111,6 @@ class Variant
 {
 
 public:
-
     Variant() : type_('?') {}
 
     Variant(const bool& b) : type_('b'), b_(b) {}
@@ -145,10 +143,10 @@ public:
     bool inline valid() const { return type_ != '?'; }
 
 private:
-
     char type_;
 
-    union {
+    union
+    {
         int i_;
         double d_;
         bool b_;
@@ -156,8 +154,7 @@ private:
 
     std::string s_;
 
-    template<typename T>
-    inline bool checkAndGet(const T& v, char type, T& out)
+    template <typename T> inline bool checkAndGet(const T& v, char type, T& out)
     {
         if (type != type_)
             return false;
@@ -165,29 +162,23 @@ private:
         return true;
     }
 
-    friend std::ostream& operator<< (std::ostream& out, const Variant& v)
+    friend std::ostream& operator<<(std::ostream& out, const Variant& v)
     {
         switch (v.type_)
         {
-        case 'i': out << v.i_;
-            break;
-        case 'd': out << v.d_;
-            break;
-        case 's': out << v.s_;
-            break;
-        case 'b': out << v.b_;
-            break;
-        default: out << "?";
-            break;
+        case 'i': out << v.i_; break;
+        case 'd': out << v.d_; break;
+        case 's': out << v.s_; break;
+        case 'b': out << v.b_; break;
+        default: out << "?"; break;
         }
 
         return out;
     }
-
 };
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
+} // namespace tue
 
 #endif

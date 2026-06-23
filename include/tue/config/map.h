@@ -13,7 +13,6 @@ class Map : public Node
 {
 
 public:
-
     Map(const Label& name) : Node(name, MAP) {}
 
     bool readGroup(const Label& label, NodeIdx& idx) const
@@ -50,10 +49,7 @@ public:
         return true;
     }
 
-    virtual bool empty() const
-    {
-        return (map_.empty() && values.empty());
-    }
+    virtual bool empty() const { return (map_.empty() && values.empty()); }
 
     // --- COPY
 
@@ -62,10 +58,9 @@ public:
     std::map<Label, NodeIdx> map_;
 
     std::map<Label, Variant> values;
-
 };
 
-}
+} // namespace config
 
 } // end namespace tue
 

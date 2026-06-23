@@ -5,3 +5,10 @@ updates:
     schedule:
       interval: "weekly"
       day: "tuesday"
+  # ROS1
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    target-branch: ros1
+    schedule:
+      interval: "weekly"
+      day: "tuesday"

@@ -12,7 +12,7 @@ NodePtr Sequence::deepCopy(const Data& source, NodeIdx target_idx, Data& target)
     boost::shared_ptr<Sequence> n(new Sequence(name()));
 
     n->children_.resize(children_.size());
-    for(unsigned int i = 0; i < children_.size(); ++i)
+    for (unsigned int i = 0; i < children_.size(); ++i)
     {
         NodeIdx child_idx = target.addNode(NodePtr(), target_idx);
         target.nodes[child_idx] = source.nodes[children_[i]]->deepCopy(source, child_idx, target);
@@ -25,7 +25,6 @@ NodePtr Sequence::deepCopy(const Data& source, NodeIdx target_idx, Data& target)
     return n;
 }
 
-}
+} // namespace config
 
 } // end namespace tue
-

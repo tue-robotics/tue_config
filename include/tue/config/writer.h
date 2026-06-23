@@ -13,7 +13,6 @@ class Writer
 {
 
 public:
-
     Writer();
 
     Writer(DataPointer& cfg);
@@ -40,7 +39,7 @@ public:
      */
     bool addArrayItem();
 
-    template<typename T>
+    template <typename T>
     /**
      * @brief setValue set child value with key 'name' and value 'value'
      * @param name name of the key
@@ -93,7 +92,6 @@ public:
     inline DataConstPointer data() const { return DataConstPointer(cfg_, idx_); }
 
 private:
-
     /**
      * @brief end go to parent node.
      * @return indicates succes, can fail if current node doesn't have a parent
@@ -102,12 +100,11 @@ private:
 
     NodeIdx idx_; // Current node index
 
-    boost::shared_ptr<Data> cfg_;  // Data pointer
-
+    boost::shared_ptr<Data> cfg_; // Data pointer
 };
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
+} // namespace tue
 
 #endif

@@ -28,9 +28,7 @@ DataPointer fromStream(std::istream& s, const ResolveConfig& resolve_config)
     if (!tue::config::loadFromYAMLStream(s, reader, resolve_config))
         throw ParseException(reader.error());
 
-
     return reader.data();
-
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -57,5 +55,5 @@ DataPointer fromFile(const char* filename, const ResolveConfig& resolve_config)
 
 // ----------------------------------------------------------------------------------------------------
 
-}
-}
+} // namespace config
+} // namespace tue

@@ -13,7 +13,6 @@ class BinaryReader
 {
 
 public:
-
     BinaryReader(const std::vector<char>& data);
 
     BinaryReader(const char* data, unsigned int byte_size);
@@ -27,7 +26,6 @@ public:
     bool value(const std::string& name, int& value);
 
 private:
-
     const char* data_;
 
     unsigned int byte_size_;
@@ -35,11 +33,10 @@ private:
     unsigned int idx_;
 
     bool error_;
-
 };
 
-} // end namespace tue
+} // namespace config
 
-} // end namespace config
+} // namespace tue
 
 #endif
