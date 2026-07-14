@@ -8,16 +8,14 @@
 
 #include <console_bridge/console.h>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
 
-void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
+static void dataMerge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
 {
-    NodePtr& n1 = c1.nodes[me_idx];
+    const NodePtr& n1 = c1.nodes[me_idx];
     const NodePtr& n2 = c2.nodes[other_idx];
 
     if (n1->type() != n2->type())
@@ -36,33 +34,33 @@ void data_merge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std
         Map* map1 = static_cast<Map*>(n1.get());
         const Map* map2 = static_cast<const Map*>(n2.get());
 
-        boost::shared_ptr<Map> new_map = boost::make_shared<Map>(*map1);
+        const boost::shared_ptr<Map> new_map = boost::make_shared<Map>(*map1);
 
         // Merge children
         const std::map<Label, NodeIdx>& children = map2->map_;
-        for (std::map<Label, NodeIdx>::const_iterator it2 = children.begin(); it2 != children.end(); ++it2)
+        for (const auto& it2 : children)
         {
-            const Label& label2 = it2->first;
-            std::map<Label, NodeIdx>::iterator it1 = map1->map_.find(label2);
+            const Label& label2 = it2.first;
+            const auto it1 = map1->map_.find(label2);
             if (it1 == map1->map_.end())
             {
                 // c1 does not have that child, so add it
-                NodeIdx child_idx = c1.addNode(NodePtr(), me_idx);
-                c1.nodes[child_idx] = c2.nodes[it2->second]->deepCopy(c2, child_idx, c1);
+                const NodeIdx child_idx = c1.addNode(NodePtr(), me_idx);
+                c1.nodes[child_idx] = c2.nodes[it2.second]->deepCopy(c2, child_idx, c1);
                 new_map->map_[label2] = child_idx;
             }
             else
             {
                 // n1 already has that child. Merge them.
-                data_merge(c1, it1->second, c2, it2->second, error);
+                dataMerge(c1, it1->second, c2, it2.second, error);
             }
         }
 
         // Merge values
         const std::map<Label, Variant>& values = map2->values;
-        for (std::map<Label, Variant>::const_iterator it2 = values.begin(); it2 != values.end(); ++it2)
+        for (const auto& it2 : values)
         {
-            new_map->values[it2->first] = it2->second;
+            new_map->values[it2.first] = it2.second;
         }
 
         c1.nodes[me_idx] = new_map;
@@ -89,7 +87,7 @@ bool DataPointer::add(const DataConstPointer& ptr)
     //    std::cout << ptr << std::endl;
 
     std::string error;
-    data_merge(*data, idx, *ptr.data, ptr.idx, error);
+    dataMerge(*data, idx, *ptr.data, ptr.idx, error);
 
     if (!error.empty())
     {
@@ -144,6 +142,4 @@ std::ostream& operator<<(std::ostream& out, const DataPointer& d)
     return out;
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config

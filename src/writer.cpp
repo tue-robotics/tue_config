@@ -6,9 +6,7 @@
 
 #include <boost/make_shared.hpp>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
@@ -31,7 +29,7 @@ Writer::Writer(DataPointer& cfg) : idx_(cfg.idx), cfg_(cfg.data)
 
 // ----------------------------------------------------------------------------------------------------
 
-Writer::~Writer() {}
+Writer::~Writer() = default;
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -46,12 +44,9 @@ bool Writer::writeGroup(const std::string& name)
         return true;
 
     // If no child node with name is known, create a new one.
-    NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
+    const NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
-        return false;
-
-    return true;
+    return cfg_->nodes[idx_]->addGroup(label, n, idx_);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -67,12 +62,9 @@ bool Writer::writeArray(const std::string& name)
         return true;
 
     // If no child node with name is known, create a new one.
-    NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
+    const NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
-        return false;
-
-    return true;
+    return cfg_->nodes[idx_]->addGroup(label, n, idx_);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -82,10 +74,10 @@ bool Writer::addArrayItem()
     if (cfg_->nodes[idx_]->type() != ARRAY)
         return false;
 
-    NodePtr node = boost::make_shared<Map>("");
-    NodeIdx n = cfg_->addNode(node, idx_);
+    const NodePtr node = boost::make_shared<Map>("");
+    const NodeIdx n = cfg_->addNode(node, idx_);
 
-    NodeIdx previous;
+    NodeIdx previous = 0;
     if (!cfg_->nodes[idx_]->add(n, previous))
         return false;
 
@@ -101,7 +93,7 @@ bool Writer::addArrayItem()
 
 bool Writer::end()
 {
-    NodeIdx parent = cfg_->getParent(idx_);
+    const NodeIdx parent = cfg_->getParent(idx_);
     if (parent == static_cast<NodeIdx>(-1))
         return false;
 
@@ -114,6 +106,4 @@ bool Writer::end()
     return true;
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config

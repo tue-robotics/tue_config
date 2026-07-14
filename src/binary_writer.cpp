@@ -4,18 +4,16 @@
 
 #include <sstream>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
 
-BinaryWriter::BinaryWriter() {}
+BinaryWriter::BinaryWriter() = default;
 
 // ----------------------------------------------------------------------------------------------------
 
-BinaryWriter::~BinaryWriter() {}
+BinaryWriter::~BinaryWriter() = default;
 
 // ----------------------------------------------------------------------------------------------------
 

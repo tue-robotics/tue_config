@@ -7,10 +7,7 @@
 
 #include <fstream>
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------

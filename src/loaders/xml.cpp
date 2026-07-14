@@ -11,24 +11,21 @@
 
 #include <filesystem>
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 bool setValue(const std::string& key, const std::string& value, ReaderWriter& config)
 {
-    char* pEnd;
-    int i = (int)std::strtol(value.c_str(), &pEnd, 10);
-    if (pEnd[0] == 0)
+    char* p_end = nullptr;
+    const int i = static_cast<int>(std::strtol(value.c_str(), &p_end, 10));
+    if (p_end[0] == 0)
     {
         config.setValue(key, i);
         return true;
     }
 
-    double d = std::strtod(value.c_str(), &pEnd);
-    if (pEnd[0] == 0)
+    const double d = std::strtod(value.c_str(), &p_end);
+    if (p_end[0] == 0)
     {
         config.setValue(key, d);
         return true;
@@ -49,29 +46,29 @@ bool setValue(const std::string& key, const std::string& value, ReaderWriter& co
 
 bool loadFromXMLText(const tinyxml2::XMLElement& element, ReaderWriter& config)
 {
-    std::string key(element.Value());
+    const std::string key(element.Value());
     if (element.GetText() == nullptr)
     {
         CONSOLE_BRIDGE_logWarn("Empty key: %s", key.c_str());
         return setValue(key, "", config);
     }
-    std::string value(element.GetText());
+    const std::string value(element.GetText());
     return setValue(key, value, config);
 }
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& config)
+static bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& config)
 {
     // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
     {
         return loadFromXMLText(element, config);
     }
-    else
+
     {
         // Start a new array with the Value of the current element as key
-        std::string element_name = element.Value();
+        const std::string element_name = element.Value();
         config.writeArray(element_name);
 
         // Iterate through attributes
@@ -87,7 +84,7 @@ bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
         // Iterate through elements
         for (const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
-            std::string candidate_name = e->Value();
+            const std::string candidate_name = e->Value();
             config.addArrayItem();
 
             if (!loadFromXMLElement(*e, config))
@@ -108,7 +105,7 @@ bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromXMLDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& config)
+static bool loadFromXMLDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& config)
 {
     const tinyxml2::XMLElement* root = doc.FirstChildElement();
 
@@ -131,7 +128,7 @@ bool loadFromXMLStream(std::istream& stream, ReaderWriter& config)
     if (doc.Error())
     {
         std::stringstream error;
-        error << "Error loading stream:" << std::endl << stream.rdbuf() << std::endl;
+        error << "Error loading stream:" << '\n' << stream.rdbuf() << '\n';
         error << doc.ErrorStr() << " at line " << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
@@ -148,7 +145,7 @@ bool loadFromXMLString(const std::string& string, ReaderWriter& config)
     if (doc.Error())
     {
         std::stringstream error;
-        error << "Error loading string:" << std::endl << string << std::endl;
+        error << "Error loading string:" << '\n' << string << '\n';
         error << doc.ErrorStr() << " at line " << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
@@ -165,7 +162,7 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
     if (!std::filesystem::exists(filename))
     {
         std::stringstream error;
-        error << "[loadFromXMLFile] file '" << filename << "' doesn't exist." << std::endl;
+        error << "[loadFromXMLFile] file '" << filename << "' doesn't exist." << '\n';
         config.addError(error.str());
         return false;
     }
@@ -188,6 +185,4 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-} // End of namespace config
-
-} // End of namespace tue
+} // End of namespace tue::config
