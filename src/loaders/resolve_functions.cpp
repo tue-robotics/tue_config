@@ -1,7 +1,15 @@
 #include "resolve_functions.h"
 #include "tue/config/resolve_config.h"
 
+// ament_index_cpp deprecated the single-argument get_package_share_directory in 1.13 and removed its
+// header entirely in 1.14, replacing it with get_package_share_path. Guard on ament_index_cpp's own
+// version (not the ROS distro), because that is the package the API lives in.
+#include <ament_index_cpp/version.h>
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+#include <ament_index_cpp/get_package_share_path.hpp>
+#else
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#endif
 #include <cstdlib> /* getenv */
 #include <exception>
 #include <sstream>
@@ -55,10 +63,11 @@ resolveResult executeResolvefunction(const std::vector<std::string>& args,
 
         try
         {
-            // get_package_share_directory is deprecated on Rolling in favour of get_package_share_path,
-            // but that API is not available on Humble/Jazzy, so keep using it across all distros.
-            result = ament_index_cpp::get_package_share_directory(
-                args[1]); // NOLINT(clang-diagnostic-deprecated-declarations)
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+            result = ament_index_cpp::get_package_share_path(args[1]).string();
+#else
+            result = ament_index_cpp::get_package_share_directory(args[1]);
+#endif
         }
         catch (const std::exception&)
         {
