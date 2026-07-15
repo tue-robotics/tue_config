@@ -65,6 +65,4 @@ void BinaryWriter::print() const
     CONSOLE_BRIDGE_logDebug("%s", ss.str().c_str());
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config

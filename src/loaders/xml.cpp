@@ -185,4 +185,4 @@ bool loadFromXMLFile(const std::string& filename, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-} // End of namespace tue::config
+} // namespace tue::config

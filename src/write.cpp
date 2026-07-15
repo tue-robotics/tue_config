@@ -214,5 +214,4 @@ bool toFile(const char* filename, const DataConstPointer& data, WriteType write_
 
 // ----------------------------------------------------------------------------------------------------
 
-} // namespace config
-} // namespace tue
+} // namespace tue::config
