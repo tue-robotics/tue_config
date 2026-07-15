@@ -1,13 +1,15 @@
 #include <console_bridge/console.h>
 
-#include <fstream>
+#include <cstdlib>
+#include <istream>
 #include <sstream>
+#include <string>
 #include <tinyxml2.h>
 
 #include "loader_functions.h"
-#include "tue/config/configuration.h"
 #include "tue/config/loaders/xml.h"
 #include "tue/config/read.h"
+#include "tue/config/reader_writer.h" // IWYU pragma: keep — complete type needed for ReaderWriter method calls
 
 #include <filesystem>
 
@@ -16,7 +18,9 @@ namespace tue::config
 
 bool setValue(const std::string& key, const std::string& value, ReaderWriter& config)
 {
-    char* p_end = nullptr;
+    // strtol writes the end pointer through &p_end, so its pointee cannot be const (the C API
+    // signature is char**), even though we never modify the pointed-to characters ourselves.
+    char* p_end = nullptr; // NOLINT(misc-const-correctness)
     const int i = static_cast<int>(std::strtol(value.c_str(), &p_end, 10));
     if (p_end[0] == 0)
     {
@@ -58,7 +62,11 @@ bool loadFromXMLText(const tinyxml2::XMLElement& element, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-static bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& config)
+namespace
+{
+
+// NOLINTNEXTLINE(misc-no-recursion) — recursive descent over nested XML elements.
+bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter& config)
 {
     // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
@@ -105,7 +113,7 @@ static bool loadFromXMLElement(const tinyxml2::XMLElement& element, ReaderWriter
 
 // ----------------------------------------------------------------------------------------------------
 
-static bool loadFromXMLDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& config)
+bool loadFromXMLDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& config)
 {
     const tinyxml2::XMLElement* root = doc.FirstChildElement();
 
@@ -116,6 +124,8 @@ static bool loadFromXMLDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& 
 
     return loadFromXMLElement(*root, config);
 }
+
+} // namespace
 
 // ----------------------------------------------------------------------------------------------------
 

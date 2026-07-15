@@ -1,13 +1,16 @@
 #include "tue/config/reader_writer.h"
 #include "tue/config/data.h"
+#include "tue/config/data_pointer.h"
+#include "tue/config/label.h"
 #include "tue/config/node.h"
 
 // Merge
 #include "tue/config/map.h"
+#include "tue/config/node_type.h"
+#include "tue/config/resolve_config.h"
 #include "tue/config/sequence.h"
 
-#include <boost/make_shared.hpp>
-
+#include <boost/smart_ptr/make_shared_object.hpp>
 #include <console_bridge/console.h>
 
 // SDF
@@ -18,16 +21,19 @@
 
 // YAML
 #include "tue/config/loaders/yaml.h"
+#include "tue/config/types.h"
 #include "tue/config/yaml_emitter.h"
+#include <ctime>
+#include <ostream>
 #include <sstream>
 
 // Sync
 #include <chrono>
 #include <filesystem>
+#include <string>
+#include <vector>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 namespace
@@ -62,14 +68,14 @@ ReaderWriter::ReaderWriter(DataPointer& cfg) : idx_(cfg.idx), scope_(0), cfg_(cf
 
 // ----------------------------------------------------------------------------------------------------
 
-ReaderWriter::~ReaderWriter() {}
+ReaderWriter::~ReaderWriter() = default;
 
 // ----------------------------------------------------------------------------------------------------
 
-bool ReaderWriter::read(const std::string& name, const NodeType type, const RequiredOrOptional opt)
+bool ReaderWriter::read(const std::string& name, NodeType type, RequiredOrOptional opt)
 {
     Label label;
-    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    NodeIdx child_idx = 0; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
     {
         // check if child matches the type you want to read.
@@ -93,7 +99,7 @@ bool ReaderWriter::end()
     if (idx_ == scope_)
         return false;
 
-    NodeIdx parent = cfg_->getParent(idx_);
+    NodeIdx const parent = cfg_->getParent(idx_);
     if (parent == static_cast<NodeIdx>(-1))
         return false;
 
@@ -113,7 +119,7 @@ bool ReaderWriter::next()
     if (cfg_->nodes[idx_]->type() == ARRAY)
         return cfg_->nodes[idx_]->firstChild(idx_);
 
-    NodeIdx right_sibling = cfg_->getRightSibling(idx_);
+    NodeIdx const right_sibling = cfg_->getRightSibling(idx_);
     if (right_sibling == static_cast<NodeIdx>(-1))
         return false;
 
@@ -135,7 +141,7 @@ ReaderWriter ReaderWriter::limitScope() const
 bool ReaderWriter::hasChild(const std::string& name, NodeType type) const
 {
     Label label;
-    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    NodeIdx child_idx = 0; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
     {
         // check if child matches the type you want to read.
@@ -173,7 +179,7 @@ void ReaderWriter::addError(const std::string& msg)
         {
             error_msg += "In '";
 
-            for (int i = context.size() - 2; i > 0; --i)
+            for (int i = static_cast<int>(context.size()) - 2; i > 0; --i)
             {
                 error_msg += context[i] + ".";
             }
@@ -202,12 +208,9 @@ bool ReaderWriter::writeGroup(const std::string& name)
         return true;
 
     // If no child node with name is known, create a new one.
-    NodeIdx n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
+    NodeIdx const n = cfg_->addNode(boost::make_shared<Map>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
-        return false;
-
-    return true;
+    return cfg_->nodes[idx_]->addGroup(label, n, idx_);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -223,12 +226,9 @@ bool ReaderWriter::writeArray(const std::string& name)
         return true;
 
     // If no child node with name is known, create a new one.
-    NodeIdx n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
+    NodeIdx const n = cfg_->addNode(boost::make_shared<Sequence>(label), idx_);
 
-    if (!cfg_->nodes[idx_]->addGroup(label, n, idx_))
-        return false;
-
-    return true;
+    return cfg_->nodes[idx_]->addGroup(label, n, idx_);
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -238,10 +238,10 @@ bool ReaderWriter::addArrayItem()
     if (cfg_->nodes[idx_]->type() != ARRAY)
         return false;
 
-    NodePtr node = boost::make_shared<Map>("");
-    NodeIdx n = cfg_->addNode(node, idx_);
+    NodePtr const node = boost::make_shared<Map>("");
+    NodeIdx const n = cfg_->addNode(node, idx_);
 
-    NodeIdx previous;
+    NodeIdx previous = 0;
     if (!cfg_->nodes[idx_]->add(n, previous))
         return false;
 
@@ -257,7 +257,7 @@ bool ReaderWriter::addArrayItem()
 
 bool ReaderWriter::endArrayItem()
 {
-    NodeIdx parent = cfg_->getParent(idx_);
+    NodeIdx const parent = cfg_->getParent(idx_);
     if (parent == static_cast<NodeIdx>(-1))
         return false;
 
@@ -269,9 +269,8 @@ bool ReaderWriter::endArrayItem()
 
 std::string ReaderWriter::toYAMLString() const
 {
-    YAMLEmitter emitter;
     std::stringstream s;
-    emitter.emit(DataConstPointer(cfg_, idx_), s);
+    YAMLEmitter::emit(DataConstPointer(cfg_, idx_), s);
     return s.str();
 }
 
@@ -340,7 +339,7 @@ bool ReaderWriter::sync()
 
     if (!filename_.empty())
     {
-        std::time_t last_write_time;
+        std::time_t last_write_time = 0;
 
         try
         {
@@ -353,7 +352,7 @@ bool ReaderWriter::sync()
 
         if (last_write_time > source_last_write_time_)
         {
-            std::string extension = std::filesystem::path(filename_).extension().string();
+            std::string const extension = std::filesystem::path(filename_).extension().string();
             if (extension == ".sdf" || extension == ".world")
                 loadFromSDFFile(filename_);
             else if (extension == ".xml")
@@ -378,6 +377,4 @@ std::ostream& operator<<(std::ostream& out, const ReaderWriter& rw)
     return out;
 }
 
-} // end namespace config
-
-} // end namespace tue
+} // namespace tue::config

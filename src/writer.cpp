@@ -1,10 +1,14 @@
 #include "tue/config/writer.h"
 #include "tue/config/data.h"
+#include "tue/config/data_pointer.h"
+#include "tue/config/label.h"
 #include "tue/config/map.h"
 #include "tue/config/node.h"
+#include "tue/config/node_type.h"
 #include "tue/config/sequence.h"
 
-#include <boost/make_shared.hpp>
+#include <boost/smart_ptr/make_shared_object.hpp>
+#include <string>
 
 namespace tue::config
 {

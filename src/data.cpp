@@ -1,14 +1,11 @@
 #include "tue/config/data.h"
 #include "tue/config/map.h"
 
-#include <boost/make_shared.hpp>
+#include <boost/smart_ptr/make_shared_object.hpp>
 
 #include "tue/config/yaml_emitter.h"
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
@@ -20,7 +17,7 @@ Data::Data()
 
 // ----------------------------------------------------------------------------------------------------
 
-Data::~Data() {}
+Data::~Data() = default;
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -31,6 +28,4 @@ Data::~Data() {}
 //     return out;
 // }
 
-} // namespace config
-
-} // end namespace tue
+} // namespace tue::config

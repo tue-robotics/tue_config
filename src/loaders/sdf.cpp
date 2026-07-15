@@ -1,22 +1,20 @@
 #include <console_bridge/console.h>
 
-#include <fstream>
+#include <istream>
 #include <set>
 #include <sstream>
+#include <string>
 #include <tinyxml2.h>
 
-#include "tue/config/configuration.h"
 #include "tue/config/loaders/sdf.h"
 #include "tue/config/loaders/xml.h"
 #include "tue/config/node_type.h"
 #include "tue/config/read.h"
+#include "tue/config/reader_writer.h" // IWYU pragma: keep — complete type needed for ReaderWriter method calls
 
 #include <filesystem>
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
@@ -65,10 +63,13 @@ static const std::set<std::string> SDF_VALUE_SET{"device",
 
 // ----------------------------------------------------------------------------------------------------
 
+namespace
+{
+
 tue::config::NodeType getSDFNodeType(const std::string& element_name)
 {
     // check if the element name is in the array set
-    std::set<std::string>::const_iterator it = SDF_ARRAY_SET.find(element_name);
+    auto const it = SDF_ARRAY_SET.find(element_name);
     if (it != SDF_ARRAY_SET.end())
         return ARRAY;
 
@@ -89,20 +90,19 @@ tue::config::NodeType getSDFNodeType(const std::string& element_name)
 
 // ----------------------------------------------------------------------------------------------------
 
-bool loadFromSDFElement(const tinyxml2::XMLElement& element, ReaderWriter& config, const NodeType node_type)
+// NOLINTNEXTLINE(misc-no-recursion) — recursive descent over nested SDF/XML elements.
+bool loadFromSDFElement(const tinyxml2::XMLElement& element, ReaderWriter& config, NodeType node_type)
 {
     // Attributes aren't read, if element doesn't have any child elements
     if (element.FirstChildElement() == nullptr)
     {
         if (node_type == MAP)
             return loadFromXMLText(element, config);
-        else
-        {
-            config.addArrayItem();
-            if (!loadFromXMLText(element, config))
-                return false;
-            config.endArrayItem();
-        }
+
+        config.addArrayItem();
+        if (!loadFromXMLText(element, config))
+            return false;
+        config.endArrayItem();
     }
     else
     {
@@ -125,8 +125,8 @@ bool loadFromSDFElement(const tinyxml2::XMLElement& element, ReaderWriter& confi
         // Iterate through elements
         for (const tinyxml2::XMLElement* e = element.FirstChildElement(); e != nullptr; e = e->NextSiblingElement())
         {
-            std::string candidate_name = e->Value();
-            tue::config::NodeType candidate_node_type = getSDFNodeType(candidate_name);
+            std::string const candidate_name = e->Value();
+            tue::config::NodeType const candidate_node_type = getSDFNodeType(candidate_name);
             // Because potentially childs of same type could be read, alternated by an other type.
             // Hence opening and closing of the array is needed for each child.
             // wirteArray will open the array if existing.
@@ -175,6 +175,8 @@ bool loadFromSDFDocument(const tinyxml2::XMLDocument& doc, ReaderWriter& config)
     return loadFromSDFElement(*root, config, MAP);
 }
 
+} // namespace
+
 // ----------------------------------------------------------------------------------------------------
 
 bool loadFromSDFStream(std::istream& stream, ReaderWriter& config)
@@ -186,7 +188,7 @@ bool loadFromSDFStream(std::istream& stream, ReaderWriter& config)
     if (doc.Error())
     {
         std::stringstream error;
-        error << "Error loading stream:" << std::endl << stream.rdbuf() << std::endl;
+        error << "Error loading stream:" << '\n' << stream.rdbuf() << '\n';
         error << doc.ErrorStr() << " at line " << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
@@ -203,7 +205,7 @@ bool loadFromSDFString(const std::string& string, ReaderWriter& config)
     if (doc.Error())
     {
         std::stringstream error;
-        error << "Error loading string:" << std::endl << string << std::endl;
+        error << "Error loading string:" << '\n' << string << '\n';
         error << doc.ErrorStr() << " at line" << doc.ErrorLineNum();
         config.addError(error.str());
         return false;
@@ -220,7 +222,7 @@ bool loadFromSDFFile(const std::string& filename, ReaderWriter& config)
     if (!std::filesystem::exists(filename))
     {
         std::stringstream error;
-        error << "[loadFromSDFFile] file '" << filename << "' doesn't exist." << std::endl;
+        error << "[loadFromSDFFile] file '" << filename << "' doesn't exist." << '\n';
         config.addError(error.str());
         return false;
     }
@@ -243,6 +245,4 @@ bool loadFromSDFFile(const std::string& filename, ReaderWriter& config)
 
 // ----------------------------------------------------------------------------------------------------
 
-} // End of namespace config
-
-} // End of namespace tue
+} // namespace tue::config

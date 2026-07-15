@@ -1,12 +1,13 @@
 #include "tue/config/read.h"
 
+#include "tue/config/data_pointer.h"
 #include "tue/config/loaders/yaml.h"
 #include "tue/config/reader_writer.h"
+#include "tue/config/resolve_config.h"
+#include <istream>
+#include <string>
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
@@ -55,5 +56,4 @@ DataPointer fromFile(const char* filename, const ResolveConfig& resolve_config)
 
 // ----------------------------------------------------------------------------------------------------
 
-} // namespace config
-} // namespace tue
+} // namespace tue::config

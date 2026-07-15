@@ -1,19 +1,29 @@
 #include "tue/config/data_pointer.h"
 #include "tue/config/data.h"
+#include "tue/config/label.h"
 #include "tue/config/map.h"
-#include "tue/config/sequence.h"
+#include "tue/config/node_type.h"
+#include "tue/config/types.h"
+#include "tue/config/variant.h"
 #include "tue/config/yaml_emitter.h"
 
-#include <boost/make_shared.hpp>
-
+#include <boost/smart_ptr/make_shared_object.hpp>
+#include <boost/smart_ptr/shared_ptr.hpp>
 #include <console_bridge/console.h>
+#include <map>
+#include <ostream>
+#include <string>
 
 namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
 
-static void dataMerge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
+namespace
+{
+
+// NOLINTNEXTLINE(misc-no-recursion) — recursive merge of nested config trees.
+void dataMerge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_idx, std::string& error)
 {
     const NodePtr& n1 = c1.nodes[me_idx];
     const NodePtr& n2 = c2.nodes[other_idx];
@@ -31,8 +41,8 @@ static void dataMerge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_id
     }
     else
     {
-        Map* map1 = static_cast<Map*>(n1.get());
-        const Map* map2 = static_cast<const Map*>(n2.get());
+        const Map* map1 = dynamic_cast<const Map*>(n1.get());
+        const Map* map2 = dynamic_cast<const Map*>(n2.get());
 
         const boost::shared_ptr<Map> new_map = boost::make_shared<Map>(*map1);
 
@@ -66,6 +76,8 @@ static void dataMerge(Data& c1, NodeIdx me_idx, const Data& c2, NodeIdx other_id
         c1.nodes[me_idx] = new_map;
     }
 }
+
+} // namespace
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -128,8 +140,7 @@ bool DataConstPointer::empty() const
 
 std::ostream& operator<<(std::ostream& out, const DataConstPointer& d)
 {
-    YAMLEmitter emitter;
-    emitter.emit(d, out);
+    YAMLEmitter::emit(d, out);
     return out;
 }
 
@@ -137,8 +148,7 @@ std::ostream& operator<<(std::ostream& out, const DataConstPointer& d)
 
 std::ostream& operator<<(std::ostream& out, const DataPointer& d)
 {
-    YAMLEmitter emitter;
-    emitter.emit(d, out);
+    YAMLEmitter::emit(d, out);
     return out;
 }
 

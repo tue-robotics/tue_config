@@ -1,21 +1,32 @@
 #include "tue/config/yaml_emitter.h"
 #include "tue/config/data.h"
+#include "tue/config/data_pointer.h"
+#include "tue/config/label.h"
 #include "tue/config/node.h"
 
 #include "tue/config/map.h"
+#include "tue/config/node_type.h"
 #include "tue/config/sequence.h"
+#include "tue/config/types.h"
+#include "tue/config/variant.h"
+#include <map>
+#include <ostream>
+#include <string>
+#include <vector>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
 
-YAMLEmitter::YAMLEmitter() {}
+YAMLEmitter::YAMLEmitter() = default;
 
 // ----------------------------------------------------------------------------------------------------
 
+namespace
+{
+
+// NOLINTNEXTLINE(misc-no-recursion) — recursive tree walk over the config document.
 void emitRecursive(std::ostream& out,
                    const tue::config::Data& cfg,
                    const NodePtr& n,
@@ -24,42 +35,44 @@ void emitRecursive(std::ostream& out,
 {
     if (n->type() == ARRAY)
     {
-        Sequence* array = static_cast<Sequence*>(n.get());
+        const auto* array = dynamic_cast<Sequence*>(n.get());
         const std::vector<NodeIdx>& children = array->children_;
-        for (std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (const unsigned int it : children)
         {
             out << indent << "- ";
-            emitRecursive(out, cfg, cfg.nodes[*it], indent + "  ", true);
+            emitRecursive(out, cfg, cfg.nodes[it], indent + "  ", true);
         }
     }
     else
     {
-        Map* map = static_cast<Map*>(n.get());
+        const Map* map = dynamic_cast<Map*>(n.get());
 
         const std::map<Label, Variant>& values = map->values;
-        for (std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
+        for (const auto& value : values)
         {
             if (!ignore_first_indent)
                 out << indent;
             else
                 ignore_first_indent = false;
 
-            out << cfg.getName(it->first) << ": " << it->second << std::endl;
+            out << cfg.getName(value.first) << ": " << value.second << '\n';
         }
 
         const std::map<Label, NodeIdx>& children = map->map_;
-        for (std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (const auto& it : children)
         {
             if (!ignore_first_indent)
                 out << indent;
             else
                 ignore_first_indent = false;
 
-            out << cfg.getName(it->first) << ": " << std::endl;
-            emitRecursive(out, cfg, cfg.nodes[it->second], indent + "    ");
+            out << cfg.getName(it.first) << ": " << '\n';
+            emitRecursive(out, cfg, cfg.nodes[it.second], indent + "    ");
         }
     }
 }
+
+} // namespace
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -71,6 +84,4 @@ void YAMLEmitter::emit(const tue::config::DataConstPointer& cfg, std::ostream& o
     emitRecursive(out, *cfg.data, cfg.data->nodes[cfg.idx], indent);
 }
 
-} // end namespace config
-
-} // end namespace tue
+} // namespace tue::config

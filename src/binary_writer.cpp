@@ -3,6 +3,7 @@
 #include <console_bridge/console.h>
 
 #include <sstream>
+#include <string>
 
 namespace tue::config
 {
@@ -51,15 +52,15 @@ void BinaryWriter::setValue(const std::string& name, int value)
 {
     data_.push_back('V');
     data_.insert(data_.end(), name.begin(), name.end() + 1);
-    data_.insert(data_.end(), (char*)&value, (char*)&value + sizeof(value));
+    data_.insert(data_.end(), reinterpret_cast<char*>(&value), reinterpret_cast<char*>(&value) + sizeof(value));
 }
 
 void BinaryWriter::print() const
 {
     std::stringstream ss;
-    for (unsigned int i = 0; i < data_.size(); ++i)
+    for (const char i : data_)
     {
-        ss << (int)(data_[i]) << " ";
+        ss << static_cast<int>(i) << " ";
     }
     CONSOLE_BRIDGE_logDebug("BinaryWriter size: %zu", data_.size());
     CONSOLE_BRIDGE_logDebug("%s", ss.str().c_str());
