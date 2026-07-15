@@ -1,10 +1,13 @@
 #include "tue/config/reader.h"
 #include "tue/config/data.h"
+#include "tue/config/data_pointer.h"
+#include "tue/config/label.h"
 #include "tue/config/node.h"
+#include "tue/config/node_type.h"
+#include "tue/config/types.h"
+#include <string>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
@@ -13,14 +16,14 @@ Reader::Reader(const DataConstPointer& ptr) : idx_(ptr.idx), cfg_(ptr.data) {}
 
 // ----------------------------------------------------------------------------------------------------
 
-Reader::~Reader() {}
+Reader::~Reader() = default;
 
 // ----------------------------------------------------------------------------------------------------
 
-bool Reader::read(const std::string& name, const NodeType type, const RequiredOrOptional /*opt*/)
+bool Reader::read(const std::string& name, NodeType type, const RequiredOrOptional /*opt*/)
 {
     Label label;
-    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    NodeIdx child_idx = 0; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
     {
         // check if child matches the type you want to read.
@@ -38,7 +41,7 @@ bool Reader::read(const std::string& name, const NodeType type, const RequiredOr
 
 bool Reader::end()
 {
-    NodeIdx parent = cfg_->getParent(idx_);
+    NodeIdx const parent = cfg_->getParent(idx_);
     if (parent == static_cast<NodeIdx>(-1))
         return false;
 
@@ -58,7 +61,7 @@ bool Reader::next()
     if (cfg_->nodes[idx_]->type() == ARRAY)
         return cfg_->nodes[idx_]->firstChild(idx_);
 
-    NodeIdx right_sibling = cfg_->getRightSibling(idx_);
+    NodeIdx const right_sibling = cfg_->getRightSibling(idx_);
     if (right_sibling == static_cast<NodeIdx>(-1))
         return false;
 
@@ -71,7 +74,7 @@ bool Reader::next()
 bool Reader::hasChild(const std::string& name, NodeType type) const
 {
     Label label;
-    NodeIdx child_idx; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
+    NodeIdx child_idx = 0; // Needed for checking if the child node is indeed the type(map/array) we are looking for.
     if (cfg_->getLabel(name, label) && cfg_->nodes[idx_]->readGroup(label, child_idx))
     {
         // check if child matches the type you want to read.
@@ -80,6 +83,4 @@ bool Reader::hasChild(const std::string& name, NodeType type) const
     return false;
 }
 
-} // end namespace config
-
-} // end namespace tue
+} // namespace tue::config

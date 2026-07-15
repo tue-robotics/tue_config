@@ -2,13 +2,22 @@
 #include "tue/config/reader_writer.h"
 #include <gtest/gtest.h>
 
+#include <ament_index_cpp/version.h>
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+#include <ament_index_cpp/get_package_share_path.hpp>
+#else
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#endif
 
 tue::config::ReaderWriter config;
 
 TEST(SDF, LoadSDF)
 {
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+    std::string path = ament_index_cpp::get_package_share_path("tue_config").string();
+#else
     std::string path = ament_index_cpp::get_package_share_directory("tue_config");
+#endif
     path += "/test/model.sdf";
     EXPECT_TRUE(tue::config::loadFromSDFFile(path, config));
     EXPECT_TRUE(config.readGroup("sdf"));

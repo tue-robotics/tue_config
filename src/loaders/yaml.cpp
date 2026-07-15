@@ -3,22 +3,33 @@
 #include "loader_functions.h"
 #include "resolve_functions.h"
 #include "tue/config/reader_writer.h"
+#include "tue/config/resolve_config.h"
 
-#include <yaml-cpp/yaml.h>
+#include <sstream>
+#include <string>
+#include <yaml-cpp/exceptions.h>
+#include <yaml-cpp/node/detail/iterator_fwd.h>
+#include <yaml-cpp/node/node.h>
+#include <yaml-cpp/node/parse.h>
+#include <yaml-cpp/node/type.h>
+// The forward-declaration headers above satisfy include-cleaner, but the complete YAML::Node
+// iterator and node.as<T>() conversion definitions live behind the umbrella header.
+#include <yaml-cpp/yaml.h> // IWYU pragma: keep
 
+#include <cstdlib>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
-#include <stdlib.h>
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
 
+namespace
+{
+
+// NOLINTNEXTLINE(misc-no-recursion) — mutually recursive with loadFromYAMLNode through file includes.
 bool yamlScalarToVariant(const std::string& key,
                          const YAML::Node& n,
                          ReaderWriter& config,
@@ -35,7 +46,7 @@ bool yamlScalarToVariant(const std::string& key,
             filename = s;
         else
         {
-            std::filesystem::path filepath(config.source());
+            std::filesystem::path const filepath(config.source());
             filename = (filepath.parent_path() / s).string();
         }
 
@@ -58,22 +69,24 @@ bool yamlScalarToVariant(const std::string& key,
         return true;
     }
 
-    char* pEnd;
-    int i = (int)std::strtol(s_resolved.c_str(), &pEnd, 10);
-    if (pEnd[0] == 0)
+    // strtol/strtod write the end pointer through &p_end, so its pointee cannot be const (the C API
+    // signature is char**), even though we never modify the pointed-to characters ourselves.
+    char* p_end = nullptr; // NOLINT(misc-const-correctness)
+    const int i = static_cast<int>(std::strtol(s_resolved.c_str(), &p_end, 10));
+    if (p_end[0] == 0)
     {
         config.setValue(key, i);
         return true;
     }
 
-    double d = std::strtod(s_resolved.c_str(), &pEnd);
-    if (pEnd[0] == 0)
+    const double d = std::strtod(s_resolved.c_str(), &p_end);
+    if (p_end[0] == 0)
     {
         config.setValue(key, d);
         return true;
     }
 
-    bool b;
+    bool b = false;
     if (strToBool(s_resolved, b))
     {
         config.setValue(key, b);
@@ -86,12 +99,13 @@ bool yamlScalarToVariant(const std::string& key,
 
 // ----------------------------------------------------------------------------------------------------
 
+// NOLINTNEXTLINE(misc-no-recursion) — recursively walks nested maps and sequences.
 bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     bool success = true;
     for (YAML::const_iterator it = node.begin(); it != node.end(); ++it)
     {
-        std::string key = it->first.as<std::string>();
+        auto const key = it->first.as<std::string>();
         // Copy the node by value: yaml-cpp's iterator returns a temporary
         // YAML::Node, so binding it to a reference would dangle. YAML::Node
         // has cheap shared-pointer semantics, so copying is safe.
@@ -113,6 +127,7 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
              * Need to use index iteration instead of iterator for sequences, because it goes behind the end.
              * See https://github.com/jbeder/yaml-cpp/issues/833
              */
+            // NOLINTNEXTLINE(modernize-loop-convert) — see the note above; index iteration is required.
             for (std::size_t i = 0; i < n.size(); ++i)
             {
                 // Copy by value: YAML::Node::operator[] returns a temporary.
@@ -122,12 +137,10 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
                     config.addError("Sequences must only contains maps");
                     return false;
                 }
-                else
-                {
-                    config.addArrayItem();
-                    loadFromYAMLNode(n2, config, resolve_config);
-                    config.endArrayItem();
-                }
+
+                config.addArrayItem();
+                loadFromYAMLNode(n2, config, resolve_config);
+                config.endArrayItem();
             }
 
             config.endArray();
@@ -147,14 +160,17 @@ bool loadFromYAMLNode(const YAML::Node& node, ReaderWriter& config, const Resolv
     return success;
 }
 
+} // namespace
+
 // ----------------------------------------------------------------------------------------------------
 
+// NOLINTNEXTLINE(misc-no-recursion) — part of the include-driven recursive load chain.
 bool loadFromYAMLStream(std::istream& stream, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     try
     {
 
-        YAML::Node doc = YAML::Load(stream);
+        YAML::Node const doc = YAML::Load(stream);
 
         if (doc.Type() != YAML::NodeType::Map)
         {
@@ -185,6 +201,7 @@ bool loadFromYAMLString(const std::string& string, ReaderWriter& config, const R
 
 // ----------------------------------------------------------------------------------------------------
 
+// NOLINTNEXTLINE(misc-no-recursion) — part of the include-driven recursive load chain.
 bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const ResolveConfig& resolve_config)
 {
     // Remove possible previous errors (TODO)
@@ -212,6 +229,4 @@ bool loadFromYAMLFile(const std::string& filename, ReaderWriter& config, const R
     return true;
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config

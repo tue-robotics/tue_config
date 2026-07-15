@@ -1,17 +1,16 @@
 #include "tue/config/binary_reader.h"
 
-#include <iostream>
-#include <string.h>
+#include <cstring>
+#include <string>
+#include <vector>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
 
 BinaryReader::BinaryReader(const std::vector<char>& data) :
-    data_(&data[0]), byte_size_(data.size()), idx_(0), error_(false)
+    data_(data.data()), byte_size_(data.size()), idx_(0), error_(false)
 {
 }
 
@@ -24,7 +23,7 @@ BinaryReader::BinaryReader(const char* data, unsigned int byte_size) :
 
 bool BinaryReader::read(const std::string& name)
 {
-    char t = data_[idx_];
+    char const t = data_[idx_];
     if (t == 'G' || t == 'A')
     {
         ++idx_;
@@ -71,19 +70,21 @@ bool BinaryReader::next()
 
 bool BinaryReader::value(const std::string& name, int& value)
 {
-    if (data_[idx_] == 'V' && strcmp(&data_[++idx_], name.c_str()) == 0)
+    if (data_[idx_] == 'V')
     {
-        idx_ += name.size() + 1;
-        memcpy((char*)&value, &data_[idx_], sizeof(value));
-        idx_ += sizeof(value);
+        ++idx_;
+        if (strcmp(&data_[idx_], name.c_str()) == 0)
+        {
+            idx_ += name.size() + 1;
+            memcpy(reinterpret_cast<char*>(&value), &data_[idx_], sizeof(value));
+            idx_ += sizeof(value);
 
-        return true;
+            return true;
+        }
     }
 
     error_ = true;
     return false;
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config

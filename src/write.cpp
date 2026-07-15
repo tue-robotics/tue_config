@@ -1,16 +1,24 @@
 #include "tue/config/write.h"
 
 #include "tue/config/data.h"
+#include "tue/config/data_pointer.h"
+#include "tue/config/label.h"
 #include "tue/config/map.h"
 #include "tue/config/node.h"
+#include "tue/config/node_type.h"
 #include "tue/config/sequence.h"
+#include "tue/config/types.h"
+#include "tue/config/variant.h"
 
+#include <algorithm>
 #include <fstream>
+#include <map>
+#include <ostream>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
-namespace tue
-{
-
-namespace config
+namespace tue::config
 {
 
 // ----------------------------------------------------------------------------------------------------
@@ -18,12 +26,12 @@ namespace config
 struct WriterImpl
 {
 
-    WriterImpl(std::ostream& out_, const tue::config::Data& cfg_) : out(out_), cfg(cfg_) {}
+    WriterImpl(std::ostream& out_, const tue::config::Data& cfg_) : out(&out_), cfg(&cfg_) {}
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-    std::ostream& out;
-    const tue::config::Data& cfg;
+    std::ostream* out;
+    const tue::config::Data* cfg;
     std::string tab;
     std::string yaml_array_tab;
     std::string newline;
@@ -52,113 +60,115 @@ struct WriterImpl
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    // NOLINTNEXTLINE(misc-no-recursion) — recursive JSON serialisation of the config tree.
     void writeJSON(const NodePtr& n, const std::string& indent)
     {
-        out << "{" << newline;
+        *out << "{" << newline;
 
-        Map* map = static_cast<Map*>(n.get());
+        const Map* map = dynamic_cast<Map*>(n.get());
 
         bool first = true;
-        std::string new_indent = indent + tab;
+        std::string const new_indent = indent + tab;
 
         const std::map<Label, Variant>& values = map->values;
-        for (std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
+        for (const auto& value : values)
         {
             if (!first)
-                out << "," << newline;
+                *out << "," << newline;
             else
                 first = false;
 
-            out << new_indent << "\"" << cfg.getName(it->first) << "\"" << delimiter;
+            *out << new_indent << "\"" << cfg->getName(value.first) << "\"" << delimiter;
 
-            const Variant& v = it->second;
+            const Variant& v = value.second;
             if (v.isString())
-                out << "\"" << v << "\"";
+                *out << "\"" << v << "\"";
             else
-                out << v;
+                *out << v;
         }
 
         const std::map<Label, NodeIdx>& children = map->map_;
-        for (std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (const auto& it : children)
         {
             if (!first)
-                out << "," << newline;
+                *out << "," << newline;
             else
                 first = false;
 
-            out << new_indent << "\"" << cfg.getName(it->first) << "\"" << delimiter;
+            *out << new_indent << "\"" << cfg->getName(it.first) << "\"" << delimiter;
 
-            const NodePtr& m = cfg.nodes[it->second];
+            const NodePtr& m = cfg->nodes[it.second];
 
             if (m->type() == ARRAY)
             {
-                out << "[" << newline;
+                *out << "[" << newline;
 
-                Sequence* array = static_cast<Sequence*>(m.get());
+                const auto* array = dynamic_cast<Sequence*>(m.get());
                 const std::vector<NodeIdx>& children = array->children_;
-                for (std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+                for (auto it = children.begin(); it != children.end(); ++it)
                 {
                     if (it != children.begin())
-                        out << "," << newline;
+                        *out << "," << newline;
 
-                    out << new_indent << tab;
+                    *out << new_indent << tab;
 
-                    writeJSON(cfg.nodes[*it], new_indent + tab);
+                    writeJSON(cfg->nodes[*it], new_indent + tab);
                 }
 
-                out << newline << new_indent << "]";
+                *out << newline << new_indent << "]";
             }
             else
             {
-                writeJSON(cfg.nodes[it->second], new_indent);
+                writeJSON(cfg->nodes[it.second], new_indent);
             }
         }
 
-        out << newline << indent << "}";
+        *out << newline << indent << "}";
     }
 
     // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+    // NOLINTNEXTLINE(misc-no-recursion) — recursive YAML serialisation of the config tree.
     void writeYAML(const NodePtr& n, const std::string& indent, bool array_item_start)
     {
-        Map* map = static_cast<Map*>(n.get());
+        const Map* map = dynamic_cast<Map*>(n.get());
 
         const std::map<Label, Variant>& values = map->values;
-        for (std::map<Label, Variant>::const_iterator it = values.begin(); it != values.end(); ++it)
+        for (const auto& value : values)
         {
             if (array_item_start)
                 array_item_start = false;
             else
-                out << indent;
+                *out << indent;
 
-            out << cfg.getName(it->first) << delimiter << " " << it->second << std::endl;
+            *out << cfg->getName(value.first) << delimiter << " " << value.second << '\n';
         }
 
         const std::map<Label, NodeIdx>& children = map->map_;
-        for (std::map<Label, NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+        for (const auto& it : children)
         {
             if (array_item_start)
                 array_item_start = false;
             else
-                out << indent;
+                *out << indent;
 
-            out << cfg.getName(it->first) << delimiter << std::endl;
+            *out << cfg->getName(it.first) << delimiter << '\n';
 
-            const NodePtr& m = cfg.nodes[it->second];
+            const NodePtr& m = cfg->nodes[it.second];
 
             if (m->type() == ARRAY)
             {
-                Sequence* array = static_cast<Sequence*>(m.get());
+                const auto* array = dynamic_cast<Sequence*>(m.get());
                 const std::vector<NodeIdx>& children = array->children_;
-                for (std::vector<NodeIdx>::const_iterator it = children.begin(); it != children.end(); ++it)
+                for (const unsigned int it : children)
                 {
-                    out << indent << yaml_array_tab << "- ";
-                    writeYAML(cfg.nodes[*it], indent + tab, true);
+                    *out << indent << yaml_array_tab << "- ";
+                    writeYAML(cfg->nodes[it], indent + tab, true);
                 }
             }
             else
             {
-                writeYAML(cfg.nodes[it->second], indent + tab, false);
+                writeYAML(cfg->nodes[it.second], indent + tab, false);
             }
         }
     }
@@ -177,7 +187,7 @@ void toStream(std::ostream& s, const DataConstPointer& data, WriteType write_typ
     {
         throw std::logic_error("Writing XML is not yet implemented");
     }
-    else if (write_type == YAML)
+    if (write_type == YAML)
     {
         writer.delimiter = ":";
         writer.setIndentSize(std::max<int>(indent_size, 2));
@@ -217,5 +227,4 @@ bool toFile(const char* filename, const DataConstPointer& data, WriteType write_
 
 // ----------------------------------------------------------------------------------------------------
 
-} // namespace config
-} // namespace tue
+} // namespace tue::config

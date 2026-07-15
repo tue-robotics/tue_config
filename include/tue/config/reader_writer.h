@@ -302,7 +302,7 @@ private:
 
     std::string filename_; // filename of the source file
 
-    std::time_t source_last_write_time_; // last writing time of the source file at time of reading.
+    std::time_t source_last_write_time_{}; // last writing time of the source file at time of reading.
 
     ResolveConfig resolve_config_; // Needs to be stored for sync
 };

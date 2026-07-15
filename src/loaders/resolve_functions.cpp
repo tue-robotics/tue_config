@@ -1,25 +1,37 @@
 #include "resolve_functions.h"
+#include "tue/config/resolve_config.h"
 
+// ament_index_cpp deprecated the single-argument get_package_share_directory in 1.13 and removed its
+// header entirely in 1.14, replacing it with get_package_share_path. Guard on ament_index_cpp's own
+// version (not the ROS distro), because that is the package the API lives in.
+#include <ament_index_cpp/version.h>
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+#include <ament_index_cpp/get_package_share_path.hpp>
+#else
 #include <ament_index_cpp/get_package_share_directory.hpp>
-#include <stdlib.h> /* getenv */
+#endif
+#include <cstdlib> /* getenv */
+#include <exception>
+#include <sstream>
+#include <string>
 #include <vector>
 
 #include <filesystem>
 
+#include <cstdint>
 #include <iostream>
-#include <iterator>
 
-namespace tue
+namespace tue::config
 {
 
-namespace config
+namespace
 {
 
-enum resolveResult
+enum class resolveResult : std::uint8_t
 {
-    failed,
-    success,
-    skipped
+    FAILED,
+    SUCCESS,
+    SKIPPED
 };
 
 // ----------------------------------------------------------------------------------------------------
@@ -47,11 +59,15 @@ resolveResult executeResolvefunction(const std::vector<std::string>& args,
     if (args[0] == "rospkg" && args.size() == 2)
     {
         if (!config.rospkg)
-            return resolveResult::skipped;
+            return resolveResult::SKIPPED;
 
         try
         {
+#if AMENT_INDEX_CPP_VERSION_GTE(1, 13, 0)
+            result = ament_index_cpp::get_package_share_path(args[1]).string();
+#else
             result = ament_index_cpp::get_package_share_directory(args[1]);
+#endif
         }
         catch (const std::exception&)
         {
@@ -60,62 +76,62 @@ resolveResult executeResolvefunction(const std::vector<std::string>& args,
         if (result.empty())
         {
             error << "ROS package '" << args[1] << "' unknown.";
-            return resolveResult::failed;
+            return resolveResult::FAILED;
         }
 
-        return resolveResult::success;
+        return resolveResult::SUCCESS;
     }
-    else if (args[0] == "env" && (args.size() == 2 || args.size() == 3))
+    if (args[0] == "env" && (args.size() == 2 || args.size() == 3))
     {
         if (!config.env)
-            return resolveResult::skipped;
+            return resolveResult::SKIPPED;
 
-        char* env_value;
-        env_value = getenv(args[1].c_str());
+        const char* const env_value = getenv(args[1].c_str());
         if (env_value == nullptr)
         {
             if (args.size() == 3)
             {
                 // Default value
                 result = args[2];
-                return resolveResult::success;
+                return resolveResult::SUCCESS;
             }
 
             error << "Environment variable '" << args[1] << "' unknown.";
-            return resolveResult::failed;
+            return resolveResult::FAILED;
         }
 
         result = env_value;
-        return resolveResult::success;
+        return resolveResult::SUCCESS;
     }
-    else if (args[0] == "file" && args.size() == 2)
+    if (args[0] == "file" && args.size() == 2)
     {
         if (!config.file)
-            return resolveResult::skipped;
+            return resolveResult::SKIPPED;
 
         const std::string& filename = args[1];
         if (filename[0] == '/')
         {
             result = filename;
-            return resolveResult::success;
+            return resolveResult::SUCCESS;
         }
 
-        std::filesystem::path parent_path = std::filesystem::path(source).parent_path();
+        const std::filesystem::path parent_path = std::filesystem::path(source).parent_path();
         if (parent_path.empty())
             result = filename;
         else
             result = (parent_path / filename).string();
 
-        return resolveResult::success;
+        return resolveResult::SUCCESS;
     }
 
     error << "Unknown resolve function: '" << args[0] << "' with " << args.size() - 1 << " arguments.";
 
-    return resolveResult::failed;
+    return resolveResult::FAILED;
 }
 
 // ----------------------------------------------------------------------------------------------------
 
+// NOLINTNEXTLINE(misc-no-recursion) — recursive descent parser for nested "$( ... )" expressions.
 resolveResult parseResolveFunction(const std::string& str,
                                    const std::string& source,
                                    std::size_t& i,
@@ -124,13 +140,13 @@ resolveResult parseResolveFunction(const std::string& str,
                                    const ResolveConfig& config)
 {
     std::vector<std::string> args;
-    args.push_back("");
+    args.emplace_back("");
 
     bool inner_function_skipped = false;
 
     for (; i < str.size();)
     {
-        char c = str[i];
+        char const c = str[i];
 
         if (c == '$' && (i + 1) < str.size() && str[i + 1] == '(')
         {
@@ -138,16 +154,16 @@ resolveResult parseResolveFunction(const std::string& str,
             i += 2;
 
             std::string arg;
-            resolveResult result = parseResolveFunction(str, source, i, arg, error, config);
-            if (result == resolveResult::failed)
-                return resolveResult::failed;
-            else if (result == resolveResult::skipped)
+            resolveResult const result = parseResolveFunction(str, source, i, arg, error, config);
+            if (result == resolveResult::FAILED)
+                return resolveResult::FAILED;
+            if (result == resolveResult::SKIPPED)
                 inner_function_skipped = true;
 
             args.back() += arg;
             continue;
         }
-        else if (c == ')')
+        if (c == ')')
         {
             ++i;
 
@@ -159,11 +175,11 @@ resolveResult parseResolveFunction(const std::string& str,
             if (args.empty())
             {
                 error << "Empty resolve function.";
-                return resolveResult::failed;
+                return resolveResult::FAILED;
             }
 
-            resolveResult result_code = executeResolvefunction(args, source, result, error, config);
-            if (result_code == resolveResult::skipped)
+            const resolveResult result_code = executeResolvefunction(args, source, result, error, config);
+            if (result_code == resolveResult::SKIPPED)
             {
                 argsToString(args, result);
                 return result_code;
@@ -174,15 +190,15 @@ resolveResult parseResolveFunction(const std::string& str,
                 std::string resolved_args;
                 argsToString(args, resolved_args);
                 error << "Inner resolve function skipped, but not this one: " << resolved_args << ".";
-                return resolveResult::failed;
+                return resolveResult::FAILED;
             }
 
             return result_code;
         }
-        else if (c == ' ')
+        if (c == ' ')
         {
             if (!args.back().empty())
-                args.push_back("");
+                args.emplace_back("");
             ++i;
         }
         else
@@ -193,8 +209,10 @@ resolveResult parseResolveFunction(const std::string& str,
     }
 
     error << "Missing ')'.";
-    return resolveResult::failed;
+    return resolveResult::FAILED;
 }
+
+} // namespace
 
 // ----------------------------------------------------------------------------------------------------
 
@@ -214,7 +232,7 @@ bool resolve(const std::string& str,
     std::size_t i = 0;
     while (i < str.size())
     {
-        std::size_t i_sign = str.find("$(", i);
+        std::size_t const i_sign = str.find("$(", i);
         if (i_sign == std::string::npos)
         {
             result += str.substr(i);
@@ -227,7 +245,7 @@ bool resolve(const std::string& str,
         i = i_sign + 2;
 
         std::string subresult;
-        if (!parseResolveFunction(str, source, i, subresult, error, config)) // failed: 0
+        if (parseResolveFunction(str, source, i, subresult, error, config) == resolveResult::FAILED)
             return false;
 
         result += subresult;
@@ -236,6 +254,4 @@ bool resolve(const std::string& str,
     return true;
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config

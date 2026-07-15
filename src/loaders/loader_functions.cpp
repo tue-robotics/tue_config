@@ -1,10 +1,10 @@
 #include "loader_functions.h"
 
 #include <algorithm>
+#include <cctype>
+#include <string>
 
-namespace tue
-{
-namespace config
+namespace tue::config
 {
 
 bool strToBool(std::string s, bool& rhs)
@@ -20,15 +20,15 @@ bool strToBool(std::string s, bool& rhs)
     };
 
     std::transform(s.begin(), s.end(), s.begin(), ::tolower);
-    for (unsigned i = 0; i < sizeof(names) / sizeof(names[0]); i++)
+    for (const auto& name : names)
     {
-        if (names[i].truename == s)
+        if (name.truename == s)
         {
             rhs = true;
             return true;
         }
 
-        if (names[i].falsename == s)
+        if (name.falsename == s)
         {
             rhs = false;
             return true;
@@ -38,6 +38,4 @@ bool strToBool(std::string s, bool& rhs)
     return false;
 }
 
-} // namespace config
-
-} // namespace tue
+} // namespace tue::config
